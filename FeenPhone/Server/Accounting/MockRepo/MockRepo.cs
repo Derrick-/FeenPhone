@@ -33,7 +33,9 @@ namespace FeenPhone.Accounting
     {
         static int usernum = 0;
 
-        public MockAccount(string username = null, string nickname = null, bool isadmin = false)
+        public MockAccount() : this(null) { }
+
+        public MockAccount(string username, string nickname = null, bool isadmin = false)
             : base(Guid.NewGuid(), username == null ? "user" + usernum++.ToString() : username, isadmin: isadmin)
         {
             if (nickname != null)
