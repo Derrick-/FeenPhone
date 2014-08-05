@@ -4,7 +4,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Alienseed.BaseNetworkServer.Accounting
+namespace FeenPhone.Accounting
 {
     static class Passwords
     {

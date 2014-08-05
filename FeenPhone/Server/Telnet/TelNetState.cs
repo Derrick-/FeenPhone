@@ -22,7 +22,7 @@ namespace Alienseed.BaseNetworkServer.Network.Telnet
 
         internal bool Login(string Username, string password)
         {
-            var user = AccountHandler.Login(Username, password);
+            var user = FeenPhone.Accounting.AccountHandler.Login(Username, password);
 
             LogLine("Login {0}: {1}", user != null ? "SUCCESS" : "FAILED", user != null ? user.Username : Username);
 

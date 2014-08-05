@@ -1,17 +1,18 @@
-﻿using System;
+﻿using Alienseed.BaseNetworkServer.Accounting;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Alienseed.BaseNetworkServer.Accounting
+namespace FeenPhone.Accounting
 {
     class MockRepo : IAccountRepository
     {
         static readonly Dictionary<string, IUserClient> accounts = new Dictionary<string, IUserClient>()
         {
-            {"derrick",new Account(Guid.NewGuid(),"derrick","Derrick",true)},
-            {"ian",new Account(Guid.NewGuid(),"ian","Hemperor",true)},
-            {"donna",new Account(Guid.NewGuid(),"donna","donna",false)},
+            {"derrick",new MockAccount("derrick","Derrick",true)},
+            {"ian",new MockAccount("ian","Hemperor",true)},
+            {"donna",new MockAccount("donna","donna",false)},
         };
 
         #region IAccountRepository Members
@@ -26,5 +27,17 @@ namespace Alienseed.BaseNetworkServer.Accounting
         }
 
         #endregion
+    }
+
+    internal class MockAccount : Account
+    {
+        static int usernum = 0;
+
+        public MockAccount(string username = null, string nickname = null, bool isadmin = false)
+            : base(Guid.NewGuid(), username == null ? "user" + usernum++.ToString() : username, isadmin: isadmin)
+        {
+            if (nickname != null)
+                Nickname = nickname;
+        }
     }
 }

@@ -6,145 +6,76 @@ using System.Threading;
 
 namespace Alienseed.BaseNetworkServer
 {
-    static class Core
+    class ServerHost : IDisposable
     {
-        public static bool Closing { get; private set; }
-        internal static CoreRunner Runner { get; private set; }
+        List<INetworkServer> Servers = new List<INetworkServer>();
 
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
-        static void Main()
+        public ServerHost()
         {
-            Closing = false;
-            using (Runner = new CoreRunner())
-            using (var servers = new ServerHost())
-            {
-                Runner.Run();
-            }
-
-            //ServiceBase[] ServicesToRun;
-            //ServicesToRun = new ServiceBase[] 
-            //{ 
-            //    new Service() 
-            //};
-            //ServiceBase.Run(ServicesToRun);
+            InitServers();
+            StartServers();
         }
 
-        public static void Shutdown()
+        void InitServers()
         {
-            Closing = true;
+            StopServers();
+            Servers.Clear();
+
+            Servers.Add(new Network.Telnet.TelnetServer());
+            //  Servers.Add(new Network.WebSockets.WSServer());
         }
 
-        internal class CoreRunner : IDisposable
+        void StartServers()
         {
-            Timer timer;
+            var failed = new List<INetworkServer>();
 
-            private static ManualResetEvent tick = new ManualResetEvent(false);
-            private void OnTick(object state)
+            foreach (var server in Servers.Where(m => !m.Running))
             {
-                tick.Set();
-            }
-
-            public CoreRunner()
-            {
-            }
-
-            public void Run()
-            {
-                timer = new Timer(OnTick, this, 1000, 1000);
-
-                while (!Core.Closing && !isDisposed)
+                Console.WriteLine("STARTING {0} on port {1}", server, server.Port);
+                if (server.Start())
                 {
-                    tick.Reset();
-                    // Tick stuff
-                    tick.WaitOne();
+                    Console.WriteLine("Started server: {0} on port {1}", server, server.Port);
+                    server.OnListenerCrash += server_OnListenerCrash;
                 }
-
-            }
-
-            #region IDisposable Members
-            bool isDisposed = false;
-            public void Dispose()
-            {
-                isDisposed = true;
-                tick.Set();
-                Console.WriteLine("Disposing games");
-            }
-
-            #endregion
-        }
-
-        private class ServerHost : IDisposable
-        {
-            List<INetworkServer> Servers = new List<INetworkServer>();
-
-            public ServerHost()
-            {
-                InitServers();
-                StartServers();
-            }
-
-            void InitServers()
-            {
-                StopServers();
-                Servers.Clear();
-
-                Servers.Add(new Network.Telnet.TelnetServer());
-              //  Servers.Add(new Network.WebSockets.WSServer());
-            }
-
-            void StartServers()
-            {
-                var failed = new List<INetworkServer>();
-
-                foreach (var server in Servers.Where(m => !m.Running))
+                else
                 {
-                    Console.WriteLine("STARTING {0} on port {1}", server, server.Port);
-                    if (server.Start())
-                    {
-                        Console.WriteLine("Started server: {0} on port {1}", server, server.Port);
-                        server.OnListenerCrash += server_OnListenerCrash;
-                    }
-                    else
-                    {
-                        Console.WriteLine("FAILED server: {0} on port {1}", server, server.Port);
-                        failed.Add(server);
-                    }
-                }
-
-                foreach (var fail in failed)
-                    Servers.Remove(fail);
-
-            }
-
-            private void StopServers()
-            {
-                foreach (var server in Servers.Where(m => m.Running))
-                {
-                    Console.WriteLine("Stopping server: {0}", server);
-                    server.Stop();
+                    Console.WriteLine("FAILED server: {0} on port {1}", server, server.Port);
+                    failed.Add(server);
                 }
             }
 
-            void server_OnListenerCrash(INetworkServer server)
-            {
-                Console.WriteLine("Server Crash: {0} on Port {1}", server, server.Port);
+            foreach (var fail in failed)
+                Servers.Remove(fail);
 
+        }
+
+        private void StopServers()
+        {
+            foreach (var server in Servers.Where(m => m.Running))
+            {
+                Console.WriteLine("Stopping server: {0}", server);
                 server.Stop();
-                Servers.Remove(server);
             }
-
-            #region IDisposable Members
-
-            public void Dispose()
-            {
-                StopServers();
-                Servers.Clear();
-            }
-
-            #endregion
         }
-    }
 
+        void server_OnListenerCrash(INetworkServer server)
+        {
+            Console.WriteLine("Server Crash: {0} on Port {1}", server, server.Port);
+
+            server.Stop();
+            Servers.Remove(server);
+        }
+
+        #region IDisposable Members
+
+        public void Dispose()
+        {
+            StopServers();
+            Servers.Clear();
+        }
+
+        #endregion
+    }
 }
+
+

@@ -1,5 +1,6 @@
 ﻿
-namespace Alienseed.BaseNetworkServer.Accounting
+using Alienseed.BaseNetworkServer.Accounting;
+namespace FeenPhone.Accounting
 {
     public static class AccountHandler
     {

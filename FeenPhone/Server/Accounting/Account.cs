@@ -1,15 +1,15 @@
 ﻿using System;
 using Alienseed.BaseNetworkServer.Accounting;
 
-namespace Alienseed.BaseNetworkServer.Accounting
+namespace FeenPhone.Accounting
 {
-    class Account : IUserClient
+    class Account : Alienseed.BaseNetworkServer.Accounting.IUserClient
     {
         public Guid ID { get { return providerID; } }
         internal Guid providerID { get; private set; }
 
         public string Username { get; private set; }
-        public string Nickname { get; private set; }
+        public string Nickname { get; internal set; }
 
         public bool IsAdmin { get; private set; }
 
