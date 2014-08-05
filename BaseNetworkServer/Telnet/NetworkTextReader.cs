@@ -26,6 +26,8 @@ namespace Alienseed.BaseNetworkServer.Network.Telnet
 
         StringBuilder inText = new StringBuilder();
 
+        public string CurrentBuffer { get { return inText.ToString(); } }
+
         internal const char ETX = (char)0x03;
 
         internal const char BS = (char)0x08;

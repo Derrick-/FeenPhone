@@ -15,6 +15,8 @@ namespace Alienseed.BaseNetworkServer.Network.Telnet
         public abstract string WelcomeMessage { get; }
         public abstract BaseTextPrompt CreateFirstPrompt();
 
+        protected virtual int screenWidth { get { return 80; } }
+
         public BaseTelNetState(Stream stream, IPEndPoint ep) : base(stream, ep)
         {
             Reader.OnTextLine += Reader_OnText;
@@ -22,26 +24,23 @@ namespace Alienseed.BaseNetworkServer.Network.Telnet
             CurrentPrompt = CreateFirstPrompt();
         }
 
-        #region ConnectionState
+        #region Prompt Handling
 
-        public bool Echo { get; set; }
-
-        public IPEndPoint IPEndPoint { get { return EndPoint as IPEndPoint; } }
-        public IPAddress Address
+        protected void SendInfoLine(string format, params object[] args)
         {
-            get
-            {
-                if (IPEndPoint == null)
-                    return IPAddress.None;
-                return IPEndPoint.Address;
-            }
+            SendInfoLine(string.Format(format, args));
         }
 
-        protected override void OnConnected()
+        protected void SendInfoLine(string line)
         {
-            if (!string.IsNullOrEmpty(WelcomeMessage))
-                Writer.WriteLine(WelcomeMessage);
-            Writer.Write(TelnetControlCodes.IAC_WILL_ECHO);
+            Writer.WriteLine("\r{0}{1}", line, new string(' ', Math.Max(0, screenWidth - line.Length)));
+            RefreshPrompt();
+        }
+
+        protected void RefreshPrompt()
+        {
+            CurrentPrompt.SendTo(Writer);
+            Writer.Write(Reader.CurrentBuffer);
         }
 
         public void Reader_OnText(string text)
@@ -49,7 +48,7 @@ namespace Alienseed.BaseNetworkServer.Network.Telnet
             if (CurrentPrompt != null)
                 CurrentPrompt = CurrentPrompt.OnResponse(this, text, false);
         }
-        
+
         protected BaseTextPrompt _CurrentPrompt = null;
         protected BaseTextPrompt CurrentPrompt
         {
@@ -82,7 +81,30 @@ namespace Alienseed.BaseNetworkServer.Network.Telnet
                 WriteLine();
                 CurrentPrompt = CurrentPrompt.OnResponse(this, null, true);
             }
+        }
 
+        #endregion
+
+        #region ConnectionState
+
+        public bool Echo { get; set; }
+
+        public IPEndPoint IPEndPoint { get { return EndPoint as IPEndPoint; } }
+        public IPAddress Address
+        {
+            get
+            {
+                if (IPEndPoint == null)
+                    return IPAddress.None;
+                return IPEndPoint.Address;
+            }
+        }
+
+        protected override void OnConnected()
+        {
+            if (!string.IsNullOrEmpty(WelcomeMessage))
+                Writer.WriteLine(WelcomeMessage);
+            Writer.Write(TelnetControlCodes.IAC_WILL_ECHO);
         }
 
         #endregion
