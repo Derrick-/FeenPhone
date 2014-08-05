@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
-namespace Alienseed.BaseNetworkServer
+namespace FeenPhone.Server
 {
     class ServerHost : IDisposable
     {
-        List<INetworkServer> Servers = new List<INetworkServer>();
+        List<BaseServer> Servers = new List<BaseServer>();
 
         public ServerHost()
         {
@@ -21,13 +21,13 @@ namespace Alienseed.BaseNetworkServer
             StopServers();
             Servers.Clear();
 
-            Servers.Add(new Network.Telnet.TelnetServer());
+            Servers.Add(new Telnet.TelnetServer());
             //  Servers.Add(new Network.WebSockets.WSServer());
         }
 
         void StartServers()
         {
-            var failed = new List<INetworkServer>();
+            var failed = new List<BaseServer>();
 
             foreach (var server in Servers.Where(m => !m.Running))
             {
@@ -63,7 +63,8 @@ namespace Alienseed.BaseNetworkServer
             Console.WriteLine("Server Crash: {0} on Port {1}", server, server.Port);
 
             server.Stop();
-            Servers.Remove(server);
+            if (server is BaseServer)
+                Servers.Remove((BaseServer)server);
         }
 
         #region IDisposable Members

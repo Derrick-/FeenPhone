@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Alienseed.BaseNetworkServer.Network.Telnet;
+using Alienseed.BaseNetworkServer.Network.Telnet.Prompts;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Alienseed.BaseNetworkServer.Network.Telnet.Prompts
+namespace FeenPhone.Server.Telnet.Prompts
 {
     abstract class TextPrompt : BaseTextPrompt
     {

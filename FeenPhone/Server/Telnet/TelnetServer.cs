@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Alienseed.BaseNetworkServer.Network.Telnet;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
 
-namespace Alienseed.BaseNetworkServer.Network.Telnet
+namespace FeenPhone.Server.Telnet
 {
     internal class TelnetServer : BaseTelnetServer<TelNetState>
     {

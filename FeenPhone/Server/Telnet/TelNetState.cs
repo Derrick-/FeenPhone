@@ -1,11 +1,13 @@
 ﻿using Alienseed.BaseNetworkServer.Accounting;
-using Alienseed.BaseNetworkServer.Network.Telnet.Prompts;
+using Alienseed.BaseNetworkServer.Network.Telnet;
+using FeenPhone.Server.Telnet.Prompts;
+using System;
 using System.IO;
 using System.Net;
 
-namespace Alienseed.BaseNetworkServer.Network.Telnet
+namespace FeenPhone.Server.Telnet
 {
-    class TelNetState : BaseTelNetState
+    class TelNetState : BaseTelNetState, IFeenPhoneNetstate
     {
         public TelNetState(Stream stream, IPEndPoint ep) : base(stream, ep) { }
 
@@ -13,7 +15,7 @@ namespace Alienseed.BaseNetworkServer.Network.Telnet
         {
             get { return "Welcome to FeenPhone!"; }
         }
-        public override BaseTextPrompt CreateFirstPrompt()
+        public override Alienseed.BaseNetworkServer.Network.Telnet.Prompts.BaseTextPrompt CreateFirstPrompt()
         {
             return new LoginPrompt();
         }
@@ -38,5 +40,20 @@ namespace Alienseed.BaseNetworkServer.Network.Telnet
             base.Dispose();
         }
 
+        public void OnUserConnected(IUser user)
+        {
+            SendInfoLine("  {0} connected.", user);
+        }
+
+        public void OnUserDisconnected(IUser user)
+        {
+            SendInfoLine("  {0} disconnected.", user);
+        }
+
+        public void OnChat(IUser user, string text)
+        {
+            string line=string.Format("  {0} says: {1}", user.Nickname, text);
+            SendInfoLine(line);
+        }
     }
 }

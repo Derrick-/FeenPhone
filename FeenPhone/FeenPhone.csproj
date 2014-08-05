@@ -61,11 +61,17 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Client\BaseClient.cs" />
+    <Compile Include="Client\LocalClient.cs" />
+    <Compile Include="Client\RemoteClient.cs" />
     <Compile Include="Server\Accounting\Account.cs" />
     <Compile Include="Server\Accounting\AccountHandler.cs" />
     <Compile Include="Server\Accounting\MockRepo\MockRepo.cs" />
     <Compile Include="Server\Accounting\Passwords.cs" />
+    <Compile Include="Server\EventSink.cs" />
     <Compile Include="Server\ServerHost.cs" />
+    <Compile Include="Server\Telnet\IFeenPhoneNetstate.cs" />
+    <Compile Include="Server\Telnet\Prompts\ChatPrompt.cs" />
     <Compile Include="Server\Telnet\Prompts\LoginPrompt.cs" />
     <Compile Include="Server\Telnet\Prompts\MainMenu.cs" />
     <Compile Include="Server\Telnet\Prompts\TextPrompt.cs" />

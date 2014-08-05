@@ -1,9 +1,12 @@
-﻿using System;
+﻿using Alienseed.BaseNetworkServer.Network;
+using Alienseed.BaseNetworkServer.Network.Telnet;
+using Alienseed.BaseNetworkServer.Network.Telnet.Prompts;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Alienseed.BaseNetworkServer.Network.Telnet.Prompts
+namespace FeenPhone.Server.Telnet.Prompts
 {
     class MainMenu : BaseMenuPrompt
     {
@@ -15,11 +18,18 @@ namespace Alienseed.BaseNetworkServer.Network.Telnet.Prompts
         public MainMenu(bool foradmin = false) : base(options, foradmin) { }
 
         private static MenuOption[] options = new MenuOption[] {
+            new MenuOption() { Command = "CHAT", Description = "Chat", Result=cmdChat } ,
             new MenuOption() { Command = "USERS", Description = "List users online", Result=cmdUsers } ,
             new MenuOption() { Command = "LOGOUT", Description = "Log Out", Result=cmdLogOut } ,
             new MenuOption() { Command = "QUIT", Description = "Disconnect from server", Result=cmdQuit } ,
             new MenuOption(admin:true) { Command = "SHUTDOWN", Description = "Shut down the server", Result=cmdShutdown } 
        };
+
+        private static BaseTextPrompt cmdChat(BaseTextPrompt sender, BaseTelNetState client, string args = null)
+        {
+            client.WriteLine("Begin chatting. <ESC> to cancel.");
+            return new ChatPrompt();
+        }
 
         private static BaseTextPrompt cmdShutdown(BaseTextPrompt sender, BaseTelNetState client, string args)
         {

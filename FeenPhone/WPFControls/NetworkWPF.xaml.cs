@@ -34,7 +34,7 @@ namespace FeenPhone.WPFControls
             set { this.SetValue(IsServerProperty, value); }
         }
 
-        Alienseed.BaseNetworkServer.ServerHost server = null;
+        FeenPhone.Server.ServerHost server = null;
         private static void OnIsServerChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             NetworkWPF target = d as NetworkWPF;
@@ -42,7 +42,7 @@ namespace FeenPhone.WPFControls
             {
                 if ((bool?)e.NewValue == true && target.server == null)
                 {
-                    target.server = new Alienseed.BaseNetworkServer.ServerHost();
+                    target.server = new FeenPhone.Server.ServerHost();
                 }
                 else
                 {
