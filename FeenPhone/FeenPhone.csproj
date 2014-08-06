@@ -77,6 +77,9 @@
     <Compile Include="Server\Telnet\Prompts\TextPrompt.cs" />
     <Compile Include="Server\Telnet\TelnetServer.cs" />
     <Compile Include="Server\Telnet\TelNetState.cs" />
+    <Compile Include="WPFControls\LogWPF.xaml.cs">
+      <DependentUpon>LogWPF.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WPFControls\NetworkWPF.xaml.cs">
       <DependentUpon>NetworkWPF.xaml</DependentUpon>
     </Compile>
@@ -95,6 +98,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="WPFControls\LogWPF.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="WPFControls\NetworkWPF.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

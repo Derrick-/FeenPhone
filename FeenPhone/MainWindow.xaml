@@ -5,6 +5,6 @@
     <DockPanel>
         <WPFControls:UserListWPF DockPanel.Dock="Right" MinWidth="150" />
         <WPFControls:NetworkWPF DockPanel.Dock="Top"/>
-        <TextBlock Background="GhostWhite" Name="log"></TextBlock>
+        <WPFControls:LogWPF />
     </DockPanel>
 </Window>
