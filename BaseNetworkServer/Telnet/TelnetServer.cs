@@ -34,7 +34,7 @@ namespace Alienseed.BaseNetworkServer.Network.Telnet
         }
         protected abstract Tnetstate NetstateFactory(System.Net.Sockets.NetworkStream stream, EndPoint ep);
 
-        void svr_OnClientConnected(TCPNetState<NetworkTextReader, NetworkTextWriter> client)
+        void svr_OnClientConnected(NetState client)
         {
             if (client is BaseTelNetState)
             {

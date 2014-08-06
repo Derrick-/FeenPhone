@@ -48,6 +48,28 @@ namespace Alienseed.BaseNetworkServer.Network
 
         public virtual bool Connected { get { return !isDisposed; } }
 
+        public class OnDisposedEventArgs : EventArgs
+        {
+            public NetState State { get; private set; }
+            public OnDisposedEventArgs(NetState state)
+            {
+                this.State = state;
+            }
+        }
+
+        public class OnLoginLogoutEventArgs : EventArgs
+        {
+            public IUserClient Client { get; private set; }
+            public OnLoginLogoutEventArgs(IUserClient client)
+            {
+                this.Client = client;
+            }
+        }
+
+        public EventHandler<OnDisposedEventArgs> OnDisposed;
+        public EventHandler<OnLoginLogoutEventArgs> OnLogin;
+        public EventHandler<OnLoginLogoutEventArgs> OnLogout;
+
         internal NetState(EndPoint ep)
         {
             EndPoint = ep;
@@ -103,12 +125,20 @@ namespace Alienseed.BaseNetworkServer.Network
                 }
             }
             User = user;
+
+            if (OnLogin != null)
+                OnLogin(this, new OnLoginLogoutEventArgs(User));
+            
             return true;
         }
 
         public void Logout()
         {
             LogLine("Logout");
+
+            if (OnLogout != null)
+                OnLogout(this,new OnLoginLogoutEventArgs(User));
+            
             User = null;
         }
 
@@ -162,6 +192,9 @@ namespace Alienseed.BaseNetworkServer.Network
             RemoveClient(this);
 
             isDisposed = true;
+          
+            if (OnDisposed != null)
+                OnDisposed(this, new OnDisposedEventArgs(this));
         }
     }
 

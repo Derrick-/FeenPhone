@@ -1,4 +1,5 @@
 ﻿using Alienseed.BaseNetworkServer.Accounting;
+using Alienseed.BaseNetworkServer.Network;
 using Alienseed.BaseNetworkServer.Network.Telnet;
 using FeenPhone.Server.Telnet.Prompts;
 using System;
@@ -40,20 +41,35 @@ namespace FeenPhone.Server.Telnet
             base.Dispose();
         }
 
-        public void OnUserConnected(IUser user)
+        public void OnUserConnected(NetState user)
         {
-            SendInfoLine("  {0} connected.", user);
+            SendInfoLine("  {0} connected.", NicknameOrIP(user));
         }
 
-        public void OnUserDisconnected(IUser user)
+        public void OnUserDisconnected(NetState user)
         {
-            SendInfoLine("  {0} disconnected.", user);
+            SendInfoLine("  {0} disconnected.", NicknameOrIP(user));
         }
 
-        public void OnChat(IUser user, string text)
+        public void OnChat(NetState user, string text)
         {
-            string line=string.Format("  {0} says: {1}", user.Nickname, text);
+            string line = string.Format("  {0} says: {1}", NicknameOrIP(user), text);
             SendInfoLine(line);
+        }
+
+        public void OnUserLogin(IUserClient client)
+        {
+            SendInfoLine("  {0} login.", client.Nickname);
+        }
+
+        public void OnUserLogout(IUserClient client)
+        {
+            SendInfoLine("  {0} logout.", client.Nickname);
+        }
+
+        private static string NicknameOrIP(NetState user)
+        {
+            return user.User != null ? user.User.Nickname : user.EndPoint.ToString();
         }
     }
 }

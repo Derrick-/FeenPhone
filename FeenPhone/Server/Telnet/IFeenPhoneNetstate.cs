@@ -1,16 +1,21 @@
 ﻿using Alienseed.BaseNetworkServer.Accounting;
+using Alienseed.BaseNetworkServer.Network;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 
 namespace FeenPhone.Server
 {
     interface IFeenPhoneNetstate
     {
-        void OnUserConnected(IUser user);
-        void OnUserDisconnected(IUser user);
-        void OnChat(IUser user, string text);
+        void OnUserConnected(NetState user);
+        void OnUserDisconnected(NetState user);
 
+        void OnUserLogin(IUserClient client);
+        void OnUserLogout(IUserClient client);
+
+        void OnChat(NetState user, string text);
     }
 }

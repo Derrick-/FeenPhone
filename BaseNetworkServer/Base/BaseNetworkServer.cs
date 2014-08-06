@@ -45,12 +45,27 @@ namespace Alienseed.BaseNetworkServer.Network
         where TReader : BaseStreamReader, new()
         where TWriter : BaseStreamWriter, new()
     {
-        public delegate void OnClientConnectedHandler(TCPNetState<TReader, TWriter> client);
-        public event OnClientConnectedHandler OnClientConnected;
+        public delegate void OnClientConnectionHandler(NetState client);
+        public delegate void OnClientLoginLogoutHandler(IUserClient client);
+        
+        public event OnClientConnectionHandler OnClientConnected;
+        public event OnClientConnectionHandler OnClientDisconnected;
+        public event OnClientLoginLogoutHandler OnClientLogin;
+        public event OnClientLoginLogoutHandler OnClientLogout;
 
-        public BaseTCPServer(int port, IPAddress address = null) : base(port, address)
+        public BaseTCPServer(int port, IPAddress address = null)
+            : base(port, address)
         {
+            this.OnClientConnected += ClientConnected;
+            this.OnClientDisconnected += ClientDisconnected;
+            this.OnClientLogin += ClientLogin;
+            this.OnClientLogout += ClientLogout;
         }
+
+        protected abstract void ClientConnected(NetState client);
+        protected abstract void ClientDisconnected(NetState client);
+        protected abstract void ClientLogin(IUserClient client);
+        protected abstract void ClientLogout(IUserClient client);
 
         #region INetworkServer Members
 
@@ -123,6 +138,9 @@ namespace Alienseed.BaseNetworkServer.Network
                     NetworkStream stream = client.GetStream();
 
                     var ns = CreateNetstate(stream, client.Client.RemoteEndPoint);
+                    ns.OnDisposed += NetState_OnDisposed;
+                    ns.OnLogin += NetState_OnLogin;
+                    ns.OnLogout += NetState_OnLogout;
                     InvokeOnClientConnected(ns);
 
                 }
@@ -132,6 +150,21 @@ namespace Alienseed.BaseNetworkServer.Network
                     InvokeOnListenerCrash();
 
             }
+        }
+
+        private void NetState_OnDisposed(object sender, NetState.OnDisposedEventArgs e)
+        {
+            InvokeOnClientDisconnected(e.State);
+        }
+
+        private void NetState_OnLogin(object sender, NetState.OnLoginLogoutEventArgs e)
+        {
+            InvokeOnClientLogin(e.Client);
+        }
+
+        private void NetState_OnLogout(object sender, NetState.OnLoginLogoutEventArgs e)
+        {
+            InvokeOnClientLogout(e.Client);
         }
 
         protected abstract TCPNetState<TReader, TWriter> CreateNetstate(NetworkStream stream, EndPoint ep);
@@ -144,5 +177,22 @@ namespace Alienseed.BaseNetworkServer.Network
                 OnClientConnected(ns);
         }
 
+        private void InvokeOnClientDisconnected(NetState ns)
+        {
+            if (OnClientDisconnected != null)
+                OnClientDisconnected(ns);
+        }
+
+        private void InvokeOnClientLogin(IUserClient userClient)
+        {
+            if (OnClientLogin != null)
+                OnClientLogin(userClient);
+        }
+
+        private void InvokeOnClientLogout(IUserClient userClient)
+        {
+            if (OnClientLogout != null)
+                OnClientLogout(userClient);
+        }
     }
 }
