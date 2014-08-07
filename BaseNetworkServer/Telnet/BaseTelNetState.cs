@@ -10,7 +10,6 @@ namespace  Alienseed.BaseNetworkServer.Telnet
     public abstract class BaseTelNetState : TCPNetState<NetworkTextReader, NetworkTextWriter>
     {
         protected override string LogTitle { get { return "Telnet"; } }
-        protected override string ClientIdentifier { get { return string.Format("{0} {1}", Address.ToString(), User != null ? User.Username : "NULL"); } }
 
         public abstract string WelcomeMessage { get; }
         public abstract BaseTextPrompt CreateFirstPrompt();
@@ -88,17 +87,6 @@ namespace  Alienseed.BaseNetworkServer.Telnet
         #region ConnectionState
 
         public bool Echo { get; set; }
-
-        public IPEndPoint IPEndPoint { get { return EndPoint as IPEndPoint; } }
-        public IPAddress Address
-        {
-            get
-            {
-                if (IPEndPoint == null)
-                    return IPAddress.None;
-                return IPEndPoint.Address;
-            }
-        }
 
         protected override void OnConnected()
         {
@@ -276,11 +264,6 @@ namespace  Alienseed.BaseNetworkServer.Telnet
         #endregion
 
         #region Writing
-
-        public override void Write(byte[] bytes)
-        {
-            Writer.Write(bytes);
-        }
 
         public void WriteLine()
         {

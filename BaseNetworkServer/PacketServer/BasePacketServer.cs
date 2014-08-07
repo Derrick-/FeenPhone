@@ -1,28 +1,29 @@
 ﻿using Alienseed.BaseNetworkServer.Accounting;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Text;
 
-namespace  Alienseed.BaseNetworkServer.Telnet
+namespace Alienseed.BaseNetworkServer.PacketServer
 {
-    public abstract class BaseTelnetServer<Tnetstate> : BaseTCPServer<NetworkTextReader, NetworkTextWriter> where Tnetstate : BaseTelNetState
+    abstract class BasePacketServer<Tnetstate> : BaseTCPServer<NetworkPacketReader, NetworkPacketWriter> where Tnetstate : BasePacketNetState
     {
-
         public new static IEnumerable<Tnetstate> Clients { get { return NetworkServer.Clients.Where(m => m is Tnetstate).Cast<Tnetstate>(); } }
-        public new static IEnumerable<IUser> AllUsers { get { return BaseTelnetServer<Tnetstate>.Clients.Select(m => m.User); } }
+        public new static IEnumerable<IUser> AllUsers { get { return BasePacketServer<Tnetstate>.Clients.Select(m => m.User); } }
 
+        public BasePacketServer(int port, IPAddress address) : base(port,address)
+        {
+            OnClientConnected += ValidateNetstate;
+        }
+        
         protected override void PurgeAllClients()
         {
             foreach (var client in Clients.ToList())
                 client.Dispose();
         }
 
-        public BaseTelnetServer(int port=23, IPAddress address = null) : base(port, address)
-        {
-            OnClientConnected += ValidateNetstate;
-        }
-
-        protected sealed override TCPNetState<NetworkTextReader, NetworkTextWriter> CreateNetstate(System.Net.Sockets.NetworkStream stream, EndPoint ep)
+        protected sealed override TCPNetState<NetworkPacketReader, NetworkPacketWriter> CreateNetstate(System.Net.Sockets.NetworkStream stream, System.Net.EndPoint ep)
         {
             return NetstateFactory(stream, ep);
         }

@@ -14,9 +14,22 @@ namespace  Alienseed.BaseNetworkServer
         public TReader Reader { get; private set; }
         public TWriter Writer { get; private set; }
 
+        protected override string ClientIdentifier { get { return string.Format("{0} {1}", Address.ToString(), User != null ? User.Username : "NULL"); } }
+        
+        public IPEndPoint IPEndPoint { get { return EndPoint as IPEndPoint; } }
+        public IPAddress Address
+        {
+            get
+            {
+                if (IPEndPoint == null)
+                    return IPAddress.None;
+                return IPEndPoint.Address;
+            }
+        }
+
         private Stream Stream { get; set; }
 
-        internal TCPNetState(Stream stream, EndPoint ep)
+        internal TCPNetState(Stream stream, IPEndPoint ep)
             : base(ep)
         {
             Stream = stream;
@@ -29,7 +42,12 @@ namespace  Alienseed.BaseNetworkServer
             OnConnected();
         }
 
-        protected abstract void OnConnected();
+        public sealed override void Write(byte[] bytes)
+        {
+            Writer.Write(bytes);
+        }
+
+        protected virtual void OnConnected() { }
 
         public override void Dispose()
         {
