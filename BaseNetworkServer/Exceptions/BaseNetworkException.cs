@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Alienseed.BaseNetworkServer.Network
+namespace  Alienseed.BaseNetworkServer
 {
     class NetworkException : Exception { }
 }

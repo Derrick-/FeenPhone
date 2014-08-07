@@ -1,6 +1,6 @@
 ﻿using Alienseed.BaseNetworkServer.Accounting;
-using Alienseed.BaseNetworkServer.Network;
-using Alienseed.BaseNetworkServer.Network.Telnet;
+using Alienseed.BaseNetworkServer;
+using Alienseed.BaseNetworkServer.Telnet;
 using FeenPhone.Server.Telnet.Prompts;
 using System;
 using System.IO;
@@ -16,7 +16,7 @@ namespace FeenPhone.Server.Telnet
         {
             get { return "Welcome to FeenPhone!"; }
         }
-        public override Alienseed.BaseNetworkServer.Network.Telnet.Prompts.BaseTextPrompt CreateFirstPrompt()
+        public override Alienseed.BaseNetworkServer.Telnet.Prompts.BaseTextPrompt CreateFirstPrompt()
         {
             return new LoginPrompt();
         }

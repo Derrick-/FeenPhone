@@ -1,5 +1,5 @@
 ﻿
-namespace Alienseed.BaseNetworkServer.Network
+namespace  Alienseed.BaseNetworkServer
 {
     class CantReadFromStreamException : NetworkException
     {

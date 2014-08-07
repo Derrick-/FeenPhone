@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
 
-namespace Alienseed.BaseNetworkServer.Network
+namespace  Alienseed.BaseNetworkServer
 {
     public abstract class BaseStreamReader : INetworkReader
     {

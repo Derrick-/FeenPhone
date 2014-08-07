@@ -9,7 +9,7 @@ namespace FeenPhone.Server.Telnet.Prompts
     {
         static string[] prompt = new string[] { "Chat> " };
 
-        public override Alienseed.BaseNetworkServer.Network.Telnet.Prompts.BaseTextPrompt OnResponse(TelNetState client, string text, bool cancel)
+        public override Alienseed.BaseNetworkServer.Telnet.Prompts.BaseTextPrompt OnResponse(TelNetState client, string text, bool cancel)
         {
             if(cancel)
                 return new MainMenu(client.User.IsAdmin);

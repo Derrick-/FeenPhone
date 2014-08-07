@@ -1,5 +1,5 @@
-﻿using Alienseed.BaseNetworkServer.Network;
-using Alienseed.BaseNetworkServer.Network.Telnet;
+﻿using Alienseed.BaseNetworkServer;
+using Alienseed.BaseNetworkServer.Telnet;
 using System;
 using System.Collections.Generic;
 using System.Linq;

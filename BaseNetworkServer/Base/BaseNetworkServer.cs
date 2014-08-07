@@ -5,7 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 
-namespace Alienseed.BaseNetworkServer.Network
+namespace Alienseed.BaseNetworkServer
 {
     public abstract class NetworkServer
     {

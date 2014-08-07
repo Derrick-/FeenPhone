@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 
-namespace Alienseed.BaseNetworkServer.Network.Telnet
+namespace  Alienseed.BaseNetworkServer.Telnet
 {
     public abstract class BaseTelnetServer<Tnetstate> : BaseTCPServer<NetworkTextReader, NetworkTextWriter> where Tnetstate : BaseTelNetState
     {

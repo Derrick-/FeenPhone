@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace Alienseed.BaseNetworkServer.Network
+namespace  Alienseed.BaseNetworkServer
 {
     public delegate void OnListenerCrashHandler(INetworkServer server);
 

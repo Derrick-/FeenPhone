@@ -1,5 +1,5 @@
 ﻿using Alienseed.BaseNetworkServer.Accounting;
-using Alienseed.BaseNetworkServer.Network;
+using Alienseed.BaseNetworkServer;
 using System;
 using System.Collections.Generic;
 using System.Linq;

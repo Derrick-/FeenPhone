@@ -43,6 +43,7 @@
     <Compile Include="Base\BaseNetworkReader.cs" />
     <Compile Include="Base\BaseNetworkServer.cs" />
     <Compile Include="Base\BaseNetworkWriter.cs" />
+    <Compile Include="Base\TCPNetState.cs" />
     <Compile Include="Exceptions\BaseNetworkException.cs" />
     <Compile Include="Exceptions\CantReadFromStreamException.cs" />
     <Compile Include="Exceptions\IncomingBufferOverflowException.cs" />
@@ -58,7 +59,7 @@
     <Compile Include="Telnet\BaseTextPrompt.cs" />
     <Compile Include="Telnet\NetworkTextReader.cs" />
     <Compile Include="Telnet\NetworkTextWriter.cs" />
-    <Compile Include="Telnet\TelnetServer.cs" />
+    <Compile Include="Telnet\BaseTelnetServer.cs" />
     <Compile Include="Telnet\BaseTelNetState.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

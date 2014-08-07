@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Alienseed.BaseNetworkServer.Network
+namespace  Alienseed.BaseNetworkServer
 {
     public abstract class BaseStreamWriter : INetworkWriter
     {

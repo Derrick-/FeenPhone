@@ -1,5 +1,5 @@
 ﻿
-namespace Alienseed.BaseNetworkServer.Network.Telnet.Prompts
+namespace  Alienseed.BaseNetworkServer.Telnet.Prompts
 {
     public abstract class BaseTextPrompt
     {

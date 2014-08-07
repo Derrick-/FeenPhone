@@ -1,11 +1,11 @@
-﻿using Alienseed.BaseNetworkServer.Network.Telnet.Prompts;
+﻿using Alienseed.BaseNetworkServer.Telnet.Prompts;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 
-namespace Alienseed.BaseNetworkServer.Network.Telnet
+namespace  Alienseed.BaseNetworkServer.Telnet
 {
     public abstract class BaseTelNetState : TCPNetState<NetworkTextReader, NetworkTextWriter>
     {

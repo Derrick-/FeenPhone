@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text;
 
-namespace Alienseed.BaseNetworkServer.Network.Telnet
+namespace  Alienseed.BaseNetworkServer.Telnet
 {
     public class NetworkTextReader : BaseStreamReader
     {

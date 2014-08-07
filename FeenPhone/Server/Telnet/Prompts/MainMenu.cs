@@ -1,6 +1,6 @@
-﻿using Alienseed.BaseNetworkServer.Network;
-using Alienseed.BaseNetworkServer.Network.Telnet;
-using Alienseed.BaseNetworkServer.Network.Telnet.Prompts;
+﻿using Alienseed.BaseNetworkServer;
+using Alienseed.BaseNetworkServer.Telnet;
+using Alienseed.BaseNetworkServer.Telnet.Prompts;
 using System;
 using System.Collections.Generic;
 using System.Linq;

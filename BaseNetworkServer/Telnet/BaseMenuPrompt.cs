@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Alienseed.BaseNetworkServer.Network.Telnet.Prompts
+namespace  Alienseed.BaseNetworkServer.Telnet.Prompts
 {
     public abstract class BaseMenuPrompt : BaseTextPrompt
     {
