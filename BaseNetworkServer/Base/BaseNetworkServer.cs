@@ -41,11 +41,12 @@ namespace Alienseed.BaseNetworkServer
 
     }
 
-    public abstract class BaseTCPServer<TReader, TWriter> : BaseServer
+    public abstract class BaseTCPServer<TReader, TWriter, Tnetstate> : BaseServer
+        where Tnetstate : NetState
         where TReader : BaseStreamReader, new()
         where TWriter : BaseStreamWriter, new()
     {
-        public delegate void OnClientConnectionHandler(NetState client);
+        public delegate void OnClientConnectionHandler(Tnetstate client);
         public delegate void OnClientLoginLogoutHandler(IUserClient client);
         
         public event OnClientConnectionHandler OnClientConnected;
@@ -62,8 +63,8 @@ namespace Alienseed.BaseNetworkServer
             this.OnClientLogout += ClientLogout;
         }
 
-        protected abstract void ClientConnected(NetState client);
-        protected abstract void ClientDisconnected(NetState client);
+        protected abstract void ClientConnected(Tnetstate client);
+        protected abstract void ClientDisconnected(Tnetstate client);
         protected abstract void ClientLogin(IUserClient client);
         protected abstract void ClientLogout(IUserClient client);
 
@@ -154,7 +155,7 @@ namespace Alienseed.BaseNetworkServer
 
         private void NetState_OnDisposed(object sender, NetState.OnDisposedEventArgs e)
         {
-            InvokeOnClientDisconnected(e.State);
+            InvokeOnClientDisconnected(e.State as Tnetstate);
         }
 
         private void NetState_OnLogin(object sender, NetState.OnLoginLogoutEventArgs e)
@@ -167,17 +168,17 @@ namespace Alienseed.BaseNetworkServer
             InvokeOnClientLogout(e.Client);
         }
 
-        protected abstract TCPNetState<TReader, TWriter> CreateNetstate(NetworkStream stream, EndPoint ep);
+        protected abstract Tnetstate CreateNetstate(NetworkStream stream, EndPoint ep);
 
         #endregion
 
-        private void InvokeOnClientConnected(TCPNetState<TReader, TWriter> ns)
+        private void InvokeOnClientConnected(Tnetstate ns)
         {
             if (OnClientConnected != null)
                 OnClientConnected(ns);
         }
 
-        private void InvokeOnClientDisconnected(NetState ns)
+        private void InvokeOnClientDisconnected(Tnetstate ns)
         {
             if (OnClientDisconnected != null)
                 OnClientDisconnected(ns);

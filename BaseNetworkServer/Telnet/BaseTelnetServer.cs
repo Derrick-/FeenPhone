@@ -5,7 +5,7 @@ using System.Net;
 
 namespace  Alienseed.BaseNetworkServer.Telnet
 {
-    public abstract class BaseTelnetServer<Tnetstate> : BaseTCPServer<NetworkTextReader, NetworkTextWriter> where Tnetstate : BaseTelNetState
+    public abstract class BaseTelnetServer<Tnetstate> : BaseTCPServer<NetworkTextReader, NetworkTextWriter, Tnetstate> where Tnetstate : BaseTelNetState
     {
 
         public new static IEnumerable<Tnetstate> Clients { get { return NetworkServer.Clients.Where(m => m is Tnetstate).Cast<Tnetstate>(); } }
@@ -22,7 +22,7 @@ namespace  Alienseed.BaseNetworkServer.Telnet
             OnClientConnected += ValidateNetstate;
         }
 
-        protected sealed override TCPNetState<NetworkTextReader, NetworkTextWriter> CreateNetstate(System.Net.Sockets.NetworkStream stream, EndPoint ep)
+        protected sealed override Tnetstate CreateNetstate(System.Net.Sockets.NetworkStream stream, EndPoint ep)
         {
             return NetstateFactory(stream, ep);
         }
