@@ -10,6 +10,20 @@ namespace FeenPhone.Server
     {
         List<BaseServer> Servers = new List<BaseServer>();
 
+        static Client.LocalClient _LocalClient = null;
+        internal static Client.LocalClient LocalClient
+        {
+            get { return _LocalClient; }
+            set
+            {
+                if (value != _LocalClient && _LocalClient != null)
+                {
+                    _LocalClient.Dispose();
+                }
+                _LocalClient = value;
+            }
+        }
+
         public ServerHost()
         {
             InitServers();

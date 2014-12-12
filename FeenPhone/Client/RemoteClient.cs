@@ -11,5 +11,10 @@ namespace FeenPhone.Client
         {
             get { throw new NotImplementedException(); }
         }
+
+        public override void Dispose()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

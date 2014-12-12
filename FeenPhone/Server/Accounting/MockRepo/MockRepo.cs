@@ -11,8 +11,9 @@ namespace FeenPhone.Accounting
         static readonly Dictionary<string, IUserClient> accounts = new Dictionary<string, IUserClient>()
         {
             {"derrick",new MockAccount("derrick","Derrick",true)},
+            {"mwd",new MockAccount("mwd","MWD",true)},
             {"ian",new MockAccount("ian","Hemperor",true)},
-            {"donna",new MockAccount("donna","donna",false)},
+            {"donna",new MockAccount("donna","Donna",false)},
         };
 
         #region IAccountRepository Members

@@ -18,8 +18,10 @@ namespace FeenPhone.Server
         {
             foreach (var feen in AllFeens)
                 if (feen != client)
-                    if(client.User!=null)
+                    if (client.User != null)
                         feen.OnChat(client, text);
+            if (ServerHost.LocalClient != null)
+                ServerHost.LocalClient.OnChat(client, text);
         }
 
         internal static void OnConnect(NetState client)
@@ -27,6 +29,8 @@ namespace FeenPhone.Server
             foreach (var feen in AllFeens)
                 if (feen != client)
                     feen.OnUserConnected(client);
+            if (ServerHost.LocalClient != null)
+                ServerHost.LocalClient.OnUserConnected(client);
         }
 
         internal static void OnDisconnect(NetState client)
@@ -34,14 +38,17 @@ namespace FeenPhone.Server
             foreach (var feen in AllFeens)
                 if (feen != client)
                     feen.OnUserDisconnected(client);
+            if (ServerHost.LocalClient != null)
+                ServerHost.LocalClient.OnUserDisconnected(client);
         }
-
 
         internal static void OnLogin(IUserClient client)
         {
             foreach (var feen in AllFeens)
                 if (feen != client)
                     feen.OnUserLogin(client);
+            if (ServerHost.LocalClient != null)
+                ServerHost.LocalClient.OnUserLogin(client);
         }
 
         internal static void OnLogout(IUserClient client)
@@ -49,6 +56,8 @@ namespace FeenPhone.Server
             foreach (var feen in AllFeens)
                 if (feen != client)
                     feen.OnUserLogout(client);
+            if (ServerHost.LocalClient != null)
+                ServerHost.LocalClient.OnUserLogout(client);
         }
     }
 }

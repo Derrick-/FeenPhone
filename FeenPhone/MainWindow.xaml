@@ -5,6 +5,29 @@
     <DockPanel>
         <WPFControls:UserListWPF DockPanel.Dock="Right" MinWidth="150" />
         <WPFControls:NetworkWPF DockPanel.Dock="Top"/>
-        <WPFControls:LogWPF />
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition MinHeight="20" />
+                <RowDefinition Height="auto"/>
+                <RowDefinition MinHeight="100"/>
+            </Grid.RowDefinitions>
+            <DockPanel Grid.Row="0" Grid.Column="0">
+                <WPFControls:LogWPF />
+            </DockPanel>
+            <GridSplitter Grid.Row="1"
+                HorizontalAlignment="Stretch" 
+                VerticalAlignment="Center"
+                Background="Tan" 
+                ShowsPreview="true"
+                ResizeDirection="Rows"
+                Height="5">
+            </GridSplitter>
+            <DockPanel Grid.Row="2" Grid.Column="0">
+                <WPFControls:ChatWPF/>
+            </DockPanel>
+        </Grid>
     </DockPanel>
 </Window>

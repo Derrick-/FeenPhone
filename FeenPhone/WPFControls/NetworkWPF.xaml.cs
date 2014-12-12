@@ -1,4 +1,6 @@
-﻿using System;
+﻿using FeenPhone.Client;
+using FeenPhone.Server;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -34,7 +36,8 @@ namespace FeenPhone.WPFControls
             set { this.SetValue(IsServerProperty, value); }
         }
 
-        FeenPhone.Server.ServerHost server = null;
+        BaseClient client = null;
+        ServerHost server = null;
         private static void OnIsServerChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             NetworkWPF target = d as NetworkWPF;
@@ -43,9 +46,11 @@ namespace FeenPhone.WPFControls
                 if ((bool?)e.NewValue == true && target.server == null)
                 {
                     target.server = new FeenPhone.Server.ServerHost();
+                    target.client = ServerHost.LocalClient = new LocalClient();
                 }
                 else
                 {
+                    target.client = ServerHost.LocalClient = null;
                     target.server.Dispose();
                     target.server = null;
                 }
@@ -56,6 +61,5 @@ namespace FeenPhone.WPFControls
         {
 
         }
-
     }
 }

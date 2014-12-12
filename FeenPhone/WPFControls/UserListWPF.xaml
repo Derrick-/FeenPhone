@@ -7,7 +7,7 @@
              d:DesignHeight="300" d:DesignWidth="150">
     <DockPanel Background="Wheat">
         <TextBlock DockPanel.Dock="Top" TextAlignment="Center">USERS</TextBlock>
-        <ListBox d:DataContext="{d:DesignData Source=SampleData/UserListSampleData.xaml}" ItemsSource="{Binding}">
+        <ListBox Name="UsersList" d:DataContext="{d:DesignData Source=SampleData/UserListSampleData.xaml}" ItemsSource="{Binding}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <WrapPanel>

@@ -6,51 +6,25 @@ using System.Text;
 
 namespace FeenPhone.Client
 {
-    public class OnUserEventArgs : EventArgs
-    {
-        public IUser User { get; private set; }
-        public OnUserEventArgs(IUser user)
-        {
-            User = user;
-        }
-    }
-
-    public class OnChatEventArgs : EventArgs
-    {
-        public IUser User { get; private set; }
-        public string Text { get; private set; }
-        public OnChatEventArgs(IUser user, string text)
-        {
-            User = user;
-            Text = text;
-        }
-    }
-
-    abstract class BaseClient
+    abstract class BaseClient : IDisposable
     {
         public abstract bool IsConnected { get; }
 
-        public event EventHandler<OnUserEventArgs> OnUserConnected;
-        public event EventHandler<OnUserEventArgs> OnUserDisconnected;
-        public event EventHandler<OnChatEventArgs> OnChat;
-
-        public void InvokeOnUserConnected(IUser user)
+        public void OnChat(IUser user, string text)
         {
-            if (OnUserConnected != null)
-                OnUserConnected(this, new OnUserEventArgs(user));
+            EventSink.InvokeOnChat(this, user, text);
         }
 
-        public void InvokeOnUserDisconnected(IUser user)
+        public void OnUserConnected(IUser user)
         {
-            if (OnUserDisconnected != null)
-                OnUserDisconnected(this, new OnUserEventArgs(user));
+            EventSink.InvokeOnUserConnected(this, user);
         }
 
-        public void InvokeOnChat(IUser user, string text)
+        public void OnUserDisconnected(IUser user)
         {
-            if (OnChat != null)
-                OnChat(this, new OnChatEventArgs(user, text));
+            EventSink.InvokeOnUserDisconnected(this, user);
         }
 
+        public abstract void Dispose();
     }
 }
