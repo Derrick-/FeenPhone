@@ -14,7 +14,7 @@ namespace FeenPhone.Server
             get { return NetworkServer.Clients.Where(m => m is IFeenPhoneNetstate).Cast<IFeenPhoneNetstate>(); }
         }
 
-        internal static void OnChat(NetState client, string text)
+        internal static void OnChat(INetState client, string text)
         {
             foreach (var feen in AllFeens)
                 if (feen != client)

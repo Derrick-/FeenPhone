@@ -36,7 +36,55 @@ namespace FeenPhone.WPFControls
             set { this.SetValue(IsServerProperty, value); }
         }
 
-        BaseClient client = null;
+        internal static BaseClient Client { get; private set; }
+
+        public class LocalUser : Alienseed.BaseNetworkServer.Accounting.IUserClient
+        {
+
+            public LocalUser(string nickname)
+            {
+                Nickname = nickname;
+            }
+
+            public Alienseed.BaseNetworkServer.Accounting.IClient Client
+            {
+                get { throw new NotImplementedException(); }
+            }
+
+            public bool SetClient(Alienseed.BaseNetworkServer.Accounting.IClient client)
+            {
+                throw new NotImplementedException();
+            }
+
+            public string Username
+            {
+                get { return Nickname; }
+            }
+
+            public string Nickname { get; set; }
+
+            public bool IsAdmin
+            {
+                get { return true; }
+            }
+
+            public Guid ID
+            {
+                get { return Guid.Empty; }
+            }
+
+            public bool Equals(Alienseed.BaseNetworkServer.Accounting.IUser other)
+            {
+                return other is LocalUser;
+            }
+        }
+
+        LocalUser _User = null;
+        internal LocalUser User
+        {
+            get { return _User ?? (_User = new LocalUser(txtNickname.Text)); }
+        }
+
         ServerHost server = null;
         private static void OnIsServerChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -46,11 +94,11 @@ namespace FeenPhone.WPFControls
                 if ((bool?)e.NewValue == true && target.server == null)
                 {
                     target.server = new FeenPhone.Server.ServerHost();
-                    target.client = ServerHost.LocalClient = new LocalClient();
+                    Client = ServerHost.LocalClient = new LocalClient(target.User);
                 }
                 else
                 {
-                    target.client = ServerHost.LocalClient = null;
+                    Client = ServerHost.LocalClient = null;
                     target.server.Dispose();
                     target.server = null;
                 }
@@ -60,6 +108,18 @@ namespace FeenPhone.WPFControls
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void txtNickname_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            TextBox box=sender as TextBox;
+            if(box!=null)
+            {
+                if (!string.IsNullOrWhiteSpace(box.Text))
+                    User.Nickname = box.Text;
+                else
+                    box.Text = User.Nickname;
+            }
         }
     }
 }

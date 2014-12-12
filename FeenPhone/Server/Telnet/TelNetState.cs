@@ -41,17 +41,17 @@ namespace FeenPhone.Server.Telnet
             base.Dispose();
         }
 
-        public void OnUserConnected(NetState user)
+        public void OnUserConnected(INetState user)
         {
             SendInfoLine("  {0} connected.", NicknameOrIP(user));
         }
 
-        public void OnUserDisconnected(NetState user)
+        public void OnUserDisconnected(INetState user)
         {
             SendInfoLine("  {0} disconnected.", NicknameOrIP(user));
         }
 
-        public void OnChat(NetState user, string text)
+        public void OnChat(INetState user, string text)
         {
             string line = string.Format("  {0} says: {1}", NicknameOrIP(user), text);
             SendInfoLine(line);
@@ -67,9 +67,13 @@ namespace FeenPhone.Server.Telnet
             SendInfoLine("  {0} logout.", client.Nickname);
         }
 
-        private static string NicknameOrIP(NetState user)
+        private static string NicknameOrIP(INetState user)
         {
-            return user.User != null ? user.User.Nickname : user.EndPoint.ToString();
+            if (user.User != null)
+                return user.User.Nickname;
+            if (user is NetState)
+                return ((NetState)user).EndPoint.ToString();
+            return "Unknown";
         }
     }
 }

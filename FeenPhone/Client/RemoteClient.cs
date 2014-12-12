@@ -16,5 +16,10 @@ namespace FeenPhone.Client
         {
             throw new NotImplementedException();
         }
+
+        internal override void SendChat(string text)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

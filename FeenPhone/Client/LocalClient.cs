@@ -6,10 +6,11 @@ using System.Text;
 
 namespace FeenPhone.Client
 {
-    class LocalClient : BaseClient, FeenPhone.Server.IFeenPhoneNetstate
+    class LocalClient : BaseClient, FeenPhone.Server.IFeenPhoneNetstate, Alienseed.BaseNetworkServer.INetState
     {
-        public LocalClient()
+        public LocalClient(IUserClient LocalUser)
         {
+            this.LocalUser = LocalUser;
         }
 
         public override bool IsConnected
@@ -17,7 +18,7 @@ namespace FeenPhone.Client
             get { return true; }
         }
 
-        public void OnChat(Alienseed.BaseNetworkServer.NetState client, string text)
+        public void OnChat(Alienseed.BaseNetworkServer.INetState client, string text)
         {
             OnChat(client.User, text);
         }
@@ -32,12 +33,12 @@ namespace FeenPhone.Client
             OnUserDisconnected(client);
         }
 
-        public void OnUserConnected(Alienseed.BaseNetworkServer.NetState client)
+        public void OnUserConnected(Alienseed.BaseNetworkServer.INetState client)
         {
             //throw new NotImplementedException();
         }
 
-        public void OnUserDisconnected(Alienseed.BaseNetworkServer.NetState client)
+        public void OnUserDisconnected(Alienseed.BaseNetworkServer.INetState client)
         {
             //throw new NotImplementedException();
         }
@@ -47,5 +48,20 @@ namespace FeenPhone.Client
             
         }
 
+        internal override void SendChat(string text)
+        {
+            Server.EventSink.OnChat(this, text);
+        }
+
+        IUserClient LocalUser;
+        IUserClient IClient.User
+        {
+            get { return LocalUser; }
+        }
+
+        bool IClient.Connected
+        {
+            get { return this.IsConnected; }
+        }
     }
 }

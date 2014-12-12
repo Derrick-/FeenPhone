@@ -10,12 +10,12 @@ namespace FeenPhone.Server
 {
     interface IFeenPhoneNetstate
     {
-        void OnUserConnected(NetState user);
-        void OnUserDisconnected(NetState user);
+        void OnUserConnected(INetState user);
+        void OnUserDisconnected(INetState user);
 
         void OnUserLogin(IUserClient client);
         void OnUserLogout(IUserClient client);
 
-        void OnChat(NetState user, string text);
+        void OnChat(INetState user, string text);
     }
 }
