@@ -36,7 +36,11 @@ namespace FeenPhone.WPFControls
 
         void AddToLog(string text)
         {
+            var maxVertOffset=LogScroller.ExtentHeight - LogScroller.ViewportHeight;
+            bool wasAtBottom = LogScroller.VerticalOffset>=maxVertOffset;
             log.Text += text;
+            if (wasAtBottom)
+                LogScroller.ScrollToBottom();
         }
 
         class ConsoleWriter : TextWriter
