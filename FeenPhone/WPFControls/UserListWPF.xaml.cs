@@ -28,8 +28,8 @@ namespace FeenPhone.WPFControls
         {
             InitializeComponent();
 
-            EventSink.OnUserConnected += this.OnConnected;
-            EventSink.OnUserDisconnected += this.OnDisconnected;
+            EventSource.OnUserConnected += this.OnConnected;
+            EventSource.OnUserDisconnected += this.OnDisconnected;
 
             UsersList.ItemsSource = Users;
         }

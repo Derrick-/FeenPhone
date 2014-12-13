@@ -5,11 +5,26 @@ using System.Text;
 
 namespace Alienseed.BaseNetworkServer.PacketServer
 {
-    class NetworkPacketReader : BaseStreamReader
+    public class NetworkPacketReader : BaseStreamReader
     {
+
+        public class DataReadEventArgs : EventArgs
+        {
+            public Queue<byte> data { get; set; }
+            public DataReadEventArgs(Queue<byte> data)
+            {
+                this.data = data;
+            }
+        }
+
+        public event EventHandler<DataReadEventArgs> OnReadData;
+
         protected override void OnRead()
         {
-            throw new NotImplementedException();
+            if (OnReadData != null)
+            {
+                OnReadData(this, new DataReadEventArgs(InStream));
+            }
         }
     }
 }

@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Alienseed.BaseNetworkServer.PacketServer
 {
-    abstract class BasePacketNetState : TCPNetState<NetworkPacketReader, NetworkPacketWriter>
+    public abstract class BasePacketNetState : TCPNetState<NetworkPacketReader, NetworkPacketWriter>
     {
         protected override string LogTitle { get { return "PacketServer"; } }
 
@@ -15,6 +15,5 @@ namespace Alienseed.BaseNetworkServer.PacketServer
         {
 
         }
-
     }
 }

@@ -63,14 +63,20 @@
     </ApplicationDefinition>
     <Compile Include="Client\BaseClient.cs" />
     <Compile Include="Client\EventSink.cs" />
+    <Compile Include="Client\ClientPacketHandler.cs" />
     <Compile Include="Client\LocalClient.cs" />
     <Compile Include="Client\RemoteClient.cs" />
+    <Compile Include="BasePacketHandler.cs" />
+    <Compile Include="Packet.cs" />
     <Compile Include="Server\Accounting\Account.cs" />
     <Compile Include="Server\Accounting\AccountHandler.cs" />
     <Compile Include="Server\Accounting\MockRepo\MockRepo.cs" />
     <Compile Include="Server\Accounting\Passwords.cs" />
     <Compile Include="Server\EventSink.cs" />
     <Compile Include="Server\ServerHost.cs" />
+    <Compile Include="Server\TcpPacketServer\ServerPacketHandler.cs" />
+    <Compile Include="Server\TcpPacketServer\TcpPacketNetState.cs" />
+    <Compile Include="Server\TcpPacketServer\TcpPacketServer.cs" />
     <Compile Include="Server\Telnet\IFeenPhoneNetstate.cs" />
     <Compile Include="Server\Telnet\Prompts\ChatPrompt.cs" />
     <Compile Include="Server\Telnet\Prompts\LoginPrompt.cs" />

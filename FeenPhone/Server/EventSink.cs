@@ -24,7 +24,7 @@ namespace FeenPhone.Server
                 ServerHost.LocalClient.OnChat(client, text);
         }
 
-        internal static void OnConnect(NetState client)
+        internal static void OnConnect(INetState client)
         {
             foreach (var feen in AllFeens)
                 if (feen != client)
@@ -33,7 +33,7 @@ namespace FeenPhone.Server
                 ServerHost.LocalClient.OnUserConnected(client);
         }
 
-        internal static void OnDisconnect(NetState client)
+        internal static void OnDisconnect(INetState client)
         {
             foreach (var feen in AllFeens)
                 if (feen != client)

@@ -8,21 +8,28 @@ namespace FeenPhone.Client
 {
     abstract class BaseClient : IDisposable
     {
+        protected readonly IUserClient LocalUser;
+
+        public BaseClient(IUserClient localUser)
+        {
+            this.LocalUser = localUser;
+        }
+
         public abstract bool IsConnected { get; }
 
         public void OnChat(IUser user, string text)
         {
-            EventSink.InvokeOnChat(this, user, text);
+            EventSource.InvokeOnChat(this, user, text);
         }
 
         public void OnUserConnected(IUser user)
         {
-            EventSink.InvokeOnUserConnected(this, user);
+            EventSource.InvokeOnUserConnected(this, user);
         }
 
         public void OnUserDisconnected(IUser user)
         {
-            EventSink.InvokeOnUserDisconnected(this, user);
+            EventSource.InvokeOnUserDisconnected(this, user);
         }
 
         public abstract void Dispose();

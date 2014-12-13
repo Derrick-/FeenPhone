@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace  Alienseed.BaseNetworkServer
+namespace Alienseed.BaseNetworkServer
 {
     public abstract class BaseStreamWriter : INetworkWriter
     {
@@ -13,12 +13,14 @@ namespace  Alienseed.BaseNetworkServer
 
         public void Write(byte[] bytes)
         {
-            Stream.Write(bytes, 0, bytes.Length);
+            if (Stream != null)
+                Stream.Write(bytes, 0, bytes.Length);
         }
 
         internal void Write(byte[] bytes, int numbytes)
         {
-            Stream.Write(bytes, 0, numbytes);
+            if (Stream != null)
+                Stream.Write(bytes, 0, numbytes);
         }
 
 

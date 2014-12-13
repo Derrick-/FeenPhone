@@ -27,7 +27,7 @@ namespace FeenPhone.Client
         }
     }
 
-    internal static class EventSink
+    internal static class EventSource
     {
         public static event EventHandler<OnUserEventArgs> OnUserConnected;
         public static event EventHandler<OnUserEventArgs> OnUserDisconnected;

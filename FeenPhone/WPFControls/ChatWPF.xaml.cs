@@ -23,7 +23,7 @@ namespace FeenPhone.WPFControls
         {
             InitializeComponent();
 
-            FeenPhone.Client.EventSink.OnChat += OnChat;
+            FeenPhone.Client.EventSource.OnChat += OnChat;
         }
 
         private void OnChat(object sender, Client.OnChatEventArgs e)

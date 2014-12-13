@@ -8,10 +8,7 @@ namespace FeenPhone.Client
 {
     class LocalClient : BaseClient, FeenPhone.Server.IFeenPhoneNetstate, Alienseed.BaseNetworkServer.INetState
     {
-        public LocalClient(IUserClient LocalUser)
-        {
-            this.LocalUser = LocalUser;
-        }
+        public LocalClient(IUserClient localUser) : base(localUser) { }
 
         public override bool IsConnected
         {
@@ -45,7 +42,7 @@ namespace FeenPhone.Client
 
         public override void Dispose()
         {
-            
+
         }
 
         internal override void SendChat(string text)
@@ -53,7 +50,6 @@ namespace FeenPhone.Client
             Server.EventSink.OnChat(this, text);
         }
 
-        IUserClient LocalUser;
         IUserClient IClient.User
         {
             get { return LocalUser; }

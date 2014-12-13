@@ -40,9 +40,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Base\BaseNetworkReader.cs" />
+    <Compile Include="Base\BaseStreamReader.cs" />
     <Compile Include="Base\BaseNetworkServer.cs" />
-    <Compile Include="Base\BaseNetworkWriter.cs" />
+    <Compile Include="Base\BaseStreamWriter.cs" />
     <Compile Include="Base\TCPNetState.cs" />
     <Compile Include="Exceptions\BaseNetworkException.cs" />
     <Compile Include="Exceptions\CantReadFromStreamException.cs" />

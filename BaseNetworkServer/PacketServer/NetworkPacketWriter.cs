@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Alienseed.BaseNetworkServer.PacketServer
 {
-    class NetworkPacketWriter : BaseStreamWriter
+    public class NetworkPacketWriter : BaseStreamWriter
     {
     }
 }

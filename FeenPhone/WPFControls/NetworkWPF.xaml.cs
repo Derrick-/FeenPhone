@@ -3,6 +3,7 @@ using FeenPhone.Server;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -105,21 +106,81 @@ namespace FeenPhone.WPFControls
             }
         }
 
-        private void CheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void txtNickname_TextChanged(object sender, TextChangedEventArgs e)
         {
-            TextBox box=sender as TextBox;
-            if(box!=null)
+            TextBox box = sender as TextBox;
+            if (box != null)
             {
                 if (!string.IsNullOrWhiteSpace(box.Text))
                     User.Nickname = box.Text;
                 else
                     box.Text = User.Nickname;
             }
+        }
+
+        private void Connect_Click(object sender, RoutedEventArgs e)
+        {
+            IPAddress IP;
+            int port = 0;
+
+            bool OK = true;
+
+            if(IsServer==true)
+            {
+                Console.WriteLine("Cannot connect while running a server");
+                OK = false;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtServer.Text))
+            {
+                Console.WriteLine("Server is required");
+                OK = false;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtPort.Text))
+            {
+                Console.WriteLine("Port is required");
+                OK = false;
+            }
+            else
+            {
+                if (!int.TryParse(txtPort.Text, out port))
+                {
+                    Console.WriteLine("Invalid Port: {0}", txtPort.Text);
+                    OK = false;
+                }
+            }
+
+            if (!OK) return;
+
+            string servername = txtServer.Text.Trim();
+            if (!IPAddress.TryParse(servername, out IP))
+            {
+                IPAddress[] ips = null;
+                try
+                {
+                    ips = Dns.GetHostAddresses(servername);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Could not resolve {0}: ", servername, ex.Message);
+                    return;
+                }
+
+                //IP = ips.Where(m => m.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6).FirstOrDefault();
+                //if (IP == null)
+                {
+                    IP = ips.Where(m => m.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork).FirstOrDefault();
+                }
+                if (IP == null)
+                {
+                    Console.WriteLine("No valid addresses for {0}", servername);
+                    return;
+                }
+            }
+            var remClient = new RemoteClient(User, IP, port);
+            Client = remClient;
+            remClient.Connect();
         }
     }
 }

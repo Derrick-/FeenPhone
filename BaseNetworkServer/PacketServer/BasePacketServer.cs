@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Alienseed.BaseNetworkServer.PacketServer
 {
-    abstract class BasePacketServer<Tnetstate> : BaseTCPServer<NetworkPacketReader, NetworkPacketWriter, Tnetstate> where Tnetstate : BasePacketNetState
+    public abstract class BasePacketServer<Tnetstate> : BaseTCPServer<NetworkPacketReader, NetworkPacketWriter, Tnetstate> where Tnetstate : BasePacketNetState
     {
         public new static IEnumerable<Tnetstate> Clients { get { return NetworkServer.Clients.Where(m => m is Tnetstate).Cast<Tnetstate>(); } }
         public new static IEnumerable<IUser> AllUsers { get { return BasePacketServer<Tnetstate>.Clients.Select(m => m.User); } }

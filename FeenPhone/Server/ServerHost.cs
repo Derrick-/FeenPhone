@@ -36,7 +36,7 @@ namespace FeenPhone.Server
             Servers.Clear();
 
             Servers.Add(new Telnet.TelnetServer());
-            //  Servers.Add(new Network.WebSockets.WSServer());
+            Servers.Add(new TcpPacketServer.TcpPacketServer());
         }
 
         void StartServers()
