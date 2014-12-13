@@ -13,8 +13,7 @@ namespace Alienseed.BaseNetworkServer
 
         public void Write(byte[] bytes)
         {
-            if (Stream != null)
-                Stream.Write(bytes, 0, bytes.Length);
+            Write(bytes, bytes.Length);
         }
 
         internal void Write(byte[] bytes, int numbytes)
@@ -22,7 +21,6 @@ namespace Alienseed.BaseNetworkServer
             if (Stream != null)
                 Stream.Write(bytes, 0, numbytes);
         }
-
 
         public void Dispose()
         {

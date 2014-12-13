@@ -33,11 +33,11 @@ namespace  Alienseed.BaseNetworkServer
                 }
                 catch (NetworkException ex)
                 {
-                    Console.WriteLine(ex);
+                    Console.WriteLine(ex.Message);
                 }
             else
                 if (!IsDisposed)
-                    throw new CantReadFromStreamException();
+                    InvokeOnDisconnect();
         }
 
         private byte[] _buffer = new byte[255];

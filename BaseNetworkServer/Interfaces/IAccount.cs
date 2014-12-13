@@ -1,9 +1,12 @@
 ﻿
+using System;
+
 namespace Alienseed.BaseNetworkServer.Accounting
 {
     public interface IAccountRepository
     {
         IUserClient Login(string username, string password);
+        IUser FindUser(Guid id);
     }
 
     public interface IUserClient : IUser

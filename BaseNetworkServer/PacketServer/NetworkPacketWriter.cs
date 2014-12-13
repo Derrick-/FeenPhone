@@ -8,5 +8,9 @@ namespace Alienseed.BaseNetworkServer.PacketServer
 {
     public class NetworkPacketWriter : BaseStreamWriter
     {
+        public void Write(PacketBuffer buffer)
+        {
+            Write(buffer.GetData());
+        }
     }
 }
