@@ -62,12 +62,14 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Client\BaseClient.cs" />
-    <Compile Include="Client\EventSink.cs" />
+    <Compile Include="Client\EventSource.cs" />
     <Compile Include="Client\ClientPacketHandler.cs" />
     <Compile Include="Client\LocalClient.cs" />
     <Compile Include="Client\RemoteClient.cs" />
-    <Compile Include="BasePacketHandler.cs" />
-    <Compile Include="Packet.cs" />
+    <Compile Include="Client\UserRepo.cs" />
+    <Compile Include="Packets\BasePacketHandler.cs" />
+    <Compile Include="Packets\FeenPacketBuffer.cs" />
+    <Compile Include="Packets\Packet.cs" />
     <Compile Include="Server\Accounting\Account.cs" />
     <Compile Include="Server\Accounting\AccountHandler.cs" />
     <Compile Include="Server\Accounting\MockRepo\MockRepo.cs" />

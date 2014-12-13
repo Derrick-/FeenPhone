@@ -19,6 +19,7 @@ namespace FeenPhone.Server.TcpPacketServer
 
         protected override void ClientConnected(TcpPacketNetState client)
         {
+            Packet.WriteLoginStatus(client.Writer, false);
             EventSink.OnConnect(client);
         }
 

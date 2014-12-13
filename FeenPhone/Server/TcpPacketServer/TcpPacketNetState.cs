@@ -57,7 +57,28 @@ namespace FeenPhone.Server.TcpPacketServer
 
         public void OnChat(Alienseed.BaseNetworkServer.INetState user, string text)
         {
-            Packet.WriteChat(Writer, text);
+            Packet.WriteChat(Writer, user.User, text);
+        }
+
+        public void OnLoginFailed()
+        {
+            Packet.WriteLoginStatus(Writer,false);
+        }
+
+        public void OnLoginSuccess()
+        {
+            Packet.WriteLoginStatus(Writer, true);
+        }
+
+        internal bool Login(string Username, string password)
+        {
+            var user = FeenPhone.Accounting.AccountHandler.Login(Username, password);
+
+            LogLine("Login {0}: {1}", user != null ? "SUCCESS" : "FAILED", user != null ? user.Username : Username);
+
+            if (user == null) return false;
+
+            return LoginSetUser(user);
         }
     }
 }

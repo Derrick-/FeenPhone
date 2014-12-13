@@ -27,7 +27,13 @@ namespace FeenPhone.Accounting
             return null;
         }
 
-        #endregion
+        public IUser FindUser(Guid id)
+        {
+            return accounts.SingleOrDefault(m => m.Value.ID == id).Value;
+        }
+
+       #endregion
+
     }
 
     internal class MockAccount : Account

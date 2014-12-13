@@ -9,8 +9,6 @@ namespace FeenPhone.Client
 {
     class RemoteClient : BaseClient
     {
-        const int bufferSize = 1024;
-
         private readonly System.Net.IPAddress IP;
         private readonly int Port;
 
@@ -29,6 +27,12 @@ namespace FeenPhone.Client
             Handler = new ClientPacketHandler();
 
             Reader.OnReadData += Reader_OnReadData;
+            Reader.OnDisconnect += Reader_OnDisconnect;
+        }
+
+        void Reader_OnDisconnect()
+        {
+            Disconnect();
         }
 
         void Reader_OnReadData(object sender, Alienseed.BaseNetworkServer.PacketServer.NetworkPacketReader.DataReadEventArgs e)
@@ -43,8 +47,11 @@ namespace FeenPhone.Client
             {
                 TcpClient client = new TcpClient();
                 connecting = true;
+                Console.WriteLine("Connecting to {0}...", IP);
                 client.BeginConnect(IP.ToString(), Port, new AsyncCallback(ConnectCallback), client);
             }
+            else
+                Console.WriteLine("Already connecting...");
         }
 
         private void ConnectCallback(IAsyncResult ar)
@@ -65,6 +72,7 @@ namespace FeenPhone.Client
                 Client = client;
                 Stream = Client.GetStream();
                 Reader.SetStream(Stream);
+
                 Writer.SetStream(Stream);
                 _IsConnected = true;
             }
@@ -81,7 +89,11 @@ namespace FeenPhone.Client
             Writer.SetStream(null);
             if (Stream != null)
                 Stream.Dispose();
-            Client.Close();
+            if (Client != null)
+            {
+                Console.WriteLine("Disconnected.");
+                Client.Close();
+            }
             Client = null;
         }
 
@@ -101,8 +113,14 @@ namespace FeenPhone.Client
 
         internal override void SendChat(string text)
         {
-            Packet.WriteChat(Writer, text);
+            Packet.WriteChat(Writer, LocalUser, text);
             OnChat(LocalUser, text);
+        }
+
+        internal override void SendLoginInfo()
+        {
+            Console.WriteLine("Logging in as {0}", LocalUser.Nickname);
+            Packet.WriteLoginRequest(Writer, LocalUser.Nickname, LocalUser.Nickname);
         }
     }
 }

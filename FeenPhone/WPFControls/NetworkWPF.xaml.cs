@@ -27,6 +27,34 @@ namespace FeenPhone.WPFControls
         {
             InitializeComponent();
             DataContext = this;
+
+            EventSource.OnLoginStatus += EventSource_OnLoginStatus;
+        }
+
+        int invalidLoginAttempts = 0;
+        void EventSource_OnLoginStatus(object sender, BoolEventArgs e)
+        {
+            bool isLoggedIn = e.Value;
+            if(!isLoggedIn)
+            {
+                if (invalidLoginAttempts == 0)
+                {
+                    invalidLoginAttempts++;
+                    Console.WriteLine("Server requests login.");
+                    Client.SendLoginInfo();
+                }
+                else
+                {
+                    Console.WriteLine("Server login rejected.");
+                    Client.Dispose();
+                    Client = null;
+                }
+            }
+            else
+            {
+                Console.WriteLine("Server login accepted.");
+                invalidLoginAttempts = 0;
+            }
         }
 
         public static DependencyProperty IsServerProperty = DependencyProperty.Register("IsServer", typeof(bool?), typeof(NetworkWPF), new PropertyMetadata(false, OnIsServerChanged));
@@ -120,6 +148,19 @@ namespace FeenPhone.WPFControls
 
         private void Connect_Click(object sender, RoutedEventArgs e)
         {
+            if(Client!=null)
+            {
+                if (Client.IsConnected)
+                {
+                    Console.WriteLine("You are already connected.");
+                    return;
+                }
+                else
+                {
+                    Client.Dispose();
+                    Client = null;
+                }
+            }
             IPAddress IP;
             int port = 0;
 
@@ -180,6 +221,7 @@ namespace FeenPhone.WPFControls
             }
             var remClient = new RemoteClient(User, IP, port);
             Client = remClient;
+            invalidLoginAttempts = 0;
             remClient.Connect();
         }
     }

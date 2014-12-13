@@ -1,5 +1,7 @@
 ﻿
 using Alienseed.BaseNetworkServer.Accounting;
+using System;
+
 namespace FeenPhone.Accounting
 {
     public static class AccountHandler
@@ -19,6 +21,11 @@ namespace FeenPhone.Accounting
         public static IUserClient Login(string username, string password)
         {
             return Repo.Login(username, password);
+        }
+
+        public static IUser FindUser(Guid id)
+        {
+            return Repo.FindUser(id);
         }
     }
 }

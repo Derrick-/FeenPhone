@@ -27,11 +27,21 @@ namespace FeenPhone.Client
         }
     }
 
+        public class BoolEventArgs : EventArgs
+    {
+        public bool Value { get; private set; }
+        public BoolEventArgs(bool value)
+        {
+            Value = value;
+        }
+    }
+
     internal static class EventSource
     {
         public static event EventHandler<OnUserEventArgs> OnUserConnected;
         public static event EventHandler<OnUserEventArgs> OnUserDisconnected;
         public static event EventHandler<OnChatEventArgs> OnChat;
+        public static event EventHandler<BoolEventArgs> OnLoginStatus;
 
         public static void InvokeOnUserConnected(object sender, IUser user)
         {
@@ -51,5 +61,10 @@ namespace FeenPhone.Client
                 OnChat(sender, new OnChatEventArgs(user, text));
         }
 
+        internal static void InvokeOnLoginStatus(object sender, bool isLoggedIn)
+        {
+            if (OnLoginStatus != null)
+                OnLoginStatus(sender, new BoolEventArgs(isLoggedIn));
+        }
     }
 }

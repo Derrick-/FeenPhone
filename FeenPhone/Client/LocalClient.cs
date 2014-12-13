@@ -50,6 +50,11 @@ namespace FeenPhone.Client
             Server.EventSink.OnChat(this, text);
         }
 
+        internal override void SendLoginInfo()
+        {
+            Server.EventSink.OnLogin(LocalUser);
+        }
+
         IUserClient IClient.User
         {
             get { return LocalUser; }

@@ -35,5 +35,6 @@ namespace FeenPhone.Client
         public abstract void Dispose();
 
         internal abstract void SendChat(string text);
+        internal abstract void SendLoginInfo();
     }
 }
