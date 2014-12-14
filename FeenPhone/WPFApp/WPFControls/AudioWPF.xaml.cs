@@ -40,6 +40,52 @@ namespace FeenPhone.WPFApp.Controls
             DataContext = this;
             InitializeInputDevices();
             PopulateCodecsCombo(Codecs);
+
+            LoadSettings();
+            Settings.SaveSettings += Settings_SaveSettings;
+
+        }
+
+        private void LoadSettings()
+        {
+            var settings = Settings.Container;
+
+            string strCodec = settings.Codec;
+            string strInputDevice = settings.InputDevice;
+
+            if (!string.IsNullOrWhiteSpace(strCodec))
+            {
+                var selectCodecItem = comboBoxCodecs.Items.OfType<CodecComboItem>().Where(m => m.Text == strCodec).FirstOrDefault();
+                if (selectCodecItem != null)
+                {
+                    comboBoxCodecs.SelectedItem = selectCodecItem;
+                    this.codec = selectCodecItem.Codec;
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(strInputDevice))
+            {
+                var selectInputDevice = InputList.Where(m => m == strInputDevice).FirstOrDefault();
+                if (selectInputDevice != null)
+                    SelectedInputSource = selectInputDevice;
+            }
+        }
+
+        private void Settings_SaveSettings(object sender, EventArgs e)
+        {
+            var settings = Settings.Container;
+           
+            var selectedCodec = comboBoxCodecs.SelectedItem as CodecComboItem;
+            if (selectedCodec != null)
+                settings.Codec = selectedCodec.Text;
+            else
+                settings.Codec = null;
+
+            var selectedMic = SelectedInputSource;
+            if (selectedMic != null)
+                settings.InputDevice = selectedMic;
+            else
+                settings.InputDevice = null;
         }
 
         private void InitializeInputDevices()
@@ -106,12 +152,18 @@ namespace FeenPhone.WPFApp.Controls
             }
         }
 
+        public string SelectedInputSource
+        {
+            get { return (string)this.GetValue(SelectedInputSourceProperty); }
+            set { this.SetValue(SelectedInputSourceProperty, value); }
+        }
+
         public int? SelectedInputSourceIndex
         {
             get { return (int?)this.GetValue(SelectedInputSourceIndexProperty); }
             set { this.SetValue(SelectedInputSourceIndexProperty, value); }
         }
-
+        
         private static void OnIsRecordingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             AudioWPF target = d as AudioWPF;

@@ -28,14 +28,39 @@ namespace FeenPhone.WPFApp.Controls
             InitializeComponent();
             DataContext = this;
 
+            LoadSettings();
+            Settings.SaveSettings += Settings_SaveSettings;
+
             EventSource.OnLoginStatus += EventSource_OnLoginStatus;
+        }
+
+        private void LoadSettings()
+        {
+            var settings = Settings.Container;
+           
+            if (settings.Server != null)
+                txtServer.Text = settings.Server;
+            
+            if (settings.Port != null)
+                txtPort.Text = settings.Port;
+            
+            if (settings.Nickname != null)
+                txtNickname.Text = settings.Nickname;
+        }
+
+        private void Settings_SaveSettings(object sender, EventArgs e)
+        {
+            var settings = Settings.Container;
+            settings.Server = txtServer.Text;
+            settings.Port = txtPort.Text;
+            settings.Nickname = txtNickname.Text;
         }
 
         int invalidLoginAttempts = 0;
         void EventSource_OnLoginStatus(object sender, BoolEventArgs e)
         {
             bool isLoggedIn = e.Value;
-            if(!isLoggedIn)
+            if (!isLoggedIn)
             {
                 if (invalidLoginAttempts == 0)
                 {
@@ -148,7 +173,7 @@ namespace FeenPhone.WPFApp.Controls
 
         private void Connect_Click(object sender, RoutedEventArgs e)
         {
-            if(Client!=null)
+            if (Client != null)
             {
                 if (Client.IsConnected)
                 {
@@ -166,7 +191,7 @@ namespace FeenPhone.WPFApp.Controls
 
             bool OK = true;
 
-            if(IsServer==true)
+            if (IsServer == true)
             {
                 Console.WriteLine("Cannot connect while running a server");
                 OK = false;

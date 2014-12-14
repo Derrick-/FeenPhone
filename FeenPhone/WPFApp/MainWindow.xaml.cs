@@ -43,6 +43,7 @@ namespace FeenPhone.WPFApp
         void Window_Closed(object sender, EventArgs e)
         {
             Settings.InvokeSaveSettings(this);
+            Settings.Container.Save();
         }
 
     }
