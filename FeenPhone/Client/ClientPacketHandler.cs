@@ -23,6 +23,11 @@ namespace FeenPhone.Client
             Console.WriteLine("Invalid client packet LoginInfo received.");
         }
 
+        protected override void UserList(IEnumerable<IUser> users)
+        {
+            EventSource.InvokeOnUserList(this, users);
+        }
+
         protected override IUser GetUserObject(Guid id, bool isadmin, string username, string nickname)
         {
             return UserRepo.CreateOrUpdateUser(id, isadmin, username, nickname);

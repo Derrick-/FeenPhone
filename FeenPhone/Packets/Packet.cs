@@ -12,6 +12,7 @@ namespace FeenPhone
     {
         LoginStatus = 1,
         LoginRequest = 2,
+        UserList = 10,
         Chat = 11
     }
 
@@ -48,20 +49,41 @@ namespace FeenPhone
             using (var buffer = new FeenPacketBuffer())
             {
                 byte[] dataUser = UserData(user);
-                var len = dataUser.Length + 2 + dataText.Length;
+                var len = dataUser.Length + dataText.Length;
 
                 buffer.Write(PacketID.Chat);
 
                 buffer.WriteLength(len);
-                
-                buffer.WriteLength(dataUser.Length);
+
                 buffer.Write(dataUser);
-              
+
                 buffer.Write(dataText);
 
                 Writer.Write(buffer);
             }
         }
+
+        internal static void WriteUserList(NetworkPacketWriter Writer, IEnumerable<IUser> users)
+        {
+            if (users.Count() > byte.MaxValue)
+                throw new ArgumentException("Too many users, max is " + byte.MaxValue);
+
+            List<byte[]> usersDatas = new List<byte[]>();
+
+            foreach (var user in users)
+                usersDatas.Add(UserData(user));
+
+            using (var buffer = new FeenPacketBuffer())
+            {
+                buffer.Write(PacketID.UserList);
+                buffer.WriteLength(usersDatas.Sum(m => m.Length) + 1);
+                buffer.Write((byte)usersDatas.Count());
+                buffer.Write(usersDatas.SelectMany(m => m).ToArray());
+
+                Writer.Write(buffer);
+            }
+        }
+
 
         private static byte[] UserData(IUser user)
         {
@@ -69,7 +91,7 @@ namespace FeenPhone
                 throw new ArgumentException("Username or Nickname contains invalid character");
 
             string textdata = string.Format("{0}\t{1}\t{2}\t{3}", user.ID, user.IsAdmin ? "1" : "0", user.Username, user.Nickname);
-            return Encoding.ASCII.GetBytes(textdata); 
+            return (new byte[] { (byte)(textdata.Length >> 8), (byte)textdata.Length }).Concat(Encoding.ASCII.GetBytes(textdata)).ToArray();
         }
     }
 }

@@ -66,7 +66,6 @@ namespace FeenPhone.Accounting
         public MockAccount(string username, string nickname = null, bool isadmin = false)
             : base(Guid.NewGuid(), username == null ? "user" + usernum++.ToString() : username, isadmin: isadmin)
         {
-            Nickname = nickname ?? username;
         }
     }
 }

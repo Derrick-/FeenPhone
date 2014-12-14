@@ -19,6 +19,7 @@ namespace FeenPhone
                 {
                     {PacketID.LoginStatus, Handle_LoginStatus},
                     {PacketID.LoginRequest, Handle_LoginInfo},
+                    {PacketID.UserList, Handle_UserList},
                     {PacketID.Chat, Handle_OnChat}
                 };
         }
@@ -57,7 +58,7 @@ namespace FeenPhone
             }
 
             PacketID packetid = (PacketID)data[i];
-            len = (ushort)(data[i + 1] << 1 | data[i + 2]);
+            len = (ushort)((data[i + 1] << 8) | data[i + 2]);
             if (data.Length < len + 3)
                 return i;
             IEnumerable<byte> payload = data.Skip(3).Take(len);
@@ -96,6 +97,24 @@ namespace FeenPhone
             OnChat(user, text);
         }
 
+        protected abstract void UserList(IEnumerable<IUser> users);
+        protected void Handle_UserList(IEnumerable<byte> payload)
+        {
+            int count = payload.First();
+            List<IUser> users = new List<IUser>(count);
+            int consumed = 1;
+            if (count > 0)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    IUser user;
+                    consumed += ReadUser(payload.Skip(consumed), out user);
+                    users.Add(user);
+                }
+            }
+            UserList(users);
+        }
+
         protected abstract IUser GetUserObject(Guid id, bool isadmin, string username, string nickname);
         private int ReadUser(IEnumerable<byte> payload, out IUser user)
         {
@@ -105,9 +124,9 @@ namespace FeenPhone
                 throw new ArgumentException("Out of data in ReadUser");
 
             byte[] lenBytes = payload.Take(2).ToArray();
-            ushort len = (ushort)(lenBytes[0] << 1 | lenBytes[1]);
+            ushort len = (ushort)(lenBytes[0] << 8 | lenBytes[1]);
 
-            if (len <=0 || count < 2 + len)
+            if (len <= 0 || count < 2 + len)
                 throw new ArgumentException("Out of data in ReadUser");
 
             byte[] userData = payload.Skip(2).Take(len).ToArray();
@@ -118,7 +137,7 @@ namespace FeenPhone
                 throw new ArgumentException("Invalid user data item count in ReadUser");
 
             Guid id;
-            if(!Guid.TryParse(uservalues[0],out id))
+            if (!Guid.TryParse(uservalues[0], out id))
                 throw new ArgumentException("Invalid user id item count in ReadUser");
 
             bool isadmin = uservalues[1] == "1";

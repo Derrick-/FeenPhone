@@ -27,7 +27,16 @@ namespace FeenPhone.Client
         }
     }
 
-        public class BoolEventArgs : EventArgs
+    public class UserListEventArgs : EventArgs
+    {
+        public IEnumerable<IUser> Users { get; private set; }
+        public UserListEventArgs(IEnumerable<IUser> users)
+        {
+            Users = users;
+        }
+    }
+
+    public class BoolEventArgs : EventArgs
     {
         public bool Value { get; private set; }
         public BoolEventArgs(bool value)
@@ -41,6 +50,7 @@ namespace FeenPhone.Client
         public static event EventHandler<OnUserEventArgs> OnUserConnected;
         public static event EventHandler<OnUserEventArgs> OnUserDisconnected;
         public static event EventHandler<OnChatEventArgs> OnChat;
+        public static event EventHandler<UserListEventArgs> OnUserList;
         public static event EventHandler<BoolEventArgs> OnLoginStatus;
 
         public static void InvokeOnUserConnected(object sender, IUser user)
@@ -65,6 +75,12 @@ namespace FeenPhone.Client
         {
             if (OnLoginStatus != null)
                 OnLoginStatus(sender, new BoolEventArgs(isLoggedIn));
+        }
+
+        internal static void InvokeOnUserList(object sender, IEnumerable<IUser> users)
+        {
+            if (OnUserList != null)
+                OnUserList(sender, new UserListEventArgs(users));
         }
     }
 }

@@ -36,6 +36,11 @@ namespace FeenPhone.Server.TcpPacketServer
 
         }
 
+        protected override void UserList(IEnumerable<IUser> users)
+        {
+            Console.WriteLine("Invalid server packet UserList received.");
+        }
+
         protected override IUser GetUserObject(Guid id, bool isadmin, string username, string nickname)
         {
             return AccountHandler.FindUser(id);

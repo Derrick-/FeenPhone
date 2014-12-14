@@ -46,7 +46,7 @@ namespace Alienseed.BaseNetworkServer.PacketServer
 
         public void Write(ushort value)
         {
-            Write((byte)(value >> 1));
+            Write((byte)(value >> 8));
             Write((byte)value);
         }
 
