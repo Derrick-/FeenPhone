@@ -24,14 +24,14 @@ namespace FeenPhone.WPFApp.Controls
     /// <summary>
     /// Interaction logic for AudioWPF.xaml
     /// </summary>
-    public partial class AudioWPF : UserControl, INotifyPropertyChanged
+    public partial class AudioInWPF : UserControl, INotifyPropertyChanged
     {
         static ObservableCollection<string> InputList = new ObservableCollection<string>();
 
         [ImportMany(typeof(Audio.Codecs.INetworkChatCodec))]
         public IEnumerable<Audio.Codecs.INetworkChatCodec> Codecs { get; set; }
 
-        public AudioWPF()
+        public AudioInWPF()
         {
             if (!DesignerProperties.GetIsInDesignMode(this))
                 new CompositionContainer(new AssemblyCatalog(Assembly.GetExecutingAssembly())).ComposeParts(this);
@@ -43,9 +43,6 @@ namespace FeenPhone.WPFApp.Controls
 
             LoadSettings();
             Settings.SaveSettings += Settings_SaveSettings;
-
-            FeenPhone.Client.EventSource.OnAudioData += EventSource_OnAudioData;
-
         }
 
         private void LoadSettings()
@@ -111,9 +108,7 @@ namespace FeenPhone.WPFApp.Controls
 
                 foreach (var codec in sorted)
                 {
-                    string bitRate = codec.BitsPerSecond == -1 ? "VBR" : String.Format("{0:0.#}kbps", codec.BitsPerSecond / 1000.0);
-                    string text = String.Format("{0} ({1})", codec.Name, bitRate);
-                    this.comboBoxCodecs.Items.Add(new CodecComboItem() { Text = text, Codec = codec });
+                    this.comboBoxCodecs.Items.Add(new CodecComboItem() { Text = codec.ToString(), Codec = codec });
                 }
             }
             else
@@ -132,11 +127,11 @@ namespace FeenPhone.WPFApp.Controls
         }
 
 
-        public static DependencyProperty IsRecordingProperty = DependencyProperty.Register("IsRecording", typeof(bool?), typeof(AudioWPF), new PropertyMetadata(false, OnIsRecordingChanged));
-        public static DependencyProperty InputSourceListProperty = DependencyProperty.Register("InputSourceList", typeof(ObservableCollection<string>), typeof(AudioWPF), new PropertyMetadata(InputList));
-        public static DependencyProperty SelectedInputSourceProperty = DependencyProperty.Register("SelectedInputSource", typeof(string), typeof(AudioWPF), new PropertyMetadata(null));
-        public static DependencyProperty SelectedInputSourceIndexProperty = DependencyProperty.Register("SelectedInputSourceIndex", typeof(int?), typeof(AudioWPF), new PropertyMetadata(null));
-        public static DependencyProperty ControlsEnabledProperty = DependencyProperty.Register("ControlsEnabled", typeof(bool), typeof(AudioWPF), new PropertyMetadata(true));
+        public static DependencyProperty IsRecordingProperty = DependencyProperty.Register("IsRecording", typeof(bool?), typeof(AudioInWPF), new PropertyMetadata(false, OnIsRecordingChanged));
+        public static DependencyProperty InputSourceListProperty = DependencyProperty.Register("InputSourceList", typeof(ObservableCollection<string>), typeof(AudioInWPF), new PropertyMetadata(InputList));
+        public static DependencyProperty SelectedInputSourceProperty = DependencyProperty.Register("SelectedInputSource", typeof(string), typeof(AudioInWPF), new PropertyMetadata(null));
+        public static DependencyProperty SelectedInputSourceIndexProperty = DependencyProperty.Register("SelectedInputSourceIndex", typeof(int?), typeof(AudioInWPF), new PropertyMetadata(null));
+        public static DependencyProperty ControlsEnabledProperty = DependencyProperty.Register("ControlsEnabled", typeof(bool), typeof(AudioInWPF), new PropertyMetadata(true));
 
         public bool ControlsEnabled
         {
@@ -168,7 +163,7 @@ namespace FeenPhone.WPFApp.Controls
         
         private static void OnIsRecordingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            AudioWPF target = d as AudioWPF;
+            AudioInWPF target = d as AudioInWPF;
             if (target != null)
             {
                 target.SetRecording((bool?)e.NewValue == true);
@@ -231,43 +226,6 @@ namespace FeenPhone.WPFApp.Controls
                     NetworkWPF.Client.SendAudio(codec.CodecID, encoded, encoded.Length);
             }
         }
-
-
-        void EventSource_OnAudioData(object sender, Client.AudioDataEventArgs e)
-        {
-            ReceivedAudio(e.Codec, e.Data);
-        }
-        
-        private IWavePlayer waveOut;
-        private BufferedWaveProvider waveProvider;
-        static readonly TimeSpan MaxBufferedDuration = TimeSpan.FromMilliseconds(100);
-        private void ReceivedAudio(Audio.Codecs.CodecID codecid, byte[] encoded)
-        {
-
-            Audio.Codecs.INetworkChatCodec remoteCodec=Codecs.SingleOrDefault(m=>m.CodecID==codecid);
-
-            if (waveOut!=null && waveProvider.WaveFormat!=remoteCodec.RecordFormat)
-            {
-                waveOut.Stop();
-                waveOut = null;
-            }
-
-            if (waveOut == null)
-            {
-                waveOut = new DirectSoundOut(50);
-                waveProvider = new BufferedWaveProvider(remoteCodec.RecordFormat);
-                waveOut.Init(waveProvider);
-                waveOut.Play();
-            }
-            if (waveProvider.BufferedDuration <= MaxBufferedDuration)
-            {
-                byte[] decoded = remoteCodec.Decode(encoded, encoded.Length);
-                waveProvider.AddSamples(decoded, 0, decoded.Length);
-            }
-            else
-                Console.WriteLine("Skipping audio data to reduce latency ({0}ms)", waveProvider.BufferedDuration.TotalMilliseconds);
-        }
-
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged(string propertyName)
