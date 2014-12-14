@@ -15,6 +15,9 @@ using NAudio.Wave;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using FeenPhone.Audio;
+using System.ComponentModel.Composition.Hosting;
+using System.Reflection;
+using System.ComponentModel.Composition;
 
 namespace FeenPhone.WPFControls
 {
@@ -25,11 +28,18 @@ namespace FeenPhone.WPFControls
     {
         static ObservableCollection<string> InputList = new ObservableCollection<string>();
 
+        [ImportMany(typeof(Audio.Codecs.INetworkChatCodec))]
+        public IEnumerable<Audio.Codecs.INetworkChatCodec> Codecs { get; set; }
+
         public AudioWPF()
         {
+            if (!DesignerProperties.GetIsInDesignMode(this))
+                new CompositionContainer(new AssemblyCatalog(Assembly.GetExecutingAssembly())).ComposeParts(this);
+            
             InitializeComponent();
             DataContext = this;
             InitializeInputDevices();
+            PopulateCodecsCombo(Codecs);
         }
 
         private void InitializeInputDevices()
@@ -42,10 +52,44 @@ namespace FeenPhone.WPFControls
             }
         }
 
+        private void PopulateCodecsCombo(IEnumerable<Audio.Codecs.INetworkChatCodec> codecs)
+        {
+            var sorted = from codec in codecs
+                         where codec.IsAvailable
+                         orderby codec.BitsPerSecond ascending
+                         select codec;
+
+            foreach (var codec in sorted)
+            {
+                string bitRate = codec.BitsPerSecond == -1 ? "VBR" : String.Format("{0:0.#}kbps", codec.BitsPerSecond / 1000.0);
+                string text = String.Format("{0} ({1})", codec.Name, bitRate);
+                this.comboBoxCodecs.Items.Add(new CodecComboItem() { Text = text, Codec = codec });
+            }
+            this.comboBoxCodecs.SelectedIndex = 0;
+        }
+
+        class CodecComboItem
+        {
+            public string Text { get; set; }
+            public Audio.Codecs.INetworkChatCodec Codec { get; set; }
+            public override string ToString()
+            {
+                return Text;
+            }
+        }
+
+
         public static DependencyProperty IsRecordingProperty = DependencyProperty.Register("IsRecording", typeof(bool?), typeof(AudioWPF), new PropertyMetadata(false, OnIsRecordingChanged));
         public static DependencyProperty InputSourceListProperty = DependencyProperty.Register("InputSourceList", typeof(ObservableCollection<string>), typeof(AudioWPF), new PropertyMetadata(InputList));
         public static DependencyProperty SelectedInputSourceProperty = DependencyProperty.Register("SelectedInputSource", typeof(string), typeof(AudioWPF), new PropertyMetadata(null));
         public static DependencyProperty SelectedInputSourceIndexProperty = DependencyProperty.Register("SelectedInputSourceIndex", typeof(int?), typeof(AudioWPF), new PropertyMetadata(null));
+        public static DependencyProperty ControlsEnabledProperty = DependencyProperty.Register("ControlsEnabled", typeof(bool), typeof(AudioWPF), new PropertyMetadata(true));
+      
+        public bool ControlsEnabled 
+        {
+            get { return (bool)this.GetValue(ControlsEnabledProperty); }
+            set { this.SetValue(ControlsEnabledProperty, value); } 
+        }
 
         public bool? IsRecording
         {
@@ -81,18 +125,31 @@ namespace FeenPhone.WPFControls
         }
 
         private WaveIn waveIn;
-        private INetworkChatCodec codec = new Audio.MicrosoftAdpcmChatCodec();
+        private Audio.Codecs.INetworkChatCodec codec;
+        public Audio.Codecs.INetworkChatCodec Codec { get { return codec; } }
         private void StartRecording()
         {
             if (SelectedInputSourceIndex.HasValue)
             {
+                this.codec = ((CodecComboItem)comboBoxCodecs.SelectedItem).Codec;
+
                 int source = SelectedInputSourceIndex.Value;
                 waveIn = new WaveIn();
                 waveIn.BufferMilliseconds = 50;
                 waveIn.DeviceNumber = source;
                 waveIn.WaveFormat = codec.RecordFormat;
                 waveIn.DataAvailable += waveIn_DataAvailable;
-                waveIn.StartRecording();
+                try
+                {
+                    waveIn.StartRecording();
+                    ControlsEnabled = false;
+                }
+                catch (NAudio.MmException ex)
+                {
+                    Console.WriteLine("Audio Error: Couldn't open recording device\n{0}", ex.Message);
+                    waveIn = null;
+                    IsRecording = false;
+                }
             }
             else
                 IsRecording = false;
@@ -102,13 +159,14 @@ namespace FeenPhone.WPFControls
         {
             waveIn.DataAvailable -= waveIn_DataAvailable;
             waveIn.StopRecording();
+            ControlsEnabled = true;
         }
 
         private void waveIn_DataAvailable(object sender, WaveInEventArgs e)
         {
             if(IsEnabled)
             {
-                byte[] encoded = codec.Encode(e.Buffer, 0, e.BytesRecorded);
+                byte[] encoded = codec.Encode(e.Buffer, e.BytesRecorded);
 
                 ReceivedAudio(encoded);
                 //if (NetworkWPF.Client != null)
@@ -130,7 +188,7 @@ namespace FeenPhone.WPFControls
             }
             if (waveProvider.BufferedDuration <= MaxBufferedDuration)
             {
-                byte[] decoded = codec.Decode(encoded, 0, encoded.Length);
+                byte[] decoded = codec.Decode(encoded, encoded.Length);
                 waveProvider.AddSamples(decoded, 0, decoded.Length);
             }
             else
@@ -144,7 +202,7 @@ namespace FeenPhone.WPFControls
             var propertyChanged = PropertyChanged;
             if (propertyChanged != null)
             {
-                Dispatcher.BeginInvoke(new Action(() => { propertyChanged(this, new PropertyChangedEventArgs(propertyName)); }));
+                Dispatcher.BeginInvoke(PropertyChanged, this, new PropertyChangedEventArgs(propertyName));
             }
         }
 

@@ -1,45 +1,60 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using NAudio.Wave;
 using NAudio.Wave.Compression;
+using System.Diagnostics;
 using NAudio;
 
-namespace FeenPhone.Audio
+namespace FeenPhone.Audio.Codecs
 {
     /// <summary>
     /// useful base class for deriving any chat codecs that will use ACM for decode and encode
     /// </summary>
     abstract class AcmChatCodec : INetworkChatCodec
     {
-        private readonly WaveFormat encodeFormat;
+        public abstract CodecID CodecID { get; }
+
+        private WaveFormat encodeFormat;
         private AcmStream encodeStream;
         private AcmStream decodeStream;
         private int decodeSourceBytesLeftovers;
         private int encodeSourceBytesLeftovers;
 
-        protected AcmChatCodec(WaveFormat recordFormat, WaveFormat encodeFormat)
+        public AcmChatCodec(WaveFormat recordFormat, WaveFormat encodeFormat)
         {
-            RecordFormat = recordFormat;
+            this.RecordFormat = recordFormat;
             this.encodeFormat = encodeFormat;
         }
 
         public WaveFormat RecordFormat { get; private set; }
 
+        public byte[] Encode(byte[] data, int length)
+        {
+            return Encode(data, 0, length);
+        }
+
         public byte[] Encode(byte[] data, int offset, int length)
         {
-            if (encodeStream == null)
+            if (this.encodeStream == null)
             {
-                encodeStream = new AcmStream(RecordFormat, encodeFormat);
+                this.encodeStream = new AcmStream(this.RecordFormat, this.encodeFormat);
             }
             //Debug.WriteLine(String.Format("Encoding {0} + {1} bytes", length, encodeSourceBytesLeftovers));
             return Convert(encodeStream, data, offset, length, ref encodeSourceBytesLeftovers);
         }
 
+        public byte[] Decode(byte[] data, int length)
+        {
+            return Decode(data, 0, length);
+        }
+
         public byte[] Decode(byte[] data, int offset, int length)
         {
-            if (decodeStream == null)
+            if (this.decodeStream == null)
             {
-                decodeStream = new AcmStream(encodeFormat, RecordFormat);
+                this.decodeStream = new AcmStream(this.encodeFormat, this.RecordFormat);
             }
             //Debug.WriteLine(String.Format("Decoding {0} + {1} bytes", data.Length, decodeSourceBytesLeftovers));
             return Convert(decodeStream, data, offset, length, ref decodeSourceBytesLeftovers);
@@ -69,7 +84,7 @@ namespace FeenPhone.Audio
         {
             get
             {
-                return encodeFormat.AverageBytesPerSecond * 8;
+                return this.encodeFormat.AverageBytesPerSecond * 8;
             }
         }
 
@@ -87,16 +102,19 @@ namespace FeenPhone.Audio
             }
         }
 
+        static bool disableAll = true;
         public bool IsAvailable
         {
             get
             {
+                if (disableAll) return false;
+
                 // determine if this codec is installed on this PC
                 bool available = true;
                 try
                 {
-                    using (new AcmStream(RecordFormat, encodeFormat)) { }
-                    using (new AcmStream(encodeFormat, RecordFormat)) { }
+                    using (var tempEncoder = new AcmStream(this.RecordFormat, this.encodeFormat)) { }
+                    using (var tempDecoder = new AcmStream(this.encodeFormat, this.RecordFormat)) { }
                 }
                 catch (MmException)
                 {
@@ -107,4 +125,3 @@ namespace FeenPhone.Audio
         }
     }
 }
-

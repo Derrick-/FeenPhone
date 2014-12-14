@@ -8,6 +8,7 @@
     <DockPanel>
         <TextBlock Background="Wheat" DockPanel.Dock="Top" TextAlignment="Center">AUDIO</TextBlock>
         <CheckBox ClickMode="Release" DockPanel.Dock="Top" IsChecked="{Binding Path=IsRecording, Mode=TwoWay}" ToolTip="Enable sound recording">Record</CheckBox>
-        <ListBox ItemsSource="{Binding Path=InputSourceList, Mode=TwoWay}" SelectedIndex="{Binding Path=SelectedInputSourceIndex, Mode=TwoWay}" SelectedItem="{Binding Path=SelectedInputSource, Mode=TwoWay}"></ListBox>
+        <ComboBox DockPanel.Dock="Top" Name="comboBoxCodecs" IsEnabled="{Binding ControlsEnabled}" />
+        <ComboBox ItemsSource="{Binding Path=InputSourceList, Mode=TwoWay}" SelectedIndex="{Binding Path=SelectedInputSourceIndex, Mode=TwoWay}" SelectedItem="{Binding Path=SelectedInputSource, Mode=TwoWay}" IsEnabled="{Binding ControlsEnabled}"/>
     </DockPanel>
 </UserControl>

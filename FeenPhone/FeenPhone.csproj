@@ -18,7 +18,7 @@
     <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -26,15 +26,17 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>FeenPhone.App</StartupObject>
@@ -43,7 +45,13 @@
     <Reference Include="NAudio">
       <HintPath>..\packages\NAudio.1.7.2\lib\net35\NAudio.dll</HintPath>
     </Reference>
+    <Reference Include="NSpeex">
+      <HintPath>..\Libs\NSpeex\NSpeex.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition">
+      <HintPath>..\Libs\MEF\System.ComponentModel.Composition.dll</HintPath>
+    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
@@ -66,9 +74,21 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Audio\AcmChatCodec.cs" />
-    <Compile Include="Audio\INetworkChatCodec.cs" />
-    <Compile Include="Audio\MicrosoftAdpcmChatCodec.cs" />
+    <Compile Include="Audio\Codecs\AcmChatCodec.cs" />
+    <Compile Include="Audio\Codecs\ALawChatCodec.cs" />
+    <Compile Include="Audio\Codecs\FormatException.cs" />
+    <Compile Include="Audio\Codecs\G722ChatCodec.cs" />
+    <Compile Include="Audio\Codecs\Gsm610ChatCodec.cs" />
+    <Compile Include="Audio\Codecs\INetworkChatCodec.cs" />
+    <Compile Include="Audio\Codecs\MicrosoftAdpcmChatCodec.cs" />
+    <Compile Include="Audio\Codecs\MuLawChatCodec.cs" />
+    <Compile Include="Audio\Codecs\OpusCodec.cs" />
+    <Compile Include="Audio\Codecs\Opus\API.cs" />
+    <Compile Include="Audio\Codecs\Opus\OpusDecoder.cs" />
+    <Compile Include="Audio\Codecs\Opus\OpusEncoder.cs" />
+    <Compile Include="Audio\Codecs\SpeexChatCodec.cs" />
+    <Compile Include="Audio\Codecs\TrueSpeechChatCodec.cs" />
+    <Compile Include="Audio\Codecs\UncompressedPcmChatCodec.cs" />
     <Compile Include="Client\BaseClient.cs" />
     <Compile Include="Client\EventSource.cs" />
     <Compile Include="Client\ClientPacketHandler.cs" />
@@ -180,7 +200,11 @@
       <Name>BaseNetworkServer</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="opus.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
