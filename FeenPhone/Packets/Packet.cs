@@ -10,12 +10,13 @@ namespace FeenPhone
 {
     enum PacketID : byte
     {
-        LoginStatus = 1,
-        LoginRequest = 2,
-        UserLogin = 3,
-        UserLogout = 4,
-        UserList = 10,
-        Chat = 11
+        Chat = 2,
+        LoginStatus = 5,
+        LoginRequest = 6,
+        UserList = 12,
+        UserLogout = 14,
+        UserLogin = 15,
+        Audio = 16
     }
 
     static class Packet
@@ -102,6 +103,18 @@ namespace FeenPhone
             }
         }
 
+        internal static void WriteAudioData(NetworkPacketWriter Writer, Audio.Codecs.CodecID Codec, byte[] AudioData, int AudioDataLen)
+        {
+            using (var buffer = new FeenPacketBuffer())
+            {
+                buffer.Write(PacketID.Audio);
+                buffer.WriteLength(AudioDataLen + 1);
+                buffer.WriteLength(Codec);
+                buffer.Write(AudioData, AudioDataLen);
+
+                Writer.Write(buffer);
+            }
+        }
 
         private static byte[] UserData(IUser user)
         {

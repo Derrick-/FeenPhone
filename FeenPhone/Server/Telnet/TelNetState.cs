@@ -67,6 +67,11 @@ namespace FeenPhone.Server.Telnet
             SendInfoLine("  {0} logout.", client.Nickname);
         }
 
+        public void OnAudio(Audio.Codecs.CodecID Codec, byte[] data, int dataLen)
+        {
+            // nothing for telnet
+        }
+
         private static string NicknameOrIP(INetState user)
         {
             if (user.User != null)

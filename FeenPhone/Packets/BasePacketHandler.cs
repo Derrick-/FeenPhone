@@ -22,7 +22,8 @@ namespace FeenPhone
                     {PacketID.UserLogin, Handle_UserLogin},
                     {PacketID.UserLogout, Handle_UserLogout},
                     {PacketID.UserList, Handle_UserList},
-                    {PacketID.Chat, Handle_OnChat}
+                    {PacketID.Chat, Handle_OnChat},
+                    {PacketID.Audio, Handle_OnAudio}
                 };
         }
 
@@ -115,7 +116,7 @@ namespace FeenPhone
             OnChat(user, text);
         }
 
-        protected abstract void UserList(IEnumerable<IUser> users);
+        protected abstract void OnUserList(IEnumerable<IUser> users);
         protected void Handle_UserList(IEnumerable<byte> payload)
         {
             int count = payload.First();
@@ -130,8 +131,20 @@ namespace FeenPhone
                     users.Add(user);
                 }
             }
-            UserList(users);
+            OnUserList(users);
         }
+
+        protected abstract void OnAudio(Audio.Codecs.CodecID Codec, byte[] data, int dataLen);
+        protected void Handle_OnAudio(IEnumerable<byte> payload)
+        {
+            if (!payload.Any())
+                throw new ArgumentException("No audio payload");
+
+            Audio.Codecs.CodecID Codec = (Audio.Codecs.CodecID)payload.First();
+            OnAudio(Codec, payload.Skip(1).ToArray(), payload.Count() - 1);
+        }
+
+
 
         protected abstract IUser GetUserObject(Guid id, bool isadmin, string username, string nickname);
         private int ReadUser(IEnumerable<byte> payload, out IUser user)

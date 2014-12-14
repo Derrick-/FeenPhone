@@ -54,5 +54,34 @@ namespace FeenPhoneTest
         {
             LastUsersListEventData = new List<IUser>(e.Users);
         }
+
+        [TestMethod]
+        public void AudioPacketTest()
+        {
+            NetworkPacketWriter writer = new NetworkPacketWriter();
+            MemoryStream ms = new MemoryStream();
+            writer.SetStream(ms);
+
+            byte[] audioData = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
+            Packet.WriteAudioData(writer, FeenPhone.Audio.Codecs.CodecID.Gsm610ChatCodec, audioData, 10);
+
+            ClientPacketHandler handler = new ClientPacketHandler();
+
+            EventSource.OnAudioData += EventSource_OnAudioData;
+            LastAudioDataEventArgs = null;
+            handler.Handle(new Queue<byte>(ms.ToArray()));
+            EventSource.OnAudioData += EventSource_OnAudioData;
+
+            Assert.IsNotNull(LastAudioDataEventArgs);
+            Assert.AreEqual(FeenPhone.Audio.Codecs.CodecID.Gsm610ChatCodec, LastAudioDataEventArgs.Codec);
+            Assert.AreEqual(10, LastAudioDataEventArgs.Data.Length);
+            Assert.AreEqual(10, LastAudioDataEventArgs.DataLen);
+        }
+
+        AudioDataEventArgs LastAudioDataEventArgs = null;
+        private void EventSource_OnAudioData(object sender, AudioDataEventArgs e)
+        {
+            LastAudioDataEventArgs = e;
+        }
     }
 }

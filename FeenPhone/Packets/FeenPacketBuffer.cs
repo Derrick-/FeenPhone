@@ -36,6 +36,11 @@ namespace FeenPhone.Packets
             Write((byte)packetID);
         }
 
+        internal void WriteLength(Audio.Codecs.CodecID Codec)
+        {
+            Write((byte)Codec);
+        }
+
         internal void WriteLength(byte[] payload)
         {
             WriteLength(payload.Length);

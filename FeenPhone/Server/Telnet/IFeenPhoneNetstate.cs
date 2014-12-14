@@ -17,5 +17,7 @@ namespace FeenPhone.Server
         void OnUserLogout(IUserClient client);
 
         void OnChat(INetState user, string text);
+
+        void OnAudio(Audio.Codecs.CodecID Codec, byte[] data, int dataLen);
     }
 }

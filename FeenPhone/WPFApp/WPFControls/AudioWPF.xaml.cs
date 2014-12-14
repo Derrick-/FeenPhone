@@ -44,6 +44,8 @@ namespace FeenPhone.WPFApp.Controls
             LoadSettings();
             Settings.SaveSettings += Settings_SaveSettings;
 
+            FeenPhone.Client.EventSource.OnAudioData += EventSource_OnAudioData;
+
         }
 
         private void LoadSettings()
@@ -225,31 +227,45 @@ namespace FeenPhone.WPFApp.Controls
             {
                 byte[] encoded = codec.Encode(e.Buffer, e.BytesRecorded);
 
-                ReceivedAudio(encoded);
-                //if (NetworkWPF.Client != null)
-                //    NetworkWPF.Client.SendAudio(text);
+                if (NetworkWPF.Client != null)
+                    NetworkWPF.Client.SendAudio(codec.CodecID, encoded, encoded.Length);
             }
         }
 
+
+        void EventSource_OnAudioData(object sender, Client.AudioDataEventArgs e)
+        {
+            ReceivedAudio(e.Codec, e.Data);
+        }
+        
         private IWavePlayer waveOut;
         private BufferedWaveProvider waveProvider;
         static readonly TimeSpan MaxBufferedDuration = TimeSpan.FromMilliseconds(100);
-        private void ReceivedAudio(byte[] encoded)
+        private void ReceivedAudio(Audio.Codecs.CodecID codecid, byte[] encoded)
         {
+
+            Audio.Codecs.INetworkChatCodec remoteCodec=Codecs.SingleOrDefault(m=>m.CodecID==codecid);
+
+            if (waveOut!=null && waveProvider.WaveFormat!=remoteCodec.RecordFormat)
+            {
+                waveOut.Stop();
+                waveOut = null;
+            }
+
             if (waveOut == null)
             {
                 waveOut = new DirectSoundOut(50);
-                waveProvider = new BufferedWaveProvider(codec.RecordFormat);
+                waveProvider = new BufferedWaveProvider(remoteCodec.RecordFormat);
                 waveOut.Init(waveProvider);
                 waveOut.Play();
             }
             if (waveProvider.BufferedDuration <= MaxBufferedDuration)
             {
-                byte[] decoded = codec.Decode(encoded, encoded.Length);
+                byte[] decoded = remoteCodec.Decode(encoded, encoded.Length);
                 waveProvider.AddSamples(decoded, 0, decoded.Length);
             }
             else
-                Console.WriteLine("Skipping audio data to reduce latency");
+                Console.WriteLine("Skipping audio data to reduce latency ({0}ms)", waveProvider.BufferedDuration.TotalMilliseconds);
         }
 
 

@@ -147,6 +147,8 @@ namespace FeenPhone.WPFApp.Controls
                 EventSource.InvokeOnUserList(null, null);
                 if ((bool?)e.NewValue == true && target.server == null)
                 {
+                    if (Client != null)
+                        Client.Dispose();
                     target.server = new FeenPhone.Server.ServerHost();
                     Client = ServerHost.LocalClient = new LocalClient(target.User);
                 }

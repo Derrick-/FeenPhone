@@ -32,6 +32,11 @@ namespace FeenPhone.Server.TcpPacketServer
             EventSink.OnChat(state, text);
         }
 
+        protected override void OnAudio(Audio.Codecs.CodecID Codec, byte[] data, int dataLen)
+        {
+            EventSink.OnAudio(state, Codec, data, dataLen);
+        }
+
         protected override void OnLoginStatus(bool isLoggedIn)
         {
             Console.WriteLine("Invalid server packet LoginDemand received.");
@@ -46,7 +51,7 @@ namespace FeenPhone.Server.TcpPacketServer
 
         }
 
-        protected override void UserList(IEnumerable<IUser> users)
+        protected override void OnUserList(IEnumerable<IUser> users)
         {
             Console.WriteLine("Invalid server packet UserList received.");
         }

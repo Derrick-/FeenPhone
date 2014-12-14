@@ -18,24 +18,10 @@ namespace FeenPhone.Client
 
         public abstract bool IsConnected { get; }
 
-        public void OnChat(IUser user, string text)
-        {
-            EventSource.InvokeOnChat(this, user, text);
-        }
-
-        public void OnUserConnected(IUser user)
-        {
-            EventSource.InvokeOnUserConnected(this, user);
-        }
-
-        public void OnUserDisconnected(IUser user)
-        {
-            EventSource.InvokeOnUserDisconnected(this, user);
-        }
-
         public abstract void Dispose();
 
         internal abstract void SendChat(string text);
+        internal abstract void SendAudio(Audio.Codecs.CodecID codec, byte[] data, int dataLen);
         internal abstract void SendLoginInfo();
     }
 }

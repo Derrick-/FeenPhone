@@ -17,17 +17,22 @@ namespace FeenPhone.Client
 
         public void OnChat(Alienseed.BaseNetworkServer.INetState client, string text)
         {
-            OnChat(client.User, text);
+            EventSource.InvokeOnChat(this, client.User, text);
+        }
+
+        public void OnAudio(Audio.Codecs.CodecID Codec, byte[] data, int dataLen)
+        {
+            EventSource.InvokeOnAudio(this, Codec, data, dataLen);
         }
 
         public void OnUserLogin(Alienseed.BaseNetworkServer.Accounting.IUserClient client)
         {
-            OnUserConnected(client);
+            EventSource.InvokeOnUserConnected(this, client);
         }
 
         public void OnUserLogout(Alienseed.BaseNetworkServer.Accounting.IUserClient client)
         {
-            OnUserDisconnected(client);
+            EventSource.InvokeOnUserDisconnected(this, client);
         }
 
         public void OnUserConnected(Alienseed.BaseNetworkServer.INetState client)
@@ -37,7 +42,8 @@ namespace FeenPhone.Client
 
         public void OnUserDisconnected(Alienseed.BaseNetworkServer.INetState client)
         {
-            //throw new NotImplementedException();
+            if (client.User != null)
+                EventSource.InvokeOnUserDisconnected(this, client.User);
         }
 
         public override void Dispose()
@@ -48,6 +54,11 @@ namespace FeenPhone.Client
         internal override void SendChat(string text)
         {
             Server.EventSink.OnChat(this, text);
+        }
+
+        internal override void SendAudio(Audio.Codecs.CodecID codec, byte[] data, int dataLen)
+        {
+            Server.EventSink.OnAudio(this, codec, data, dataLen);
         }
 
         internal override void SendLoginInfo()

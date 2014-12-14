@@ -36,6 +36,20 @@ namespace FeenPhone.Client
         }
     }
 
+    public class AudioDataEventArgs : EventArgs
+    {
+        public readonly Audio.Codecs.CodecID Codec;
+        public readonly byte[] Data;
+        public readonly int DataLen;
+
+        public AudioDataEventArgs(Audio.Codecs.CodecID codec, byte[] data, int dataLen)
+        {
+            Codec = codec;
+            Data = data;
+            DataLen = dataLen;
+        }
+    }
+
     public class BoolEventArgs : EventArgs
     {
         public bool Value { get; private set; }
@@ -52,6 +66,7 @@ namespace FeenPhone.Client
         public static event EventHandler<OnChatEventArgs> OnChat;
         public static event EventHandler<UserListEventArgs> OnUserList;
         public static event EventHandler<BoolEventArgs> OnLoginStatus;
+        public static event EventHandler<AudioDataEventArgs> OnAudioData;
 
         public static void InvokeOnUserConnected(object sender, IUser user)
         {
@@ -81,6 +96,12 @@ namespace FeenPhone.Client
         {
             if (OnUserList != null)
                 OnUserList(sender, new UserListEventArgs(users));
+        }
+
+        internal static void InvokeOnAudio(object sender, Audio.Codecs.CodecID codec, byte[] data, int dataLen)
+        {
+            if (OnAudioData != null)
+                OnAudioData(sender, new AudioDataEventArgs(codec, data, dataLen));
         }
     }
 }

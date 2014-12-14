@@ -61,6 +61,11 @@ namespace FeenPhone.Server.TcpPacketServer
             Packet.WriteChat(Writer, user.User, text);
         }
 
+        public void OnAudio(Audio.Codecs.CodecID Codec, byte[] data, int dataLen)
+        {
+            Packet.WriteAudioData(Writer, Codec, data, dataLen);
+        }
+        
         public void OnLoginFailed()
         {
             Packet.WriteLoginStatus(Writer, false);

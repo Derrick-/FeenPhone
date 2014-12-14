@@ -23,6 +23,11 @@ namespace FeenPhone.Client
             EventSource.InvokeOnChat(this, user, text);
         }
 
+        protected override void OnAudio(Audio.Codecs.CodecID Codec, byte[] data, int dataLen)
+        {
+            EventSource.InvokeOnAudio(this, Codec, data, dataLen);
+        }
+
         protected override void OnLoginStatus(bool isLoggedIn)
         {
             EventSource.InvokeOnLoginStatus(this, isLoggedIn);
@@ -33,7 +38,7 @@ namespace FeenPhone.Client
             Console.WriteLine("Invalid client packet LoginInfo received.");
         }
 
-        protected override void UserList(IEnumerable<IUser> users)
+        protected override void OnUserList(IEnumerable<IUser> users)
         {
             EventSource.InvokeOnUserList(this, users);
         }
