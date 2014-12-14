@@ -32,16 +32,18 @@ namespace FeenPhone.Accounting
         {
             IUserClient user;
 
-            if (accounts.TryGetValue(username.ToLowerInvariant(), out user))
-                return user;
-
-            if (AutoCreateAccounts)
+            if (!string.IsNullOrWhiteSpace(username))
             {
-                var newAccount = new MockAccount(username.ToLowerInvariant(), textInfo.ToTitleCase(username));
-                accounts.Add(username, newAccount);
-                return newAccount;
-            }
+                if (accounts.TryGetValue(username.ToLowerInvariant(), out user))
+                    return user;
 
+                if (AutoCreateAccounts)
+                {
+                    var newAccount = new MockAccount(username.ToLowerInvariant(), textInfo.ToTitleCase(username));
+                    accounts.Add(username, newAccount);
+                    return newAccount;
+                }
+            }
             return null;
         }
 
