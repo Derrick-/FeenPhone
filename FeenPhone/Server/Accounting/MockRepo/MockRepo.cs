@@ -1,6 +1,7 @@
 ﻿using Alienseed.BaseNetworkServer.Accounting;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
@@ -8,6 +9,15 @@ namespace FeenPhone.Accounting
 {
     class MockRepo : IAccountRepository
     {
+        TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+
+        public bool AutoCreateAccounts { get; set; }
+
+        public MockRepo(bool autoCreate = false)
+        {
+            AutoCreateAccounts = autoCreate;
+        }
+
         static readonly Dictionary<string, IUserClient> accounts = new Dictionary<string, IUserClient>()
         {
             {"derrick",new MockAccount("derrick","Derrick",true)},
@@ -22,8 +32,16 @@ namespace FeenPhone.Accounting
         {
             IUserClient user;
 
-            if (accounts.TryGetValue(username, out user))
+            if (accounts.TryGetValue(username.ToLowerInvariant(), out user))
                 return user;
+
+            if (AutoCreateAccounts)
+            {
+                var newAccount = new MockAccount(username.ToLowerInvariant(), textInfo.ToTitleCase(username));
+                accounts.Add(username, newAccount);
+                return newAccount;
+            }
+
             return null;
         }
 
@@ -32,7 +50,8 @@ namespace FeenPhone.Accounting
             return accounts.SingleOrDefault(m => m.Value.ID == id).Value;
         }
 
-       #endregion
+        #endregion
+
 
     }
 
@@ -45,8 +64,7 @@ namespace FeenPhone.Accounting
         public MockAccount(string username, string nickname = null, bool isadmin = false)
             : base(Guid.NewGuid(), username == null ? "user" + usernum++.ToString() : username, isadmin: isadmin)
         {
-            if (nickname != null)
-                Nickname = nickname;
+            Nickname = nickname ?? username;
         }
     }
 }

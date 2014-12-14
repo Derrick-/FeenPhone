@@ -14,7 +14,7 @@ namespace FeenPhone.Accounting
         private static IAccountRepository CreateRepo()
         {
             if (UseMockRepo)
-                return new MockRepo();
+                return new MockRepo(autoCreate: true);
             return null; //new SQL.SqlAccountRepo();
         }
 
