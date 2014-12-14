@@ -7,35 +7,35 @@ namespace Alienseed.BaseNetworkServer.PacketServer
 {
     public class PacketBuffer : IDisposable
     {
-        Queue<byte> bytes;
+        private Queue<byte> Bytes;
 
         protected virtual int MaxLength { get { return int.MaxValue; } }
 
         protected int CurrentLength
         {
-            get { return bytes.Count(); }
+            get { return Bytes.Count(); }
         }
 
         public PacketBuffer(int? initialSize = null)
         {
             if (initialSize.HasValue)
-                bytes = new Queue<byte>(initialSize.Value);
+                Bytes = new Queue<byte>(initialSize.Value);
             else
-                bytes = new Queue<byte>();
+                Bytes = new Queue<byte>();
         }
 
         byte[] data = null;
         private void Invalidate() { data = null; }
         public byte[] GetData()
         {
-            return data ?? (data = bytes.ToArray());
+            return data ?? (data = Bytes.ToArray());
         }
 
         public void Write(byte value)
         {
             if (CurrentLength + 1 > MaxLength)
                 throw new ArgumentException("Packet overflow", "value");
-            bytes.Enqueue(value);
+            Bytes.Enqueue(value);
             Invalidate();
         }
 
@@ -50,18 +50,36 @@ namespace Alienseed.BaseNetworkServer.PacketServer
             Write((byte)value);
         }
 
-        public void Dispose()
+        public void Write(byte[] data, int? length = null)
         {
-            bytes = null;
-            data = null;
+            if (length == null)
+                length = data.Length;
+            else
+                length = Math.Min(length.Value, data.Length);
+
+            if (CurrentLength + length > MaxLength)
+                throw new ArgumentException("Packet overflow", "data");
+
+            IEnumerable<byte> bytes = data;
+            if (length < data.Length)
+                bytes = bytes.Take(length.Value);
+
+            if (length > 100)
+            {
+                Bytes = new Queue<byte>(Bytes.Concat(bytes));
+                Invalidate();
+            }
+            else
+            {
+                foreach (byte value in bytes)
+                    Write(value);
+            }
         }
 
-        public void Write(byte[] data)
+        public void Dispose()
         {
-            if (CurrentLength + data.Length > MaxLength)
-                throw new ArgumentException("Packet overflow", "data");
-            foreach (byte value in data)
-                Write(value);
+            Bytes = null;
+            data = null;
         }
     }
 }

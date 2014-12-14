@@ -153,13 +153,13 @@ namespace Alienseed.BaseNetworkServer
         public virtual void Dispose()
         {
             LogLine("Disconnected.");
-            User = null;
             RemoveClient(this);
 
             isDisposed = true;
           
             if (OnDisposed != null)
                 OnDisposed(this, new OnDisposedEventArgs(this));
+            User = null;
         }
     }
 

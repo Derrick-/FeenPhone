@@ -49,7 +49,14 @@ namespace  Alienseed.BaseNetworkServer
                 int read=0;
                 try
                 {
-                    read = stream.EndRead(ar);
+                    try
+                    {
+                        read = stream.EndRead(ar);
+                    }
+                    catch(ObjectDisposedException)
+                    {
+                        read = 0;
+                    }
                     if (read == 0)
                     {
                         InvokeOnDisconnect();

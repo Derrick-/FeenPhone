@@ -19,7 +19,19 @@ namespace Alienseed.BaseNetworkServer
         internal void Write(byte[] bytes, int numbytes)
         {
             if (Stream != null)
-                Stream.Write(bytes, 0, numbytes);
+            {
+                try
+                {
+                    Stream.Write(bytes, 0, numbytes);
+                }
+                catch (System.Net.Sockets.SocketException ex)
+                {
+                    if (ex.SocketErrorCode == System.Net.Sockets.SocketError.ConnectionReset)
+                        Dispose();
+                    else
+                        throw;
+                }
+            }
         }
 
         public void Dispose()
