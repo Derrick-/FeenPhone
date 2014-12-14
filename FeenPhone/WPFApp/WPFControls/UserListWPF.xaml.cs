@@ -15,7 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace FeenPhone.WPFControls
+namespace FeenPhone.WPFApp.Controls
 {
     /// <summary>
     /// Interaction logic for UserListWPF.xaml

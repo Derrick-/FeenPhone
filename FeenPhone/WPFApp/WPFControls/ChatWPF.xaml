@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="FeenPhone.WPFControls.LogWPF"
+﻿<UserControl x:Class="FeenPhone.WPFApp.Controls.ChatWPF"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -6,7 +6,12 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <DockPanel Background="Wheat">
-        <TextBlock DockPanel.Dock="Top" TextAlignment="Center">LOG</TextBlock>
+        <TextBlock DockPanel.Dock="Top" TextAlignment="Center">CHAT</TextBlock>
+        <DockPanel DockPanel.Dock="Bottom">
+            <Label DockPanel.Dock="Left">Chat:</Label>
+            <Button DockPanel.Dock="Right" Click="Button_Click">Send</Button>
+            <TextBox Name="ChatEntry" Background="Beige" KeyDown="ChatEntry_KeyDown"></TextBox>
+        </DockPanel>
         <ScrollViewer Name="LogScroller">
             <TextBlock Background="GhostWhite" Name="log"></TextBlock>
         </ScrollViewer>

@@ -39,7 +39,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>FeenPhone.App</StartupObject>
+    <StartupObject>FeenPhone.WPFApp.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="NAudio">
@@ -70,7 +70,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
+    <ApplicationDefinition Include="WPFApp\App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
@@ -114,54 +114,55 @@
     <Compile Include="Server\Telnet\Prompts\TextPrompt.cs" />
     <Compile Include="Server\Telnet\TelnetServer.cs" />
     <Compile Include="Server\Telnet\TelNetState.cs" />
-    <Compile Include="WPFControls\AudioWPF.xaml.cs">
+    <Compile Include="WPFApp\Settings.cs" />
+    <Compile Include="WPFApp\WPFControls\AudioWPF.xaml.cs">
       <DependentUpon>AudioWPF.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WPFControls\ChatWPF.xaml.cs">
+    <Compile Include="WPFApp\WPFControls\ChatWPF.xaml.cs">
       <DependentUpon>ChatWPF.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WPFControls\LogWPF.xaml.cs">
+    <Compile Include="WPFApp\WPFControls\LogWPF.xaml.cs">
       <DependentUpon>LogWPF.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WPFControls\NetworkWPF.xaml.cs">
+    <Compile Include="WPFApp\WPFControls\NetworkWPF.xaml.cs">
       <DependentUpon>NetworkWPF.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WPFControls\UserListWPF.xaml.cs">
+    <Compile Include="WPFApp\WPFControls\UserListWPF.xaml.cs">
       <DependentUpon>UserListWPF.xaml</DependentUpon>
     </Compile>
-    <Page Include="MainWindow.xaml">
+    <Page Include="WPFApp\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="App.xaml.cs">
+    <Compile Include="WPFApp\App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="WPFApp\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="WPFControls\AudioWPF.xaml">
+    <Page Include="WPFApp\WPFControls\AudioWPF.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="WPFControls\ChatWPF.xaml">
+    <Page Include="WPFApp\WPFControls\ChatWPF.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="WPFControls\LogWPF.xaml">
+    <Page Include="WPFApp\WPFControls\LogWPF.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="WPFControls\NetworkWPF.xaml">
+    <Page Include="WPFApp\WPFControls\NetworkWPF.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="WPFControls\SampleData\UserListSampleData.xaml">
+    <Page Include="WPFApp\WPFControls\SampleData\UserListSampleData.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="WPFControls\UserListWPF.xaml">
+    <Page Include="WPFApp\WPFControls\UserListWPF.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

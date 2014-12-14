@@ -19,7 +19,7 @@ using System.ComponentModel.Composition.Hosting;
 using System.Reflection;
 using System.ComponentModel.Composition;
 
-namespace FeenPhone.WPFControls
+namespace FeenPhone.WPFApp.Controls
 {
     /// <summary>
     /// Interaction logic for AudioWPF.xaml
@@ -35,7 +35,7 @@ namespace FeenPhone.WPFControls
         {
             if (!DesignerProperties.GetIsInDesignMode(this))
                 new CompositionContainer(new AssemblyCatalog(Assembly.GetExecutingAssembly())).ComposeParts(this);
-            
+
             InitializeComponent();
             DataContext = this;
             InitializeInputDevices();
@@ -54,17 +54,22 @@ namespace FeenPhone.WPFControls
 
         private void PopulateCodecsCombo(IEnumerable<Audio.Codecs.INetworkChatCodec> codecs)
         {
-            var sorted = from codec in codecs
-                         where codec.IsAvailable
-                         orderby codec.BitsPerSecond ascending
-                         select codec;
-
-            foreach (var codec in sorted)
+            if (codecs != null)
             {
-                string bitRate = codec.BitsPerSecond == -1 ? "VBR" : String.Format("{0:0.#}kbps", codec.BitsPerSecond / 1000.0);
-                string text = String.Format("{0} ({1})", codec.Name, bitRate);
-                this.comboBoxCodecs.Items.Add(new CodecComboItem() { Text = text, Codec = codec });
+                var sorted = from codec in codecs
+                             where codec.IsAvailable
+                             orderby codec.BitsPerSecond ascending
+                             select codec;
+
+                foreach (var codec in sorted)
+                {
+                    string bitRate = codec.BitsPerSecond == -1 ? "VBR" : String.Format("{0:0.#}kbps", codec.BitsPerSecond / 1000.0);
+                    string text = String.Format("{0} ({1})", codec.Name, bitRate);
+                    this.comboBoxCodecs.Items.Add(new CodecComboItem() { Text = text, Codec = codec });
+                }
             }
+            else
+                comboBoxCodecs.Items.Add("Codec List");
             this.comboBoxCodecs.SelectedIndex = 0;
         }
 
@@ -84,11 +89,11 @@ namespace FeenPhone.WPFControls
         public static DependencyProperty SelectedInputSourceProperty = DependencyProperty.Register("SelectedInputSource", typeof(string), typeof(AudioWPF), new PropertyMetadata(null));
         public static DependencyProperty SelectedInputSourceIndexProperty = DependencyProperty.Register("SelectedInputSourceIndex", typeof(int?), typeof(AudioWPF), new PropertyMetadata(null));
         public static DependencyProperty ControlsEnabledProperty = DependencyProperty.Register("ControlsEnabled", typeof(bool), typeof(AudioWPF), new PropertyMetadata(true));
-      
-        public bool ControlsEnabled 
+
+        public bool ControlsEnabled
         {
             get { return (bool)this.GetValue(ControlsEnabledProperty); }
-            set { this.SetValue(ControlsEnabledProperty, value); } 
+            set { this.SetValue(ControlsEnabledProperty, value); }
         }
 
         public bool? IsRecording
@@ -164,7 +169,7 @@ namespace FeenPhone.WPFControls
 
         private void waveIn_DataAvailable(object sender, WaveInEventArgs e)
         {
-            if(IsEnabled)
+            if (IsEnabled)
             {
                 byte[] encoded = codec.Encode(e.Buffer, e.BytesRecorded);
 

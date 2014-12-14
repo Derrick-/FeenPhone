@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace FeenPhone
+namespace FeenPhone.WPFApp
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -23,6 +23,26 @@ namespace FeenPhone
         public MainWindow()
         {
             InitializeComponent();
+
+            LoadSettings();
+            this.Closed += new EventHandler(Window_Closed);
+            Settings.SaveSettings += Settings_SaveSettings;
+        }
+
+        private void LoadSettings()
+        {
+            Properties.Settings settings = Settings.Container;
+        }
+
+        private void Settings_SaveSettings(object sender, EventArgs e)
+        {
+            Properties.Settings settings = Settings.Container;
+
+        }
+        
+        void Window_Closed(object sender, EventArgs e)
+        {
+            Settings.InvokeSaveSettings(this);
         }
 
     }
