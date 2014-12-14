@@ -17,6 +17,16 @@ namespace FeenPhone.Server.TcpPacketServer
             this.state = state;
         }
 
+        protected override void UserLogin(IUser user)
+        {
+            Console.WriteLine("Invalid server packet UserLogin received.");
+        }
+
+        protected override void UserLogout(IUser user)
+        {
+            Console.WriteLine("Invalid server packet UserLogout received.");
+        }
+
         protected override void OnChat(IUser user, string text)
         {
             EventSink.OnChat(state, text);

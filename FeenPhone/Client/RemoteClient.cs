@@ -86,6 +86,7 @@ namespace FeenPhone.Client
 
         private void Disconnect()
         {
+            EventSource.InvokeOnUserList(null, null);
             Writer.SetStream(null);
             if (Stream != null)
                 Stream.Dispose();

@@ -69,7 +69,6 @@ namespace FeenPhone.WPFControls
 
         public class LocalUser : Alienseed.BaseNetworkServer.Accounting.IUserClient
         {
-
             public LocalUser(string nickname)
             {
                 Nickname = nickname;
@@ -120,6 +119,7 @@ namespace FeenPhone.WPFControls
             NetworkWPF target = d as NetworkWPF;
             if (target != null)
             {
+                EventSource.InvokeOnUserList(null, null);
                 if ((bool?)e.NewValue == true && target.server == null)
                 {
                     target.server = new FeenPhone.Server.ServerHost();
@@ -222,6 +222,7 @@ namespace FeenPhone.WPFControls
             var remClient = new RemoteClient(User, IP, port);
             Client = remClient;
             invalidLoginAttempts = 0;
+            EventSource.InvokeOnUserList(null, null);
             remClient.Connect();
         }
     }

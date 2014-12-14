@@ -31,24 +31,47 @@ namespace FeenPhone.WPFControls
             EventSource.OnUserConnected += this.OnConnected;
             EventSource.OnUserDisconnected += this.OnDisconnected;
 
+            EventSource.OnUserList += OnUserList;
+
             UsersList.ItemsSource = Users;
+        }
+
+        void OnUserList(object sender, UserListEventArgs e)
+        {
+            ClearUsers();
+            if (e.Users != null)
+                foreach (var user in e.Users)
+                    AddUser(user);
+        }
+
+        private void ClearUsers()
+        {
+            Dispatcher.Invoke(new Action(Users.Clear));
         }
 
         private void OnConnected(object sender, OnUserEventArgs e)
         {
             if (!Users.Any(m => m.ID == e.User.ID))
-                Dispatcher.Invoke(new Action<IUser>(Users.Add), e.User);
+                AddUser(e.User);
         }
 
         private void OnDisconnected(object sender, OnUserEventArgs e)
         {
-            Dispatcher.Invoke(new Action<IUser>(RemoveUser), e.User);
+            RemoveUser(e.User);
+        }
+
+        private void AddUser(IUser user)
+        {
+            Dispatcher.Invoke(new Action<IUser>(Users.Add), user);
         }
 
         private void RemoveUser(IUser user)
         {
-            if (Users.Any(m => m.ID == user.ID))
-                Users.Remove(Users.Single(m => m.ID == user.ID));
+            Dispatcher.Invoke(new Action<Guid>((id) =>
+            {
+                if (Users.Any(m => m.ID == user.ID))
+                    Users.Remove(Users.Single(m => m.ID == id));
+            }), user.ID);
         }
 
     }

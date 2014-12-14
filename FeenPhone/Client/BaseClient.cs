@@ -8,11 +8,12 @@ namespace FeenPhone.Client
 {
     abstract class BaseClient : IDisposable
     {
-        protected readonly IUserClient LocalUser;
+        protected readonly IUserClient _LocalUser;
+        public IUser LocalUser { get { return _LocalUser; } }
 
         public BaseClient(IUserClient localUser)
         {
-            this.LocalUser = localUser;
+            this._LocalUser = localUser;
         }
 
         public abstract bool IsConnected { get; }

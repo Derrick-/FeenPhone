@@ -52,12 +52,12 @@ namespace FeenPhone.Client
 
         internal override void SendLoginInfo()
         {
-            Server.EventSink.OnLogin(LocalUser);
+            Server.EventSink.OnLogin(_LocalUser);
         }
 
         IUserClient IClient.User
         {
-            get { return LocalUser; }
+            get { return _LocalUser; }
         }
 
         bool IClient.Connected

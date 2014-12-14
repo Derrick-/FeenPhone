@@ -1,4 +1,5 @@
-﻿using Alienseed.BaseNetworkServer.PacketServer;
+﻿using Alienseed.BaseNetworkServer;
+using Alienseed.BaseNetworkServer.PacketServer;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -47,12 +48,12 @@ namespace FeenPhone.Server.TcpPacketServer
 
         public void OnUserLogin(Alienseed.BaseNetworkServer.Accounting.IUserClient client)
         {
-            // Send Login Packet
+            Packet.WriteUserLogin(Writer, client);
         }
 
         public void OnUserLogout(Alienseed.BaseNetworkServer.Accounting.IUserClient client)
         {
-            // Send Logout Packet
+            Packet.WriteUserLogout(Writer, client);
         }
 
         public void OnChat(Alienseed.BaseNetworkServer.INetState user, string text)
@@ -62,12 +63,19 @@ namespace FeenPhone.Server.TcpPacketServer
 
         public void OnLoginFailed()
         {
-            Packet.WriteLoginStatus(Writer,false);
+            Packet.WriteLoginStatus(Writer, false);
         }
 
         public void OnLoginSuccess()
         {
             Packet.WriteLoginStatus(Writer, true);
+
+            var users = NetworkServer.AllUsers.Where(m => m != null);
+            if(ServerHost.LocalClient!=null)
+            {
+                users = users.Concat(new Alienseed.BaseNetworkServer.Accounting.IUser[] { ServerHost.LocalClient.LocalUser });
+            }
+            Packet.WriteUserList(Writer, users.Where(m => m.ID != this.User.ID));
         }
 
         internal bool Login(string Username, string password)

@@ -8,6 +8,16 @@ namespace FeenPhone.Client
 {
     class ClientPacketHandler : BasePacketHandler
     {
+        protected override void UserLogin(IUser user)
+        {
+            EventSource.InvokeOnUserConnected(this, user);
+        }
+
+        protected override void UserLogout(IUser user)
+        {
+            EventSource.InvokeOnUserDisconnected(this, user);
+        }
+        
         protected override void OnChat(IUser user, string text)
         {
             EventSource.InvokeOnChat(this, user, text);

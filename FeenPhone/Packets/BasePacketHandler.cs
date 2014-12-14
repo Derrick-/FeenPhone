@@ -19,6 +19,8 @@ namespace FeenPhone
                 {
                     {PacketID.LoginStatus, Handle_LoginStatus},
                     {PacketID.LoginRequest, Handle_LoginInfo},
+                    {PacketID.UserLogin, Handle_UserLogin},
+                    {PacketID.UserLogout, Handle_UserLogout},
                     {PacketID.UserList, Handle_UserList},
                     {PacketID.Chat, Handle_OnChat}
                 };
@@ -86,6 +88,22 @@ namespace FeenPhone
                 var password = values[1];
                 LoginInfo(username, password);
             }
+        }
+
+        protected abstract void UserLogin(IUser user);
+        protected void Handle_UserLogin(IEnumerable<byte> payload)
+        {
+            IUser user;
+            ReadUser(payload, out user);
+            UserLogin(user);
+        }
+
+        protected abstract void UserLogout(IUser user);
+        protected void Handle_UserLogout(IEnumerable<byte> payload)
+        {
+            IUser user;
+            ReadUser(payload, out user);
+            UserLogout(user);
         }
 
         protected abstract void OnChat(IUser user, string text);

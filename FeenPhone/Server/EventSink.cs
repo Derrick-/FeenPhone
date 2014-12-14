@@ -11,7 +11,7 @@ namespace FeenPhone.Server
     {
         static IEnumerable<IFeenPhoneNetstate> AllFeens
         {
-            get { return NetworkServer.Clients.Where(m => m is IFeenPhoneNetstate).Cast<IFeenPhoneNetstate>(); }
+            get { return NetworkServer.Clients.Where(m => m is IFeenPhoneNetstate).Cast<IFeenPhoneNetstate>().ToList(); }
         }
 
         internal static void OnChat(INetState client, string text)
@@ -35,7 +35,7 @@ namespace FeenPhone.Server
 
         internal static void OnDisconnect(INetState client)
         {
-            foreach (var feen in AllFeens)
+            foreach (var feen in AllFeens.ToList())
                 if (feen != client)
                     feen.OnUserDisconnected(client);
             if (ServerHost.LocalClient != null)

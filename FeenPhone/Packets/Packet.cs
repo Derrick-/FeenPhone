@@ -12,6 +12,8 @@ namespace FeenPhone
     {
         LoginStatus = 1,
         LoginRequest = 2,
+        UserLogin = 3,
+        UserLogout = 4,
         UserList = 10,
         Chat = 11
     }
@@ -40,6 +42,22 @@ namespace FeenPhone
 
             using (var buffer = new FeenPacketBuffer(PacketID.LoginRequest, data))
                 Writer.Write(buffer);
+        }
+
+        internal static void WriteUserLogin(NetworkPacketWriter Writer, IUser user)
+        {
+            using (var buffer = new FeenPacketBuffer(PacketID.UserLogin, UserData(user)))
+            {
+                Writer.Write(buffer);
+            }
+        }
+
+        internal static void WriteUserLogout(NetworkPacketWriter Writer, IUser user)
+        {
+            using (var buffer = new FeenPacketBuffer(PacketID.UserLogout, UserData(user)))
+            {
+                Writer.Write(buffer);
+            }
         }
 
         internal static void WriteChat(NetworkPacketWriter Writer, IUser user, string text)
