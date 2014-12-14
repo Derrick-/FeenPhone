@@ -108,7 +108,7 @@ namespace FeenPhone.WPFApp.Controls
 
                 foreach (var codec in sorted)
                 {
-                    this.comboBoxCodecs.Items.Add(new CodecComboItem() { Text = codec.ToString(), Codec = codec });
+                    this.comboBoxCodecs.Items.Add(new CodecComboItem() { Text = codec.Name(), Codec = codec });
                 }
             }
             else

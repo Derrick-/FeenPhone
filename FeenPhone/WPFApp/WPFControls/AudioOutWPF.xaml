@@ -22,8 +22,27 @@
                 </Style>
             </StackPanel.Resources>
             <WrapPanel>
-                <Label>Output Format</Label>
+                <Label>Format</Label>
                 <TextBlock Text="{Binding Path=OutputFormat}" d:DataContext="{d:DesignData Source=SampleData/MiscData.xaml}" ></TextBlock>
+            </WrapPanel>
+            <WrapPanel>
+                <Label>Codec</Label>
+                <TextBlock Text="{Binding Path=CodecName}" d:DataContext="{d:DesignData Source=SampleData/MiscData.xaml}" ></TextBlock>
+            </WrapPanel>
+            <DockPanel>
+                <Label>Buffer</Label>
+                <Grid Name="progressBarContainer">
+                    <ProgressBar  d:DataContext="{d:DesignData Source=SampleData/MiscData.xaml}" Height="{Binding ElementName=progressBarContainer, Path=ActualHeight}" Width="{Binding ElementName=progressBarContainer, Path=ActualWidth}" Value="{Binding Path=BufferedDuration}"  Maximum="{Binding Path=MaxBufferedDuration}" />
+                    <TextBlock Text="{Binding Path=BufferedDurationString}" d:DataContext="{d:DesignData Source=SampleData/MiscData.xaml}" ></TextBlock>
+                </Grid>
+            </DockPanel>
+            <WrapPanel>
+                <Label>MaxBufferedDuration</Label>
+                <TextBlock Text="{Binding Path=MaxBufferedDuration}" d:DataContext="{d:DesignData Source=SampleData/MiscData.xaml}" ></TextBlock>
+            </WrapPanel>
+            <WrapPanel>
+                <Label>Dropped</Label>
+                <TextBlock Text="{Binding Path=DroppedPackets}" d:DataContext="{d:DesignData Source=SampleData/MiscData.xaml}" ></TextBlock>
             </WrapPanel>
         </StackPanel>
     </DockPanel>
