@@ -6,7 +6,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <DockPanel Background="Wheat">
-        <TextBlock DockPanel.Dock="Top" TextAlignment="Center">Chat</TextBlock>
+        <TextBlock DockPanel.Dock="Top" TextAlignment="Center">CHAT</TextBlock>
         <DockPanel DockPanel.Dock="Bottom">
             <Label DockPanel.Dock="Left">Chat:</Label>
             <Button DockPanel.Dock="Right" Click="Button_Click">Send</Button>

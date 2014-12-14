@@ -5,6 +5,7 @@
     <DockPanel>
         <WPFControls:UserListWPF DockPanel.Dock="Right" MinWidth="150" />
         <WPFControls:NetworkWPF DockPanel.Dock="Top"/>
+        <WPFControls:AudioWPF DockPanel.Dock="Top"/>
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
