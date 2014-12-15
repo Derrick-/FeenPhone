@@ -3,6 +3,7 @@ using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
@@ -26,8 +27,26 @@ namespace FeenPhone.WPFApp.Controls
     /// </summary>
     public partial class AudioOutWPF : UserControl
     {
+        static ObservableCollection<WaveOutCapabilitiesView> OutputList = new ObservableCollection<WaveOutCapabilitiesView>();
+
         [ImportMany(typeof(Audio.Codecs.INetworkChatCodec))]
         public IEnumerable<Audio.Codecs.INetworkChatCodec> Codecs { get; set; }
+
+        public static DependencyProperty OutputListProperty = DependencyProperty.Register("OutputList", typeof(ObservableCollection<WaveOutCapabilitiesView>), typeof(AudioOutWPF), new PropertyMetadata(OutputList));
+        public static DependencyProperty SelectedOutputProperty = DependencyProperty.Register("SelectedOutput", typeof(WaveOutCapabilitiesView), typeof(AudioOutWPF));
+        public static DependencyProperty SelectedOutputIndexProperty = DependencyProperty.Register("SelectedOutputIndex", typeof(int?), typeof(AudioOutWPF), new PropertyMetadata(-1));
+
+        public WaveOutCapabilitiesView SelectedOutput
+        {
+            get { return (WaveOutCapabilitiesView)this.GetValue(SelectedOutputProperty); }
+            set { this.SetValue(SelectedOutputProperty, value); }
+        }
+
+        public int? SelectedOutputIndex
+        {
+            get { return (int?)this.GetValue(SelectedOutputIndexProperty); }
+            set { this.SetValue(SelectedOutputIndexProperty, value); }
+        }
 
         public static DependencyProperty OutputFormatProperty = DependencyProperty.Register("OutputFormat", typeof(string), typeof(AudioOutWPF), new PropertyMetadata(null));
         public string OutputFormat
@@ -175,6 +194,8 @@ namespace FeenPhone.WPFApp.Controls
             InitializeComponent();
             DataContext = this;
 
+            InitializeOutputDevices();
+
             LoadSettings();
             Settings.SaveSettings += Settings_SaveSettings;
 
@@ -190,6 +211,16 @@ namespace FeenPhone.WPFApp.Controls
 
             MaximumCalculated += new EventHandler<MaxSampleEventArgs>(audioGraph_MaximumCalculated);
             FftCalculated += new EventHandler<FftEventArgs>(audioGraph_FftCalculated);
+        }
+
+        private void InitializeOutputDevices()
+        {
+            OutputList.Clear();
+            for (int n = 0; n < WaveOut.DeviceCount; n++)
+            {
+                var capabilities = WaveOut.GetCapabilities(n);
+                OutputList.Add(capabilities);
+            }
         }
 
         private readonly FeenPhone.Audio.SampleAggregator aggregator;
@@ -235,11 +266,24 @@ namespace FeenPhone.WPFApp.Controls
         private void LoadSettings()
         {
             var settings = Settings.Container;
+
+            string strOutputDeviceGuid = settings.OutputDeviceGuid;
+            var selectInputDevice = OutputList.Where(m => m.WaveOutCapabilities.ProductGuid.ToString() == strOutputDeviceGuid).FirstOrDefault();
+            if (selectInputDevice != null)
+                SelectedOutput = selectInputDevice;
+            else
+                SelectedOutput = OutputList.FirstOrDefault();
         }
 
         private void Settings_SaveSettings(object sender, EventArgs e)
         {
             var settings = Settings.Container;
+
+            var selectedOut = SelectedOutput;
+            if (selectedOut != null)
+                settings.OutputDeviceGuid = selectedOut.WaveOutCapabilities.ProductGuid.ToString();
+            else
+                settings.OutputDeviceGuid = null;
         }
 
         void EventSource_OnAudioData(object sender, Client.AudioDataEventArgs e)
@@ -293,7 +337,11 @@ namespace FeenPhone.WPFApp.Controls
 
             if (waveOut == null)
             {
-                waveOut = new DirectSoundOut(40);
+                int directSoundLatency = 40;
+                if (SelectedOutput != null)
+                    waveOut = new DirectSoundOut(SelectedOutput.WaveOutCapabilities.ProductGuid, directSoundLatency);
+                else
+                    waveOut = new DirectSoundOut(directSoundLatency);
 
                 waveProvider = new BufferedWaveProvider(remoteCodec.RecordFormat);
 

@@ -82,5 +82,17 @@ namespace FeenPhone.Properties {
                 this["Codec"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string OutputDeviceGuid {
+            get {
+                return ((string)(this["OutputDeviceGuid"]));
+            }
+            set {
+                this["OutputDeviceGuid"] = value;
+            }
+        }
     }
 }
