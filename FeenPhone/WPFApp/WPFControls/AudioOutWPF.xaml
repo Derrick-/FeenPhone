@@ -42,6 +42,17 @@
                 </Grid>
             </DockPanel>
             <WrapPanel>
+                <Label ToolTip="Target buffer size in miliseconds">Buffer Target</Label>
+                <Slider Minimum="0" Maximum="{Binding Path=MaxBufferedDuration}" 
+                        Interval="10"
+                        TickFrequency="10"
+                        Value="{Binding Path=BufferTarget}" 
+                        ToolTip="{Binding Path=BufferTarget}" 
+                        Height="{Binding ElementName=modelValueContainer, Path=ActualHeight}" 
+                        Width="{Binding ElementName=modelValueContainer, Path=ActualWidth}">
+                </Slider>
+            </WrapPanel>
+            <WrapPanel>
                 <Label ToolTip="The speed at which buffer overruns are recovered by skipping silence">Buffer Recovery</Label>
                 <Slider Minimum="0" Maximum="10" 
                         Value="{Binding Path=SilenceAggression}" 
@@ -59,8 +70,12 @@
                 <TextBlock Text="{Binding Path=DroppedPackets}" d:DataContext="{d:DesignData Source=SampleData/MiscData.xaml}" ></TextBlock>
             </WrapPanel>
             <WrapPanel ToolTip="Number of silent bytes dropped from incoming stream.">
-                <Label>SilenceBytes</Label>
+                <Label>Dropped Silence</Label>
                 <TextBlock Text="{Binding Path=DroppedSilence}" d:DataContext="{d:DesignData Source=SampleData/MiscData.xaml}" ></TextBlock>
+            </WrapPanel>
+            <WrapPanel ToolTip="Number of silent bytes added to incoming stream.">
+                <Label>Added Silence</Label>
+                <TextBlock Text="{Binding Path=AddedSilence}" d:DataContext="{d:DesignData Source=SampleData/MiscData.xaml}" ></TextBlock>
             </WrapPanel>
             <WrapPanel ToolTip="Number of times the incoming stream stopped for lack of data">
                 <Label>UnderRuns</Label>

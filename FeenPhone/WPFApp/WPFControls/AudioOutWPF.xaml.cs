@@ -65,9 +65,11 @@ namespace FeenPhone.WPFApp.Controls
 
 
         static int DefaultMaxBufferedDurationMs = 1500;
-        static ushort DefaultSilenceAggression= 5;
+        static ushort DefaultSilenceAggression = 5;
 
-        static int EnableDropSilenceDurationMs = 100;
+        static int DefaultBufferTargetMs = 150;
+        static int BufferTargetMarginMs = 50;
+
         static int BufferWarningDurationMs = 250;
         static int BufferCriticalDurationMs = 1000;
 
@@ -103,12 +105,36 @@ namespace FeenPhone.WPFApp.Controls
             }
         }
 
+        public static DependencyProperty AddedSilenceProperty = DependencyProperty.Register("AddedSilence", typeof(int), typeof(AudioOutWPF), new PropertyMetadata(0));
+        public int AddedSilence
+        {
+            get { return (int)this.GetValue(AddedSilenceProperty); }
+            set
+            {
+                Dispatcher.BeginInvoke(new Action<DependencyProperty, object>(SetValue), AddedSilenceProperty, value);
+            }
+        }
+
+        public static DependencyProperty BufferTargetProperty = DependencyProperty.Register("BufferTarget", typeof(int), typeof(AudioOutWPF), new PropertyMetadata(DefaultBufferTargetMs, OnBufferTargetPropertyUpdated));
+        int bufferTarget = DefaultBufferTargetMs;
+        public int BufferTarget
+        {
+            get { return bufferTarget; }
+            set { bufferTarget = value; Dispatcher.BeginInvoke(new Action<DependencyProperty, object>(SetValue), BufferTargetProperty, value); }
+        }
+        private static void OnBufferTargetPropertyUpdated(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var target = d as AudioOutWPF;
+            if (d != null)
+                target.bufferTarget = (int)e.NewValue;
+        }
+
         public static DependencyProperty SilenceAggressionProperty = DependencyProperty.Register("SilenceAggression", typeof(ushort), typeof(AudioOutWPF), new PropertyMetadata(DefaultSilenceAggression, OnSilenceAggressionUpdated));
         ushort silenceAggression = DefaultSilenceAggression;
         public ushort SilenceAggression
         {
             get { return silenceAggression; }
-            set { silenceAggression=value; Dispatcher.BeginInvoke(new Action<DependencyProperty, object>(SetValue), SilenceAggression, value); }
+            set { silenceAggression = value; Dispatcher.BeginInvoke(new Action<DependencyProperty, object>(SetValue), SilenceAggression, value); }
         }
         private static void OnSilenceAggressionUpdated(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -229,9 +255,13 @@ namespace FeenPhone.WPFApp.Controls
 
         int droppedPackets = 0;
         int droppedSilence = 0;
+        int addedSilence = 0;
         int underruns = 0;
 
-        public bool ShouldDropSilence { get { return silenceAggression > 0 && BufferedDuration.TotalMilliseconds > EnableDropSilenceDurationMs; } }
+        const byte addSilenceThreshold = 100;
+
+        public bool ShouldDropSilence { get { return silenceAggression > 0 && BufferedDuration.TotalMilliseconds > (bufferTarget + BufferTargetMarginMs); } }
+        public bool ShouldAddSilence { get { return silenceAggression > 0 && BufferedDuration.TotalMilliseconds < (bufferTarget); } }
         public ushort silenceThreshhold
         {
             get
@@ -288,6 +318,32 @@ namespace FeenPhone.WPFApp.Controls
                 {
                     int dropped = DropSilence(silenceThreshhold, ref decoded, ref length);
                     DroppedSilence = droppedSilence += dropped;
+                }
+                else if (ShouldAddSilence && length > 5)
+                {
+                    bool silent = true;
+                    for (int i = 0; i < 5; i += 2)
+                    {
+                        if (decoded[i + 1] != 0 || decoded[i] > addSilenceThreshold)
+                        {
+                            //  if (i > 5)
+                            //Console.WriteLine("sil:{0} {1} {2}", i, decoded[i + 1], decoded[i]);
+                            silent = false;
+                            break;
+                        }
+                    }
+                    if (silent)
+                    {
+                        var silence = new byte[length];
+                        byte silenceLevel = addSilenceThreshold / 2;
+                        for (int i = 0; i < length; i += 2)
+                        {
+                            silence[i + 1] = 0;
+                            silence[i] = silenceLevel;
+                        }
+                        waveProvider.AddSamples(silence, 0, length);
+                        AddedSilence = addedSilence += length;
+                    }
                 }
 
                 waveProvider.AddSamples(decoded, 0, length);
