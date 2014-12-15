@@ -44,8 +44,10 @@
             <WrapPanel>
                 <Label ToolTip="Target buffer size in miliseconds">Buffer Target</Label>
                 <Slider Minimum="0" Maximum="{Binding Path=MaxBufferedDuration}" 
-                        Interval="10"
-                        TickFrequency="10"
+                        TickFrequency="50"
+                        TickPlacement="TopLeft"
+                        IsSnapToTickEnabled="True"
+                        MaxHeight="{Binding ElementName=modelValueContainer, Path=ActualHeight}"
                         Value="{Binding Path=BufferTarget}" 
                         ToolTip="{Binding Path=BufferTarget}" 
                         Height="{Binding ElementName=modelValueContainer, Path=ActualHeight}" 

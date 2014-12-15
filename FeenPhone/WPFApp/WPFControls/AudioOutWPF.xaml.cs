@@ -258,7 +258,7 @@ namespace FeenPhone.WPFApp.Controls
         int addedSilence = 0;
         int underruns = 0;
 
-        const byte addSilenceThreshold = 100;
+        private byte addSilenceThreshold { get { return (byte)(silenceAggression * 10); } }
 
         public bool ShouldDropSilence { get { return silenceAggression > 0 && BufferedDuration.TotalMilliseconds > (bufferTarget + BufferTargetMarginMs); } }
         public bool ShouldAddSilence { get { return silenceAggression > 0 && BufferedDuration.TotalMilliseconds < (bufferTarget); } }
@@ -335,7 +335,7 @@ namespace FeenPhone.WPFApp.Controls
                     if (silent)
                     {
                         var silence = new byte[length];
-                        byte silenceLevel = addSilenceThreshold / 2;
+                        byte silenceLevel = (byte)(addSilenceThreshold / 2);
                         for (int i = 0; i < length; i += 2)
                         {
                             silence[i + 1] = 0;
