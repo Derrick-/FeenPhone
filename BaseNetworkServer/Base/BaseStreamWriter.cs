@@ -4,11 +4,15 @@ namespace Alienseed.BaseNetworkServer
 {
     public abstract class BaseStreamWriter : INetworkWriter
     {
+        int DefaultStreamWriteTimeout = 50;
+
         public Stream Stream { get; private set; }
 
         public void SetStream(Stream stream)
         {
             Stream = stream;
+            if (stream.WriteTimeout < 0)
+                Stream.WriteTimeout = DefaultStreamWriteTimeout;
         }
 
         public void Write(byte[] bytes)
