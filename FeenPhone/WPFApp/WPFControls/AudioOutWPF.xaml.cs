@@ -1,4 +1,5 @@
 ﻿using FeenPhone.Audio;
+using FeenPhone.WPFApp.Models;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using System;
@@ -27,18 +28,18 @@ namespace FeenPhone.WPFApp.Controls
     /// </summary>
     public partial class AudioOutWPF : UserControl
     {
-        static ObservableCollection<WaveOutCapabilitiesView> OutputList = new ObservableCollection<WaveOutCapabilitiesView>();
+        static ObservableCollection<OutputDeviceModel> OutputList = new ObservableCollection<OutputDeviceModel>();
 
         [ImportMany(typeof(Audio.Codecs.INetworkChatCodec))]
         public IEnumerable<Audio.Codecs.INetworkChatCodec> Codecs { get; set; }
 
-        public static DependencyProperty OutputListProperty = DependencyProperty.Register("OutputList", typeof(ObservableCollection<WaveOutCapabilitiesView>), typeof(AudioOutWPF), new PropertyMetadata(OutputList));
-        public static DependencyProperty SelectedOutputProperty = DependencyProperty.Register("SelectedOutput", typeof(WaveOutCapabilitiesView), typeof(AudioOutWPF));
+        public static DependencyProperty OutputListProperty = DependencyProperty.Register("OutputList", typeof(ObservableCollection<OutputDeviceModel>), typeof(AudioOutWPF), new PropertyMetadata(OutputList));
+        public static DependencyProperty SelectedOutputProperty = DependencyProperty.Register("SelectedOutput", typeof(OutputDeviceModel), typeof(AudioOutWPF), new PropertyMetadata(null, OnOutputDeviceChanged));
         public static DependencyProperty SelectedOutputIndexProperty = DependencyProperty.Register("SelectedOutputIndex", typeof(int?), typeof(AudioOutWPF), new PropertyMetadata(-1));
 
-        public WaveOutCapabilitiesView SelectedOutput
+        public OutputDeviceModel SelectedOutput
         {
-            get { return (WaveOutCapabilitiesView)this.GetValue(SelectedOutputProperty); }
+            get { return (OutputDeviceModel)this.GetValue(SelectedOutputProperty); }
             set { this.SetValue(SelectedOutputProperty, value); }
         }
 
@@ -46,6 +47,13 @@ namespace FeenPhone.WPFApp.Controls
         {
             get { return (int?)this.GetValue(SelectedOutputIndexProperty); }
             set { this.SetValue(SelectedOutputIndexProperty, value); }
+        }
+
+        private static void OnOutputDeviceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var target = d as AudioOutWPF;
+            if (d != null)
+                target.waveOut = null;
         }
 
         public static DependencyProperty OutputFormatProperty = DependencyProperty.Register("OutputFormat", typeof(string), typeof(AudioOutWPF), new PropertyMetadata(null));
@@ -216,11 +224,18 @@ namespace FeenPhone.WPFApp.Controls
         private void InitializeOutputDevices()
         {
             OutputList.Clear();
+
+            foreach (var device in DirectSoundOut.Devices)
+            {
+                OutputList.Add(new OutputDeviceModel(device));
+            }
+
             for (int n = 0; n < WaveOut.DeviceCount; n++)
             {
                 var capabilities = WaveOut.GetCapabilities(n);
-                OutputList.Add(capabilities);
+                OutputList.Add(new OutputDeviceModel(n, capabilities));
             }
+
         }
 
         private readonly FeenPhone.Audio.SampleAggregator aggregator;
@@ -268,7 +283,7 @@ namespace FeenPhone.WPFApp.Controls
             var settings = Settings.Container;
 
             string strOutputDeviceGuid = settings.OutputDeviceGuid;
-            var selectInputDevice = OutputList.Where(m => m.WaveOutCapabilities.ProductGuid.ToString() == strOutputDeviceGuid).FirstOrDefault();
+            var selectInputDevice = OutputList.Where(m => m.Guid.ToString() == strOutputDeviceGuid).FirstOrDefault();
             if (selectInputDevice != null)
                 SelectedOutput = selectInputDevice;
             else
@@ -281,7 +296,7 @@ namespace FeenPhone.WPFApp.Controls
 
             var selectedOut = SelectedOutput;
             if (selectedOut != null)
-                settings.OutputDeviceGuid = selectedOut.WaveOutCapabilities.ProductGuid.ToString();
+                settings.OutputDeviceGuid = selectedOut.Guid.ToString();
             else
                 settings.OutputDeviceGuid = null;
         }
@@ -322,6 +337,11 @@ namespace FeenPhone.WPFApp.Controls
 
         private void ReceivedAudio(Audio.Codecs.CodecID codecid, byte[] encoded)
         {
+            Dispatcher.BeginInvoke(new Action<Audio.Codecs.CodecID, byte[]>(HandleAudio), codecid, encoded);
+        }
+
+        private void HandleAudio(Audio.Codecs.CodecID codecid, byte[] encoded)
+        {
             Audio.Codecs.INetworkChatCodec remoteCodec = Codecs.SingleOrDefault(m => m.CodecID == codecid);
             if (codecid != LastCodec)
             {
@@ -337,11 +357,7 @@ namespace FeenPhone.WPFApp.Controls
 
             if (waveOut == null)
             {
-                int directSoundLatency = 40;
-                if (SelectedOutput != null)
-                    waveOut = new DirectSoundOut(SelectedOutput.WaveOutCapabilities.ProductGuid, directSoundLatency);
-                else
-                    waveOut = new DirectSoundOut(directSoundLatency);
+                waveOut = GetWavePlayer();
 
                 waveProvider = new BufferedWaveProvider(remoteCodec.RecordFormat);
 
@@ -404,6 +420,20 @@ namespace FeenPhone.WPFApp.Controls
                 BufferedDuration = buffered;
                 shouldUpdateDuration = false;
             }
+        }
+
+        private IWavePlayer GetWavePlayer()
+        {
+            int directSoundLatency = 40;
+
+            switch (SelectedOutput.Provider)
+            {
+                case OutputDeviceModel.OutputDeviceProvider.Wave:
+                    return new WaveOut() { DeviceNumber = SelectedOutput.WavDeviceNumber };
+                case OutputDeviceModel.OutputDeviceProvider.DirectSound:
+                    return new DirectSoundOut(directSoundLatency);
+            }
+            return new DirectSoundOut(DirectSoundOut.DSDEVID_DefaultVoicePlayback, directSoundLatency);
         }
 
         private static int DropSilence(ushort silenceThreshhold, ref byte[] decoded, ref int length)

@@ -116,6 +116,7 @@
     <Compile Include="Server\Telnet\Prompts\TextPrompt.cs" />
     <Compile Include="Server\Telnet\TelnetServer.cs" />
     <Compile Include="Server\Telnet\TelNetState.cs" />
+    <Compile Include="WPFApp\Models\OutputDeviceModel.cs" />
     <Compile Include="WPFApp\Settings.cs" />
     <Compile Include="WPFApp\WPFControls\AudioInWPF.xaml.cs">
       <DependentUpon>AudioInWPF.xaml</DependentUpon>
