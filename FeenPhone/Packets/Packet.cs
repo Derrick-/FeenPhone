@@ -29,7 +29,8 @@ namespace FeenPhone
                 buffer.WriteLength(1);
                 buffer.Write(isLoggedIn);
 
-                Writer.Write(buffer);
+                if (Writer != null)
+                    Writer.Write(buffer);
             }
         }
 
@@ -42,14 +43,18 @@ namespace FeenPhone
             byte[] data = Encoding.ASCII.GetBytes(textdata);
 
             using (var buffer = new FeenPacketBuffer(PacketID.LoginRequest, data))
-                Writer.Write(buffer);
+            {
+                if (Writer != null)
+                    Writer.Write(buffer);
+            }
         }
 
         internal static void WriteUserLogin(NetworkPacketWriter Writer, IUser user)
         {
             using (var buffer = new FeenPacketBuffer(PacketID.UserLogin, UserData(user)))
             {
-                Writer.Write(buffer);
+                if (Writer != null)
+                    Writer.Write(buffer);
             }
         }
 
@@ -57,7 +62,8 @@ namespace FeenPhone
         {
             using (var buffer = new FeenPacketBuffer(PacketID.UserLogout, UserData(user)))
             {
-                Writer.Write(buffer);
+                if (Writer != null)
+                    Writer.Write(buffer);
             }
         }
 
@@ -78,7 +84,8 @@ namespace FeenPhone
 
                 buffer.Write(dataText);
 
-                Writer.Write(buffer);
+                if (Writer != null)
+                    Writer.Write(buffer);
             }
         }
 
@@ -99,7 +106,8 @@ namespace FeenPhone
                 buffer.Write((byte)usersDatas.Count());
                 buffer.Write(usersDatas.SelectMany(m => m).ToArray());
 
-                Writer.Write(buffer);
+                if (Writer != null)
+                    Writer.Write(buffer);
             }
         }
 
@@ -112,7 +120,8 @@ namespace FeenPhone
                 buffer.WriteLength(Codec);
                 buffer.Write(AudioData, AudioDataLen);
 
-                Writer.Write(buffer);
+                if (Writer != null)
+                    Writer.Write(buffer);
             }
         }
 

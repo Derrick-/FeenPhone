@@ -35,6 +35,10 @@ namespace  Alienseed.BaseNetworkServer
                 {
                     Console.WriteLine(ex.Message);
                 }
+                catch (IOException ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
             else
                 if (!IsDisposed)
                     InvokeOnDisconnect();

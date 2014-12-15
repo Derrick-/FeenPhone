@@ -24,12 +24,8 @@ namespace Alienseed.BaseNetworkServer
                 {
                     Stream.Write(bytes, 0, numbytes);
                 }
-                catch (System.Net.Sockets.SocketException ex)
+                catch (IOException)
                 {
-                    if (ex.SocketErrorCode == System.Net.Sockets.SocketError.ConnectionReset)
-                        Dispose();
-                    else
-                        throw;
                 }
             }
         }
