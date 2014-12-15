@@ -90,6 +90,7 @@
     <Compile Include="Audio\Codecs\SpeexChatCodec.cs" />
     <Compile Include="Audio\Codecs\TrueSpeechChatCodec.cs" />
     <Compile Include="Audio\Codecs\UncompressedPcmChatCodec.cs" />
+    <Compile Include="Audio\SampleAggregator.cs" />
     <Compile Include="Client\BaseClient.cs" />
     <Compile Include="Client\EventSource.cs" />
     <Compile Include="Client\ClientPacketHandler.cs" />

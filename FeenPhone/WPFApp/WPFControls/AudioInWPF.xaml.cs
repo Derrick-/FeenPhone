@@ -188,7 +188,7 @@ namespace FeenPhone.WPFApp.Controls
                 this.codec = ((CodecComboItem)comboBoxCodecs.SelectedItem).Codec;
 
                 int source = SelectedInputSourceIndex.Value;
-                waveIn = new WaveIn();
+                waveIn = new WaveIn();                          //TODO: Try WasapiCapture
                 waveIn.BufferMilliseconds = 50;
                 waveIn.DeviceNumber = source;
                 waveIn.WaveFormat = codec.RecordFormat;

@@ -7,7 +7,8 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <DockPanel Background="White">
         <TextBlock Background="Wheat" DockPanel.Dock="Top" TextAlignment="Center">AUDIO OUT</TextBlock>
-        <StackPanel>
+        <ProgressBar DockPanel.Dock="Left" Height="{Binding ElementName=stack, Path=ActualHeight}" Width="20" Value="{Binding Path=Max}" Maximum="100" Orientation="Vertical" />
+        <StackPanel Name="stack">
             <StackPanel.Resources>
                 <Style TargetType="{x:Type Label}">
                     <Setter Property="Width" Value="100"/>

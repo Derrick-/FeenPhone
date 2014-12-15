@@ -1,4 +1,6 @@
-﻿using NAudio.Wave;
+﻿using FeenPhone.Audio;
+using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -84,6 +86,22 @@ namespace FeenPhone.WPFApp.Controls
             }
         }
 
+        public static DependencyProperty MinProperty = DependencyProperty.Register("Min", typeof(float), typeof(AudioOutWPF));
+        public float Min
+        {
+            get { return (float)this.GetValue(MinProperty); }
+            set { Dispatcher.BeginInvoke(new Action<DependencyProperty, object>(SetValue), MinProperty, value); }
+        }
+
+        public static DependencyProperty MaxProperty = DependencyProperty.Register("Max", typeof(int), typeof(AudioOutWPF));
+        float _Max;
+        public float Max
+        {
+            get { return _Max; }
+            set { _Max = value; Dispatcher.BeginInvoke(new Action<DependencyProperty, object>(SetValue), MaxProperty, (int)(value*100)); }
+        }
+
+
         System.Timers.Timer UIUpdateTimer;
         public AudioOutWPF()
         {
@@ -102,7 +120,47 @@ namespace FeenPhone.WPFApp.Controls
             UIUpdateTimer.Start();
             UIUpdateTimer.Elapsed += UIUpdateTimer_Elapsed;
 
+            aggregator = new FeenPhone.Audio.SampleAggregator();
+            aggregator.NotificationCount = 882;
+            aggregator.PerformFFT = true;
+
+            MaximumCalculated += new EventHandler<MaxSampleEventArgs>(audioGraph_MaximumCalculated);
+            FftCalculated += new EventHandler<FftEventArgs>(audioGraph_FftCalculated);
         }
+
+        private readonly FeenPhone.Audio.SampleAggregator aggregator;
+        public event EventHandler<FeenPhone.Audio.FftEventArgs> FftCalculated
+        {
+            add { aggregator.FftCalculated += value; }
+            remove { aggregator.FftCalculated -= value; }
+        }
+
+        public event EventHandler<FeenPhone.Audio.MaxSampleEventArgs> MaximumCalculated
+        {
+            add { aggregator.MaximumCalculated += value; }
+            remove { aggregator.MaximumCalculated -= value; }
+        }
+
+        void audioGraph_FftCalculated(object sender, FftEventArgs e)
+        {
+            //if (this.selectedVisualization != null)
+            //{
+            //    this.selectedVisualization.OnFftCalculated(e.Result);
+            //}
+            //spectrumAnalyser.Update(e.Result);
+        }
+
+        void audioGraph_MaximumCalculated(object sender, MaxSampleEventArgs e)
+        {
+            Min = e.MinSample;
+            Max = e.MaxSample;
+
+            //if (this.selectedVisualization != null)
+            //{
+            //    this.selectedVisualization.OnMaxCalculated(e.MinSample, e.MaxSample);
+            //}
+        }
+
 
         private bool shouldUpdateDuration = false;
         void UIUpdateTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
@@ -128,6 +186,8 @@ namespace FeenPhone.WPFApp.Controls
         private IWavePlayer waveOut;
         private BufferedWaveProvider waveProvider;
         Audio.Codecs.CodecID? LastCodec = null;
+        SampleChannel sampleChannel;
+        NotifyingSampleProvider sampleStream;
         int droppedPackets = 0;
 
         private void ReceivedAudio(Audio.Codecs.CodecID codecid, byte[] encoded)
@@ -148,8 +208,13 @@ namespace FeenPhone.WPFApp.Controls
             if (waveOut == null)
             {
                 waveOut = new DirectSoundOut(50);
+
                 waveProvider = new BufferedWaveProvider(remoteCodec.RecordFormat);
-                waveOut.Init(waveProvider);
+
+                sampleChannel = new SampleChannel(waveProvider, false);
+                sampleStream = new NotifyingSampleProvider(sampleChannel);
+                sampleStream.Sample += (s, e) => aggregator.Add(e.Left);
+                waveOut.Init(sampleStream);
                 waveOut.Play();
 
                 OutputFormat = remoteCodec.RecordFormat.ToString();
@@ -159,8 +224,6 @@ namespace FeenPhone.WPFApp.Controls
             {
                 byte[] decoded = remoteCodec.Decode(encoded, encoded.Length);
                 waveProvider.AddSamples(decoded, 0, decoded.Length);
-
-                Console.WriteLine("Sum: {0}", decoded.Sum(m => m));
             }
             else
                 DroppedPackets = ++droppedPackets;
