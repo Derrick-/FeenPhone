@@ -38,9 +38,12 @@ namespace  Alienseed.BaseNetworkServer
             Writer = new TWriter(); Writer.SetStream(stream);
 
             Reader.OnDisconnect += Dispose;
+            Reader.OnBufferOverflow += Reader_OnBufferOverflow;
 
             OnConnected();
         }
+
+        protected abstract void Reader_OnBufferOverflow(object sender, BufferOverflowArgs e);
 
         public sealed override void Write(byte[] bytes)
         {

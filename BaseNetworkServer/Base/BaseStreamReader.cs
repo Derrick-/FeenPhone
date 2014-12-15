@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
 
-namespace  Alienseed.BaseNetworkServer
+namespace Alienseed.BaseNetworkServer
 {
     public abstract class BaseStreamReader : INetworkReader
     {
         public event OnDisconnectHandler OnDisconnect;
+        public event EventHandler<BufferOverflowArgs> OnBufferOverflow;
 
         public delegate void PreviewIncomingHandler(ref byte[] bytes, ref int numbytes);
         public event PreviewIncomingHandler PreviewIncoming;
@@ -48,16 +49,16 @@ namespace  Alienseed.BaseNetworkServer
         private void OnRead(IAsyncResult ar)
         {
             NetworkStream stream = ar.AsyncState as NetworkStream;
-            if (stream != null && stream==Stream)
+            if (stream != null && stream == Stream)
             {
-                int read=0;
+                int read = 0;
                 try
                 {
                     try
                     {
                         read = stream.EndRead(ar);
                     }
-                    catch(ObjectDisposedException)
+                    catch (ObjectDisposedException)
                     {
                         read = 0;
                     }
@@ -74,7 +75,19 @@ namespace  Alienseed.BaseNetworkServer
                 }
 
                 if (InStream.Count + read > MaxQueueLength)
-                    throw new IncomingBufferOverflowException();
+                {
+                    bool handled = false;
+                    if (OnBufferOverflow != null)
+                    {
+                        var args = new BufferOverflowArgs();
+                        OnBufferOverflow(this, args);
+                        handled = args.handled;
+                    }
+                    if (!handled)
+                        throw new IncomingBufferOverflowException();
+                    else
+                        InStream.Clear();
+                }
 
                 InvokePreviewIncoming(ref _buffer, ref read);
 

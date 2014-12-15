@@ -20,6 +20,12 @@ namespace FeenPhone.Server.TcpPacketServer
             Reader.OnReadData += OnRead;
         }
 
+        protected override void Reader_OnBufferOverflow(object sender, BufferOverflowArgs e)
+        {
+            Console.WriteLine("Buffer overflow from {0}", this.ClientIdentifier);
+            e.handled = true;
+        }
+
         protected void OnRead(object sender, Alienseed.BaseNetworkServer.PacketServer.NetworkPacketReader.DataReadEventArgs args)
         {
             Queue<byte> InStream = args.data;

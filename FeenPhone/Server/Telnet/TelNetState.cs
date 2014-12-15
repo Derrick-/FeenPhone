@@ -12,6 +12,12 @@ namespace FeenPhone.Server.Telnet
     {
         public TelNetState(Stream stream, IPEndPoint ep) : base(stream, ep) { }
 
+        protected override void Reader_OnBufferOverflow(object sender, BufferOverflowArgs e)
+        {
+            Console.WriteLine("Buffer overflow from {0}", this.ClientIdentifier);
+            e.handled = true;
+        }
+
         public override string WelcomeMessage
         {
             get { return "Welcome to FeenPhone!"; }
