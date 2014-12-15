@@ -65,6 +65,7 @@ namespace FeenPhone.WPFApp.Controls
 
 
         static int DefaultMaxBufferedDurationMs = 1500;
+        static ushort DefaultSilenceAggression= 5;
 
         static int EnableDropSilenceDurationMs = 100;
         static int BufferWarningDurationMs = 250;
@@ -100,6 +101,20 @@ namespace FeenPhone.WPFApp.Controls
             {
                 Dispatcher.BeginInvoke(new Action<DependencyProperty, object>(SetValue), DroppedSilenceProperty, value);
             }
+        }
+
+        public static DependencyProperty SilenceAggressionProperty = DependencyProperty.Register("SilenceAggression", typeof(ushort), typeof(AudioOutWPF), new PropertyMetadata(DefaultSilenceAggression, OnSilenceAggressionUpdated));
+        ushort silenceAggression = DefaultSilenceAggression;
+        public ushort SilenceAggression
+        {
+            get { return silenceAggression; }
+            set { silenceAggression=value; Dispatcher.BeginInvoke(new Action<DependencyProperty, object>(SetValue), SilenceAggression, value); }
+        }
+        private static void OnSilenceAggressionUpdated(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var target = d as AudioOutWPF;
+            if (d != null)
+                target.silenceAggression = (ushort)e.NewValue;
         }
 
         public static DependencyProperty UnderRunsProperty = DependencyProperty.Register("UnderRuns", typeof(int), typeof(AudioOutWPF), new PropertyMetadata(0));
@@ -211,21 +226,22 @@ namespace FeenPhone.WPFApp.Controls
         Audio.Codecs.CodecID? LastCodec = null;
         SampleChannel sampleChannel;
         NotifyingSampleProvider sampleStream;
+
         int droppedPackets = 0;
         int droppedSilence = 0;
         int underruns = 0;
 
-        public bool ShouldDropSilence { get { return BufferedDuration.TotalMilliseconds > EnableDropSilenceDurationMs; } }
+        public bool ShouldDropSilence { get { return silenceAggression > 0 && BufferedDuration.TotalMilliseconds > EnableDropSilenceDurationMs; } }
         public ushort silenceThreshhold
         {
             get
             {
                 int duration = (int)BufferedDuration.TotalMilliseconds;
                 if (duration > BufferCriticalDurationMs)
-                    return 120;
+                    return (ushort)(12 * silenceAggression);
                 if (duration > BufferWarningDurationMs)
-                    return 60;
-                return 30;
+                    return (ushort)(6 * silenceAggression);
+                return (ushort)(3 * silenceAggression);
             }
 
         }
@@ -270,29 +286,8 @@ namespace FeenPhone.WPFApp.Controls
 
                 if (ShouldDropSilence)
                 {
-                    var erg = new byte[length];
-                    int j = 0;
-                    erg[j++] = decoded[0];
-                    erg[j++] = decoded[1];
-                    for (int i = 2; i < length; i += 2)
-                    {
-                        if (i + 6 < length)
-                        {
-                            var sample0 = (ushort)(decoded[i - 2] | (decoded[i - 1] << 8));
-                            var sample1 = (ushort)(decoded[i] | (decoded[i + 1] << 8));
-                            var sample2 = (ushort)(decoded[i + 2] | (decoded[i + 3] << 8));
-                            if (sample0 < silenceThreshhold && sample1 < silenceThreshhold && sample2 < silenceThreshhold)
-                            {
-                                droppedSilence++;
-                                continue;
-                            }
-                        }
-                        erg[j++] = decoded[i];
-                        erg[j++] = decoded[i + 1];
-                    }
-                    length = j;
-                    decoded = erg;
-                    DroppedSilence = droppedSilence;
+                    int dropped = DropSilence(silenceThreshhold, ref decoded, ref length);
+                    DroppedSilence = droppedSilence += dropped;
                 }
 
                 waveProvider.AddSamples(decoded, 0, length);
@@ -305,6 +300,34 @@ namespace FeenPhone.WPFApp.Controls
                 BufferedDuration = buffered;
                 shouldUpdateDuration = false;
             }
+        }
+
+        private static int DropSilence(ushort silenceThreshhold, ref byte[] decoded, ref int length)
+        {
+            int dropped = 0;
+            var erg = new byte[length];
+            int j = 0;
+            erg[j++] = decoded[0];
+            erg[j++] = decoded[1];
+            for (int i = 2; i < length; i += 2)
+            {
+                if (i + 6 < length)
+                {
+                    var sample0 = (ushort)(decoded[i - 2] | (decoded[i - 1] << 8));
+                    var sample1 = (ushort)(decoded[i] | (decoded[i + 1] << 8));
+                    var sample2 = (ushort)(decoded[i + 2] | (decoded[i + 3] << 8));
+                    if (sample0 < silenceThreshhold && sample1 < silenceThreshhold && sample2 < silenceThreshhold)
+                    {
+                        dropped++;
+                        continue;
+                    }
+                }
+                erg[j++] = decoded[i];
+                erg[j++] = decoded[i + 1];
+            }
+            length = j;
+            decoded = erg;
+            return dropped;
         }
     }
 }
