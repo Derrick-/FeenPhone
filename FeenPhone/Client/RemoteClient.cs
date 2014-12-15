@@ -28,6 +28,13 @@ namespace FeenPhone.Client
 
             Reader.OnReadData += Reader_OnReadData;
             Reader.OnDisconnect += Reader_OnDisconnect;
+            Reader.OnBufferOverflow += Reader_OnBufferOverflow;
+        }
+
+        void Reader_OnBufferOverflow(object sender, Alienseed.BaseNetworkServer.BufferOverflowArgs e)
+        {
+            Console.WriteLine("Client Buffer Overflow: Truncating Buffer");
+            e.handled = true;
         }
 
         void Reader_OnDisconnect()

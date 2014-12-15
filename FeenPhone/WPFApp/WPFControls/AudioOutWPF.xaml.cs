@@ -53,27 +53,21 @@ namespace FeenPhone.WPFApp.Controls
         {
             var target = d as AudioOutWPF;
             if (d != null)
-                target.waveOut = null;
+                target.Stop();
         }
 
         public static DependencyProperty OutputFormatProperty = DependencyProperty.Register("OutputFormat", typeof(string), typeof(AudioOutWPF), new PropertyMetadata(null));
         public string OutputFormat
         {
             get { return (string)this.GetValue(OutputFormatProperty); }
-            set
-            {
-                Dispatcher.BeginInvoke(new Action<DependencyProperty, object>(SetValue), OutputFormatProperty, value);
-            }
+            set { SetValue(OutputFormatProperty, value); }
         }
 
         public static DependencyProperty CodecNameProperty = DependencyProperty.Register("CodecName", typeof(string), typeof(AudioOutWPF), new PropertyMetadata(null));
         public string CodecName
         {
             get { return (string)this.GetValue(CodecNameProperty); }
-            set
-            {
-                Dispatcher.BeginInvoke(new Action<DependencyProperty, object>(SetValue), CodecNameProperty, value);
-            }
+            set { SetValue(CodecNameProperty, value); }
         }
 
         public static DependencyProperty BufferedDurationStringProperty = DependencyProperty.Register("BufferedDurationString", typeof(string), typeof(AudioOutWPF), new PropertyMetadata(null));
@@ -85,8 +79,8 @@ namespace FeenPhone.WPFApp.Controls
             set
             {
                 _BufferedDuration = value;
-                Dispatcher.BeginInvoke(new Action<DependencyProperty, object>(SetValue), BufferedDurationProperty, (int)value.TotalMilliseconds);
-                Dispatcher.BeginInvoke(new Action<DependencyProperty, object>(SetValue), BufferedDurationStringProperty, string.Format("{0}ms", value.TotalMilliseconds));
+                SetValue(BufferedDurationProperty, (int)value.TotalMilliseconds);
+                SetValue(BufferedDurationStringProperty, string.Format("{0}ms", value.TotalMilliseconds));
             }
         }
 
@@ -108,7 +102,7 @@ namespace FeenPhone.WPFApp.Controls
             set
             {
                 _MaxBufferedDuration = value;
-                Dispatcher.BeginInvoke(new Action<DependencyProperty, object>(SetValue), MaxBufferedDurationDurationProperty, (int)value.TotalMilliseconds);
+                SetValue(MaxBufferedDurationDurationProperty, (int)value.TotalMilliseconds);
             }
         }
 
@@ -116,30 +110,21 @@ namespace FeenPhone.WPFApp.Controls
         public int DroppedPackets
         {
             get { return (int)this.GetValue(DroppedPacketsProperty); }
-            set
-            {
-                Dispatcher.BeginInvoke(new Action<DependencyProperty, object>(SetValue), DroppedPacketsProperty, value);
-            }
+            set { SetValue(DroppedPacketsProperty, value); }
         }
 
         public static DependencyProperty DroppedSilenceProperty = DependencyProperty.Register("DroppedSilence", typeof(int), typeof(AudioOutWPF), new PropertyMetadata(0));
         public int DroppedSilence
         {
             get { return (int)this.GetValue(DroppedSilenceProperty); }
-            set
-            {
-                Dispatcher.BeginInvoke(new Action<DependencyProperty, object>(SetValue), DroppedSilenceProperty, value);
-            }
+            set { SetValue(DroppedSilenceProperty, value); }
         }
 
         public static DependencyProperty AddedSilenceProperty = DependencyProperty.Register("AddedSilence", typeof(int), typeof(AudioOutWPF), new PropertyMetadata(0));
         public int AddedSilence
         {
             get { return (int)this.GetValue(AddedSilenceProperty); }
-            set
-            {
-                Dispatcher.BeginInvoke(new Action<DependencyProperty, object>(SetValue), AddedSilenceProperty, value);
-            }
+            set { SetValue(AddedSilenceProperty, value); }
         }
 
         public static DependencyProperty BufferTargetProperty = DependencyProperty.Register("BufferTarget", typeof(int), typeof(AudioOutWPF), new PropertyMetadata(DefaultBufferTargetMs, OnBufferTargetPropertyUpdated));
@@ -147,7 +132,7 @@ namespace FeenPhone.WPFApp.Controls
         public int BufferTarget
         {
             get { return bufferTarget; }
-            set { bufferTarget = value; Dispatcher.BeginInvoke(new Action<DependencyProperty, object>(SetValue), BufferTargetProperty, value); }
+            set { bufferTarget = value; SetValue(BufferTargetProperty, value); }
         }
         private static void OnBufferTargetPropertyUpdated(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -161,7 +146,7 @@ namespace FeenPhone.WPFApp.Controls
         public ushort SilenceAggression
         {
             get { return silenceAggression; }
-            set { silenceAggression = value; Dispatcher.BeginInvoke(new Action<DependencyProperty, object>(SetValue), SilenceAggression, value); }
+            set { silenceAggression = value; SetValue(SilenceAggressionProperty, value); }
         }
         private static void OnSilenceAggressionUpdated(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -174,14 +159,15 @@ namespace FeenPhone.WPFApp.Controls
         public int UnderRuns
         {
             get { return (int)this.GetValue(UnderRunsProperty); }
-            set { Dispatcher.BeginInvoke(new Action<DependencyProperty, object>(SetValue), UnderRunsProperty, value); }
+            set { SetValue(UnderRunsProperty, value); }
         }
 
-        public static DependencyProperty MinProperty = DependencyProperty.Register("Min", typeof(float), typeof(AudioOutWPF));
+        public static DependencyProperty MinProperty = DependencyProperty.Register("Min", typeof(int), typeof(AudioOutWPF));
+        float _Min;
         public float Min
         {
-            get { return (float)this.GetValue(MinProperty); }
-            set { Dispatcher.BeginInvoke(new Action<DependencyProperty, object>(SetValue), MinProperty, value); }
+            get { return _Min; }
+            set { _Min = value; SetValue(MinProperty, (int)(value * 100)); }
         }
 
         public static DependencyProperty MaxProperty = DependencyProperty.Register("Max", typeof(int), typeof(AudioOutWPF));
@@ -189,7 +175,7 @@ namespace FeenPhone.WPFApp.Controls
         public float Max
         {
             get { return _Max; }
-            set { _Max = value; Dispatcher.BeginInvoke(new Action<DependencyProperty, object>(SetValue), MaxProperty, (int)(value * 100)); }
+            set { _Max = value; SetValue(MaxProperty, (int)(value * 100)); }
         }
 
 
@@ -253,22 +239,28 @@ namespace FeenPhone.WPFApp.Controls
 
         void audioGraph_FftCalculated(object sender, FftEventArgs e)
         {
-            //if (this.selectedVisualization != null)
-            //{
-            //    this.selectedVisualization.OnFftCalculated(e.Result);
-            //}
-            //spectrumAnalyser.Update(e.Result);
+            Dispatcher.BeginInvoke(new Action<object, FftEventArgs>((s, args) =>
+            {
+                //if (this.selectedVisualization != null)
+                //{
+                //    this.selectedVisualization.OnFftCalculated(e.Result);
+                //}
+                //spectrumAnalyser.Update(e.Result);
+            }), sender, e);
         }
 
         void audioGraph_MaximumCalculated(object sender, MaxSampleEventArgs e)
         {
-            Min = e.MinSample;
-            Max = e.MaxSample;
+            Dispatcher.BeginInvoke(new Action<object, MaxSampleEventArgs>((s, args) =>
+            {
+                Min = args.MinSample;
+                Max = args.MaxSample;
 
-            //if (this.selectedVisualization != null)
-            //{
-            //    this.selectedVisualization.OnMaxCalculated(e.MinSample, e.MaxSample);
-            //}
+                //if (this.selectedVisualization != null)
+                //{
+                //    this.selectedVisualization.OnMaxCalculated(e.MinSample, e.MaxSample);
+                //}
+            }), sender, e);
         }
 
 
@@ -343,6 +335,11 @@ namespace FeenPhone.WPFApp.Controls
         private void HandleAudio(Audio.Codecs.CodecID codecid, byte[] encoded)
         {
             Audio.Codecs.INetworkChatCodec remoteCodec = Codecs.SingleOrDefault(m => m.CodecID == codecid);
+            if (remoteCodec == null)
+            {
+                Console.WriteLine("Bad Audio Packet: Codec ID {0}", codecid);
+                return;
+            }
             if (codecid != LastCodec)
             {
                 LastCodec = codecid;
@@ -350,25 +347,11 @@ namespace FeenPhone.WPFApp.Controls
             }
 
             if (waveOut != null && waveProvider.WaveFormat != remoteCodec.RecordFormat)
-            {
-                waveOut.Stop();
-                waveOut = null;
-            }
+                Stop();
 
             if (waveOut == null)
-            {
-                waveOut = GetWavePlayer();
+                Start(remoteCodec);
 
-                waveProvider = new BufferedWaveProvider(remoteCodec.RecordFormat);
-
-                sampleChannel = new SampleChannel(waveProvider, false);
-                sampleStream = new NotifyingSampleProvider(sampleChannel);
-                sampleStream.Sample += (s, e) => aggregator.Add(e.Left);
-                waveOut.Init(sampleStream);
-                waveOut.Play();
-
-                OutputFormat = remoteCodec.RecordFormat.ToString();
-            }
             TimeSpan buffered = waveProvider.BufferedDuration;
 
             if (buffered == TimeSpan.Zero) UnderRuns = underruns++;
@@ -420,6 +403,34 @@ namespace FeenPhone.WPFApp.Controls
                 BufferedDuration = buffered;
                 shouldUpdateDuration = false;
             }
+        }
+
+        private void Start(Audio.Codecs.INetworkChatCodec codec)
+        {
+            waveOut = GetWavePlayer();
+
+            waveProvider = new BufferedWaveProvider(codec.RecordFormat);
+
+            sampleChannel = new SampleChannel(waveProvider, false);
+            sampleStream = new NotifyingSampleProvider(sampleChannel);
+            sampleStream.Sample += (s, e) => aggregator.Add(e.Left);
+            waveOut.Init(sampleStream);
+            waveOut.Play();
+
+            OutputFormat = codec.RecordFormat.ToString();
+        }
+
+        private void Stop()
+        {
+            if (waveOut != null)
+            {
+                waveOut.Stop();
+                waveOut.Dispose();
+                waveOut = null;
+            }
+            waveProvider = null;
+            sampleChannel = null;
+            sampleStream = null;
         }
 
         private IWavePlayer GetWavePlayer()
