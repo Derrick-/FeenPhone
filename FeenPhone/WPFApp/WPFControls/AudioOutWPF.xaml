@@ -42,8 +42,16 @@
                 <TextBlock Text="{Binding Path=MaxBufferedDuration}" d:DataContext="{d:DesignData Source=SampleData/MiscData.xaml}" ></TextBlock>
             </WrapPanel>
             <WrapPanel>
-                <Label>Dropped</Label>
+                <Label>DroppedFrames</Label>
                 <TextBlock Text="{Binding Path=DroppedPackets}" d:DataContext="{d:DesignData Source=SampleData/MiscData.xaml}" ></TextBlock>
+            </WrapPanel>
+            <WrapPanel>
+                <Label>SilenceBytes</Label>
+                <TextBlock Text="{Binding Path=DroppedSilence}" d:DataContext="{d:DesignData Source=SampleData/MiscData.xaml}" ></TextBlock>
+            </WrapPanel>
+            <WrapPanel>
+                <Label>UnderRuns</Label>
+                <TextBlock Text="{Binding Path=UnderRuns}" d:DataContext="{d:DesignData Source=SampleData/MiscData.xaml}" ></TextBlock>
             </WrapPanel>
         </StackPanel>
     </DockPanel>

@@ -63,7 +63,13 @@ namespace FeenPhone.WPFApp.Controls
             }
         }
 
-        static int DefaultMaxBufferedDurationMs = 250;
+
+        static int DefaultMaxBufferedDurationMs = 1500;
+
+        static int EnableDropSilenceDurationMs = 100;
+        static int BufferWarningDurationMs = 250;
+        static int BufferCriticalDurationMs = 1000;
+
         public static DependencyProperty MaxBufferedDurationDurationProperty = DependencyProperty.Register("MaxBufferedDuration", typeof(int), typeof(AudioOutWPF), new PropertyMetadata(DefaultMaxBufferedDurationMs));
         TimeSpan _MaxBufferedDuration = TimeSpan.FromMilliseconds(DefaultMaxBufferedDurationMs);
         public TimeSpan MaxBufferedDuration
@@ -86,6 +92,23 @@ namespace FeenPhone.WPFApp.Controls
             }
         }
 
+        public static DependencyProperty DroppedSilenceProperty = DependencyProperty.Register("DroppedSilence", typeof(int), typeof(AudioOutWPF), new PropertyMetadata(0));
+        public int DroppedSilence
+        {
+            get { return (int)this.GetValue(DroppedSilenceProperty); }
+            set
+            {
+                Dispatcher.BeginInvoke(new Action<DependencyProperty, object>(SetValue), DroppedSilenceProperty, value);
+            }
+        }
+
+        public static DependencyProperty UnderRunsProperty = DependencyProperty.Register("UnderRuns", typeof(int), typeof(AudioOutWPF), new PropertyMetadata(0));
+        public int UnderRuns
+        {
+            get { return (int)this.GetValue(UnderRunsProperty); }
+            set { Dispatcher.BeginInvoke(new Action<DependencyProperty, object>(SetValue), UnderRunsProperty, value); }
+        }
+
         public static DependencyProperty MinProperty = DependencyProperty.Register("Min", typeof(float), typeof(AudioOutWPF));
         public float Min
         {
@@ -98,7 +121,7 @@ namespace FeenPhone.WPFApp.Controls
         public float Max
         {
             get { return _Max; }
-            set { _Max = value; Dispatcher.BeginInvoke(new Action<DependencyProperty, object>(SetValue), MaxProperty, (int)(value*100)); }
+            set { _Max = value; Dispatcher.BeginInvoke(new Action<DependencyProperty, object>(SetValue), MaxProperty, (int)(value * 100)); }
         }
 
 
@@ -189,6 +212,23 @@ namespace FeenPhone.WPFApp.Controls
         SampleChannel sampleChannel;
         NotifyingSampleProvider sampleStream;
         int droppedPackets = 0;
+        int droppedSilence = 0;
+        int underruns = 0;
+
+        public bool ShouldDropSilence { get { return BufferedDuration.TotalMilliseconds > EnableDropSilenceDurationMs; } }
+        public ushort silenceThreshhold
+        {
+            get
+            {
+                int duration = (int)BufferedDuration.TotalMilliseconds;
+                if (duration > BufferCriticalDurationMs)
+                    return 120;
+                if (duration > BufferWarningDurationMs)
+                    return 60;
+                return 30;
+            }
+
+        }
 
         private void ReceivedAudio(Audio.Codecs.CodecID codecid, byte[] encoded)
         {
@@ -207,7 +247,7 @@ namespace FeenPhone.WPFApp.Controls
 
             if (waveOut == null)
             {
-                waveOut = new DirectSoundOut(50);
+                waveOut = new DirectSoundOut(40);
 
                 waveProvider = new BufferedWaveProvider(remoteCodec.RecordFormat);
 
@@ -220,10 +260,42 @@ namespace FeenPhone.WPFApp.Controls
                 OutputFormat = remoteCodec.RecordFormat.ToString();
             }
             TimeSpan buffered = waveProvider.BufferedDuration;
+
+            if (buffered == TimeSpan.Zero) UnderRuns = underruns++;
+
             if (buffered <= MaxBufferedDuration)
             {
                 byte[] decoded = remoteCodec.Decode(encoded, encoded.Length);
-                waveProvider.AddSamples(decoded, 0, decoded.Length);
+                int length = decoded.Length;
+
+                if (ShouldDropSilence)
+                {
+                    var erg = new byte[length];
+                    int j = 0;
+                    erg[j++] = decoded[0];
+                    erg[j++] = decoded[1];
+                    for (int i = 2; i < length; i += 2)
+                    {
+                        if (i + 6 < length)
+                        {
+                            var sample0 = (ushort)(decoded[i - 2] | (decoded[i - 1] << 8));
+                            var sample1 = (ushort)(decoded[i] | (decoded[i + 1] << 8));
+                            var sample2 = (ushort)(decoded[i + 2] | (decoded[i + 3] << 8));
+                            if (sample0 < silenceThreshhold && sample1 < silenceThreshhold && sample2 < silenceThreshhold)
+                            {
+                                droppedSilence++;
+                                continue;
+                            }
+                        }
+                        erg[j++] = decoded[i];
+                        erg[j++] = decoded[i + 1];
+                    }
+                    length = j;
+                    decoded = erg;
+                    DroppedSilence = droppedSilence;
+                }
+
+                waveProvider.AddSamples(decoded, 0, length);
             }
             else
                 DroppedPackets = ++droppedPackets;
