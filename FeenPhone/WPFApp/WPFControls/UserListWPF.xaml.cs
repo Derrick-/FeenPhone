@@ -28,51 +28,47 @@ namespace FeenPhone.WPFApp.Controls
         {
             InitializeComponent();
 
-            EventSource.OnUserConnected += this.OnConnected;
-            EventSource.OnUserDisconnected += this.OnDisconnected;
+            EventSource.OnUserConnected += EventSource_OnConnected;
+            EventSource.OnUserDisconnected += EventSource_OnDisconnected;
 
-            EventSource.OnUserList += OnUserList;
+            EventSource.OnUserList += EventSource_OnUserList;
 
             UsersList.ItemsSource = Users;
         }
 
-        void OnUserList(object sender, UserListEventArgs e)
+        private void EventSource_OnConnected(object sender, OnUserEventArgs e)
         {
-            ClearUsers();
-            if (e.Users != null)
-                foreach (var user in e.Users)
-                    AddUser(user);
+            Dispatcher.BeginInvoke(new Action<IUser>((user) => OnConnected(user)), e.User);
         }
 
-        private void ClearUsers()
+        private void EventSource_OnDisconnected(object sender, OnUserEventArgs e)
         {
-            Dispatcher.Invoke(new Action(Users.Clear));
+            Dispatcher.BeginInvoke(new Action<IUser>((user) => OnDisconnected(user)), e.User);
+        }
+     
+        void EventSource_OnUserList(object sender, UserListEventArgs e)
+        {
+            Dispatcher.BeginInvoke(new Action<IEnumerable<IUser>>((users) => OnUserList(users)), e.Users);
         }
 
-        private void OnConnected(object sender, OnUserEventArgs e)
+        void OnUserList(IEnumerable<IUser> users)
         {
-            if (!Users.Any(m => m.ID == e.User.ID))
-                AddUser(e.User);
+            Users.Clear();
+            if (users != null)
+                foreach (var user in users)
+                    Users.Add(user);
         }
 
-        private void OnDisconnected(object sender, OnUserEventArgs e)
+        private void OnConnected(IUser user)
         {
-            RemoveUser(e.User);
+            if (!Users.Any(m => m.ID == user.ID))
+                Users.Add(user);
         }
 
-        private void AddUser(IUser user)
+        private void OnDisconnected(IUser user)
         {
-            Dispatcher.Invoke(new Action<IUser>(Users.Add), user);
+            if (Users.Any(m => m.ID == user.ID))
+                Users.Remove(Users.Single(m => m.ID == user.ID));
         }
-
-        private void RemoveUser(IUser user)
-        {
-            Dispatcher.Invoke(new Action<Guid>((id) =>
-            {
-                if (Users.Any(m => m.ID == user.ID))
-                    Users.Remove(Users.Single(m => m.ID == id));
-            }), user.ID);
-        }
-
     }
 }

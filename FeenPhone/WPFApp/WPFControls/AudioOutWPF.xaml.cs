@@ -295,7 +295,7 @@ namespace FeenPhone.WPFApp.Controls
 
         void EventSource_OnAudioData(object sender, Client.AudioDataEventArgs e)
         {
-            ReceivedAudio(e.Codec, e.Data);
+            Dispatcher.BeginInvoke(new Action<Audio.Codecs.CodecID, byte[]>(HandleAudio), e.Codec, e.Data);
         }
 
         private IWavePlayer waveOut;
@@ -325,11 +325,6 @@ namespace FeenPhone.WPFApp.Controls
                 return (ushort)(3 * silenceAggression);
             }
 
-        }
-
-        private void ReceivedAudio(Audio.Codecs.CodecID codecid, byte[] encoded)
-        {
-            Dispatcher.BeginInvoke(new Action<Audio.Codecs.CodecID, byte[]>(HandleAudio), codecid, encoded);
         }
 
         private void HandleAudio(Audio.Codecs.CodecID codecid, byte[] encoded)

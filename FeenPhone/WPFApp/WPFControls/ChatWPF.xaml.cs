@@ -23,10 +23,10 @@ namespace FeenPhone.WPFApp.Controls
         {
             InitializeComponent();
 
-            FeenPhone.Client.EventSource.OnChat += OnChat;
+            FeenPhone.Client.EventSource.OnChat += EventSource_OnChat;
         }
 
-        private void OnChat(object sender, Client.OnChatEventArgs e)
+        void EventSource_OnChat(object sender, Client.OnChatEventArgs e)
         {
             string from = e.User == null ? "Unknown" : e.User.Nickname;
             Dispatcher.BeginInvoke(new Action<string>(AddToLog), string.Format("{0}: {1}", from, e.Text));
