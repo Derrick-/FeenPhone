@@ -43,7 +43,7 @@ namespace Alienseed.BaseNetworkServer
             LogLine("Connected");
         }
 
-        public static IEnumerable<INetState> AllClients { get { return _clients; } }
+        public static IEnumerable<INetState> Clients { get { return _clients; } }
 
         private static readonly List<INetState> _clients = new List<INetState>();
         protected static void AddClient(INetState client) { _clients.Add(client); }
@@ -83,7 +83,7 @@ namespace Alienseed.BaseNetworkServer
             }
             else
             {
-                if (NetworkServer.AllUsers.Contains(user))
+                if (BaseServer.Users.Contains(user))
                 {
                     LogLine("Login Rejected (online)");
                     return false;

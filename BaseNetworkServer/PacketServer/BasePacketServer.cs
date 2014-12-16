@@ -9,8 +9,8 @@ namespace Alienseed.BaseNetworkServer.PacketServer
 {
     public abstract class BasePacketServer<Tnetstate> : BaseTCPServer<NetworkPacketReader, NetworkPacketWriter, Tnetstate> where Tnetstate : BasePacketNetState
     {
-        public new static IEnumerable<Tnetstate> Clients { get { return NetworkServer.Clients.Where(m => m is Tnetstate).Cast<Tnetstate>(); } }
-        public new static IEnumerable<IUser> AllUsers { get { return BasePacketServer<Tnetstate>.Clients.Select(m => m.User); } }
+        public new static IEnumerable<Tnetstate> Clients { get { return BaseServer.Clients.Where(m => m is Tnetstate).Cast<Tnetstate>(); } }
+        public new static IEnumerable<IUser> Users { get { return BasePacketServer<Tnetstate>.Clients.Select(m => m.User); } }
 
         public BasePacketServer(int port, IPAddress address) : base(port,address)
         {

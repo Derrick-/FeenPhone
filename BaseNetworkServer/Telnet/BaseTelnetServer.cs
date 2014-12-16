@@ -8,8 +8,8 @@ namespace  Alienseed.BaseNetworkServer.Telnet
     public abstract class BaseTelnetServer<Tnetstate> : BaseTCPServer<NetworkTextReader, NetworkTextWriter, Tnetstate> where Tnetstate : BaseTelNetState
     {
 
-        public new static IEnumerable<Tnetstate> Clients { get { return NetworkServer.Clients.Where(m => m is Tnetstate).Cast<Tnetstate>(); } }
-        public new static IEnumerable<IUser> AllUsers { get { return BaseTelnetServer<Tnetstate>.Clients.Select(m => m.User); } }
+        public new static IEnumerable<Tnetstate> Clients { get { return BaseServer.Clients.Where(m => m is Tnetstate).Cast<Tnetstate>(); } }
+        public new static IEnumerable<IUser> Users { get { return BaseTelnetServer<Tnetstate>.Clients.Select(m => m.User); } }
 
         protected override void PurgeAllClients()
         {

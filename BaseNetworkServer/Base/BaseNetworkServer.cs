@@ -7,15 +7,11 @@ using System.Net.Sockets;
 
 namespace Alienseed.BaseNetworkServer
 {
-    public abstract class NetworkServer
+    public abstract class BaseServer : INetworkServer
     {
-        public static IEnumerable<INetState> Clients { get { return NetState.AllClients; } }
-
-        public static IEnumerable<IUser> AllUsers { get { return NetworkServer.Clients.Select(m => m.User); } }
-    }
-
-    public abstract class BaseServer : NetworkServer, INetworkServer
-    {
+        public static IEnumerable<INetState> Clients { get { return NetState.Clients; } }
+        public static IEnumerable<IUser> Users { get { return NetState.Clients.Select(m => m.User); } }
+        
         public BaseServer(int port, IPAddress address = null)
         {
             Address = address ?? IPAddress.Any;

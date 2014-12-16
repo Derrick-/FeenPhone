@@ -40,7 +40,7 @@ namespace FeenPhone.Server.Telnet.Prompts
         private static BaseTextPrompt cmdUsers(BaseTextPrompt sender, BaseTelNetState client, string args)
         {
             client.Writer.WriteLine("Users Online:");
-            var users = NetworkServer.AllUsers.Where(m => m != null).Select(m => m.Username);
+            var users = BaseServer.Users.Where(m => m != null).Select(m => m.Username);
             foreach (var user in users)
                 client.Writer.WriteLine("  {0}", user);
             client.WriteLine();

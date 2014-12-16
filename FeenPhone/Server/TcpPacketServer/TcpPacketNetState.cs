@@ -81,7 +81,7 @@ namespace FeenPhone.Server.TcpPacketServer
         {
             Packet.WriteLoginStatus(Writer, true);
 
-            var users = NetworkServer.AllUsers.Where(m => m != null);
+            var users = BaseServer.Users.Where(m => m != null);
             if (ServerHost.LocalClient != null)
             {
                 users = users.Concat(new Alienseed.BaseNetworkServer.Accounting.IUser[] { ServerHost.LocalClient.LocalUser });
