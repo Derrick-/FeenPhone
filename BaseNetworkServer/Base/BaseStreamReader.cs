@@ -7,20 +7,25 @@ namespace Alienseed.BaseNetworkServer
 {
     public abstract class BaseStreamReader : INetworkReader
     {
+        private byte[] _buffer;
+
         public event OnDisconnectHandler OnDisconnect;
         public event EventHandler<BufferOverflowArgs> OnBufferOverflow;
 
-        public delegate void PreviewIncomingHandler(ref byte[] bytes, ref int numbytes);
+        public delegate void PreviewIncomingHandler(ref byte[] bytes, ref int numbytes, ref bool handled);
         public event PreviewIncomingHandler PreviewIncoming;
 
-        const int MaxQueueLength = short.MaxValue;
+        const int MaxQueueLength = ushort.MaxValue;
 
         public Stream Stream { get; private set; }
 
         protected Queue<byte> InStream = new Queue<byte>();
 
-        public void SetStream(Stream stream)
+        public void SetStream(Stream stream, int buffersize=255)
         {
+            if (_buffer == null || _buffer.Length != buffersize)
+                _buffer = new byte[buffersize];
+
             Stream = stream;
             BeginRead();
         }
@@ -30,7 +35,7 @@ namespace Alienseed.BaseNetworkServer
             if (Stream != null && Stream.CanRead)
                 try
                 {
-                    Stream.BeginRead(_buffer, 0, 255, OnRead, Stream);
+                    Stream.BeginRead(_buffer, 0, _buffer.Length, OnRead, Stream);
                 }
                 catch (NetworkException ex)
                 {
@@ -45,7 +50,6 @@ namespace Alienseed.BaseNetworkServer
                     InvokeOnDisconnect();
         }
 
-        private byte[] _buffer = new byte[255];
         private void OnRead(IAsyncResult ar)
         {
             NetworkStream stream = ar.AsyncState as NetworkStream;
@@ -58,10 +62,8 @@ namespace Alienseed.BaseNetworkServer
                     {
                         read = stream.EndRead(ar);
                     }
-                    catch (ObjectDisposedException)
-                    {
-                        read = 0;
-                    }
+                    catch (IOException) { read = 0; }
+                    catch (ObjectDisposedException) { read = 0; }
                     if (read == 0)
                     {
                         InvokeOnDisconnect();
@@ -89,20 +91,23 @@ namespace Alienseed.BaseNetworkServer
                         InStream.Clear();
                 }
 
-                InvokePreviewIncoming(ref _buffer, ref read);
-
-                for (int i = 0; i < read; i++)
-                    InStream.Enqueue(_buffer[i]);
-                OnRead();
+                if (InvokePreviewIncoming(ref _buffer, ref read))
+                {
+                    for (int i = 0; i < read; i++)
+                        InStream.Enqueue(_buffer[i]);
+                    OnRead();
+                }
 
                 BeginRead();
             }
         }
 
-        void InvokePreviewIncoming(ref byte[] bytes, ref int numbytes)
+        bool InvokePreviewIncoming(ref byte[] bytes, ref int numbytes)
         {
+            bool handled = false;
             if (PreviewIncoming != null)
-                PreviewIncoming(ref bytes, ref numbytes);
+                PreviewIncoming(ref bytes, ref numbytes, ref handled);
+            return !handled;
         }
 
         void InvokeOnDisconnect()

@@ -211,8 +211,11 @@ namespace FeenPhone.WPFApp.Controls
 
         private void StopRecording()
         {
-            waveIn.DataAvailable -= waveIn_DataAvailable;
-            waveIn.StopRecording();
+            if (waveIn != null)
+            {
+                waveIn.DataAvailable -= waveIn_DataAvailable;
+                waveIn.StopRecording();
+            }
             ControlsEnabled = true;
         }
 

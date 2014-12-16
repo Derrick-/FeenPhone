@@ -10,13 +10,15 @@ namespace FeenPhone.Server.TcpPacketServer
 {
     class TcpPacketServer : BasePacketServer<TcpPacketNetState>
     {
+        const int readerBufferSize = ushort.MaxValue;
+
         public const int DefaultTcpServerPort = 5150;
 
         public TcpPacketServer(int port = DefaultTcpServerPort, IPAddress ip = null) : base(port, ip) { }
 
         protected override TcpPacketNetState NetstateFactory(System.Net.Sockets.NetworkStream stream, System.Net.EndPoint ep)
         {
-            return new TcpPacketNetState(stream, ep as IPEndPoint);
+            return new TcpPacketNetState(stream, ep as IPEndPoint, readerBufferSize);
         }
 
         protected override void ClientConnected(TcpPacketNetState client)

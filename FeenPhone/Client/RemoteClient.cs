@@ -9,6 +9,8 @@ namespace FeenPhone.Client
 {
     class RemoteClient : BaseClient
     {
+        const int readerBufferSize = ushort.MaxValue;
+
         private readonly System.Net.IPAddress IP;
         private readonly int Port;
 
@@ -78,7 +80,7 @@ namespace FeenPhone.Client
                 }
                 Client = client;
                 Stream = Client.GetStream();
-                Reader.SetStream(Stream);
+                Reader.SetStream(Stream, readerBufferSize);
 
                 Writer.SetStream(Stream);
                 _IsConnected = true;

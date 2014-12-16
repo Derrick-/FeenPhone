@@ -13,10 +13,11 @@ namespace FeenPhone.Server.TcpPacketServer
     {
 
         private readonly ServerPacketHandler Handler;
-        public TcpPacketNetState(Stream stream, IPEndPoint ep)
-            : base(stream, ep)
+        public TcpPacketNetState(Stream stream, IPEndPoint ep, int readBufferSize)
+            : base(stream, ep, readBufferSize)
         {
             Handler = new ServerPacketHandler(this);
+            Reader.PreviewIncoming += Reader_PreviewIncoming;
             Reader.OnReadData += OnRead;
         }
 
@@ -71,7 +72,7 @@ namespace FeenPhone.Server.TcpPacketServer
         {
             Packet.WriteAudioData(Writer, Codec, data, dataLen);
         }
-        
+
         public void OnLoginFailed()
         {
             Packet.WriteLoginStatus(Writer, false);
@@ -82,7 +83,7 @@ namespace FeenPhone.Server.TcpPacketServer
             Packet.WriteLoginStatus(Writer, true);
 
             var users = NetworkServer.AllUsers.Where(m => m != null);
-            if(ServerHost.LocalClient!=null)
+            if (ServerHost.LocalClient != null)
             {
                 users = users.Concat(new Alienseed.BaseNetworkServer.Accounting.IUser[] { ServerHost.LocalClient.LocalUser });
             }

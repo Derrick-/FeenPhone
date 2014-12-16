@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 
-namespace  Alienseed.BaseNetworkServer
+namespace Alienseed.BaseNetworkServer
 {
     public abstract class TCPNetState<TReader, TWriter> : NetState, IDisposable
         where TReader : BaseStreamReader, new()
@@ -15,7 +15,7 @@ namespace  Alienseed.BaseNetworkServer
         public TWriter Writer { get; private set; }
 
         protected override string ClientIdentifier { get { return string.Format("{0} {1}", Address.ToString(), User != null ? User.Username : "NULL"); } }
-        
+
         public IPEndPoint IPEndPoint { get { return EndPoint as IPEndPoint; } }
         public IPAddress Address
         {
@@ -29,12 +29,12 @@ namespace  Alienseed.BaseNetworkServer
 
         private Stream Stream { get; set; }
 
-        internal TCPNetState(Stream stream, IPEndPoint ep)
+        internal TCPNetState(Stream stream, IPEndPoint ep, int readBufferSize)
             : base(ep)
         {
             Stream = stream;
 
-            Reader = new TReader(); Reader.SetStream(stream);
+            Reader = new TReader(); Reader.SetStream(stream, readBufferSize);
             Writer = new TWriter(); Writer.SetStream(stream);
 
             Reader.OnDisconnect += Dispose;

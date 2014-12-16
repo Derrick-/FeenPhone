@@ -35,13 +35,17 @@ namespace FeenPhone
             Handler handler;
             ushort len;
             int consumed = Parse(data.ToArray(), out handler, out len);
-
-            if (handler != null)
-                handler(data.Skip(3).Take(len));
-
-            for (int i = 0; i < consumed && data.Any(); i++)
+            while (handler != null)
             {
-                data.Dequeue();
+                if (handler != null)
+                    handler(data.Skip(3).Take(len));
+
+                for (int i = 0; i < consumed && data.Any(); i++)
+                {
+                    data.Dequeue();
+                }
+
+                consumed = Parse(data.ToArray(), out handler, out len);
             }
         }
 
@@ -55,7 +59,7 @@ namespace FeenPhone
                 i++;
             }
 
-            if (!ValidPacketID(data[i]) || data.Length - i < 3)
+            if (data.Length - i < 3 || !ValidPacketID(data[i]))
             {
                 return i;
             }
@@ -95,7 +99,15 @@ namespace FeenPhone
         protected void Handle_UserLogin(IEnumerable<byte> payload)
         {
             IUser user;
-            ReadUser(payload, out user);
+            try
+            {
+                ReadUser(payload, out user);
+            }
+            catch (ArgumentException ex)
+            {
+                Console.WriteLine("Handle_UserLogin: {0}", ex.Message);
+                return;
+            }
             UserLogin(user);
         }
 
@@ -103,7 +115,15 @@ namespace FeenPhone
         protected void Handle_UserLogout(IEnumerable<byte> payload)
         {
             IUser user;
-            ReadUser(payload, out user);
+            try
+            {
+                ReadUser(payload, out user);
+            }
+            catch (ArgumentException ex)
+            {
+                Console.WriteLine("Handle_UserLogout: {0}", ex.Message);
+                return;
+            }
             UserLogout(user);
         }
 
@@ -127,7 +147,15 @@ namespace FeenPhone
                 for (int i = 0; i < count; i++)
                 {
                     IUser user;
-                    consumed += ReadUser(payload.Skip(consumed), out user);
+                    try
+                    {
+                        consumed += ReadUser(payload.Skip(consumed), out user);
+                    }
+                    catch (ArgumentException ex)
+                    {
+                        Console.WriteLine("Handle_UserList: {0}", ex.Message);
+                        return;
+                    }
                     users.Add(user);
                 }
             }

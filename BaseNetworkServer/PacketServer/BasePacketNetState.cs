@@ -11,7 +11,7 @@ namespace Alienseed.BaseNetworkServer.PacketServer
     {
         protected override string LogTitle { get { return "PacketServer"; } }
 
-        public BasePacketNetState(Stream stream, IPEndPoint ep) :base(stream,ep)
+        public BasePacketNetState(Stream stream, IPEndPoint ep, int readBufferSize) : base(stream, ep, readBufferSize)
         {
 
         }
