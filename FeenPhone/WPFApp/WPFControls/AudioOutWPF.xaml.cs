@@ -86,9 +86,9 @@ namespace FeenPhone.WPFApp.Controls
 
 
         static int DefaultMaxBufferedDurationMs = 1500;
-        static ushort DefaultSilenceAggression = 5;
+        static ushort DefaultSilenceAggression = 0;
 
-        static int DefaultBufferTargetMs = 150;
+        static int DefaultBufferTargetMs = 50;
         static int BufferTargetMarginMs = 50;
 
         static int BufferWarningDurationMs = 250;
@@ -428,18 +428,18 @@ namespace FeenPhone.WPFApp.Controls
             sampleStream = null;
         }
 
+        int desiredLatency = 150;
         private IWavePlayer GetWavePlayer()
         {
-            int directSoundLatency = 40;
 
             switch (SelectedOutput.Provider)
             {
                 case OutputDeviceModel.OutputDeviceProvider.Wave:
-                    return new WaveOut() { DeviceNumber = SelectedOutput.WavDeviceNumber };
+                    return new WaveOut() { DeviceNumber = SelectedOutput.WavDeviceNumber, DesiredLatency = desiredLatency };
                 case OutputDeviceModel.OutputDeviceProvider.DirectSound:
-                    return new DirectSoundOut(directSoundLatency);
+                    return new DirectSoundOut(SelectedOutput.DirectSoundDeviceInfo.Guid, desiredLatency);
             }
-            return new DirectSoundOut(DirectSoundOut.DSDEVID_DefaultVoicePlayback, directSoundLatency);
+            return new DirectSoundOut(DirectSoundOut.DSDEVID_DefaultVoicePlayback, desiredLatency);
         }
 
         private static int DropSilence(ushort silenceThreshhold, ref byte[] decoded, ref int length)
@@ -468,6 +468,11 @@ namespace FeenPhone.WPFApp.Controls
             length = j;
             decoded = erg;
             return dropped;
+        }
+
+        private void Buffer_Clear_Click(object sender, RoutedEventArgs e)
+        {
+            Stop();
         }
     }
 }

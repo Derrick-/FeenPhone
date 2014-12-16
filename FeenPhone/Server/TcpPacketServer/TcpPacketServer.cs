@@ -10,7 +10,9 @@ namespace FeenPhone.Server.TcpPacketServer
 {
     class TcpPacketServer : BasePacketServer<TcpPacketNetState>
     {
-        public TcpPacketServer(int port = 533, IPAddress ip = null) : base(port, ip) { }
+        public const int DefaultTcpServerPort = 5150;
+
+        public TcpPacketServer(int port = DefaultTcpServerPort, IPAddress ip = null) : base(port, ip) { }
 
         protected override TcpPacketNetState NetstateFactory(System.Net.Sockets.NetworkStream stream, System.Net.EndPoint ep)
         {

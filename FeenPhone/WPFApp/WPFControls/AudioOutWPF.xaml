@@ -35,7 +35,12 @@
                 <TextBlock Text="{Binding Path=CodecName}" d:DataContext="{d:DesignData Source=SampleData/MiscData.xaml}" ></TextBlock>
             </WrapPanel>
             <DockPanel ToolTip="Audio data in miliseconds of lag that has been recieved and is buffered for play.  When duration exceeds max buffer size, incoming data will be dropped">
-                <Label>Buffer</Label>
+                <Grid>
+                    <Label>Buffer</Label>
+                    <Button HorizontalAlignment="Right" Click="Buffer_Clear_Click" Background="{x:Null}" BorderBrush="{x:Null}">
+                        <Image Source="/FeenPhone;component/WPFApp/Resources/Images/emblem-ubuntuone-unsynchronized.png" Height="16"></Image>
+                    </Button>
+                </Grid>
                 <Grid Name="modelValueContainer">
                     <ProgressBar  d:DataContext="{d:DesignData Source=SampleData/MiscData.xaml}" 
                                   Height="{Binding ElementName=modelValueContainer, Path=ActualHeight}" 

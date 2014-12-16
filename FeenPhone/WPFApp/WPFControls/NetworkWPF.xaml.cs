@@ -37,13 +37,16 @@ namespace FeenPhone.WPFApp.Controls
         private void LoadSettings()
         {
             var settings = Settings.Container;
-           
+
             if (settings.Server != null)
                 txtServer.Text = settings.Server;
-            
-            if (settings.Port != null)
+
+            int port;
+            if (!string.IsNullOrWhiteSpace(settings.Port) && int.TryParse(settings.Port, out port))
                 txtPort.Text = settings.Port;
-            
+            else
+                txtPort.Text = Server.TcpPacketServer.TcpPacketServer.DefaultTcpServerPort.ToString();
+
             if (settings.Nickname != null)
                 txtNickname.Text = settings.Nickname;
         }
@@ -147,9 +150,16 @@ namespace FeenPhone.WPFApp.Controls
                 EventSource.InvokeOnUserList(null, null);
                 if ((bool?)e.NewValue == true && target.server == null)
                 {
+                    int port;
+                    if (!int.TryParse(target.txtPort.Text, out port))
+                    {
+                        port = FeenPhone.Server.TcpPacketServer.TcpPacketServer.DefaultTcpServerPort;
+                        target.txtPort.Text = port.ToString();
+                    }
+
                     if (Client != null)
                         Client.Dispose();
-                    target.server = new FeenPhone.Server.ServerHost();
+                    target.server = new FeenPhone.Server.ServerHost(TcpServerPort: port);
                     Client = ServerHost.LocalClient = new LocalClient(target.User);
                 }
                 else

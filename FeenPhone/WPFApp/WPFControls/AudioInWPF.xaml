@@ -7,8 +7,42 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <DockPanel>
         <TextBlock Background="Wheat" DockPanel.Dock="Top" TextAlignment="Center">AUDIO IN</TextBlock>
-        <CheckBox ClickMode="Release" DockPanel.Dock="Top" IsChecked="{Binding Path=IsRecording, Mode=TwoWay}" ToolTip="Enable sound recording">Record</CheckBox>
-        <ComboBox DockPanel.Dock="Top" Name="comboBoxCodecs" IsEnabled="{Binding ControlsEnabled}" />
-        <ComboBox ItemsSource="{Binding Path=InputSourceList, Mode=TwoWay}" SelectedIndex="{Binding Path=SelectedInputSourceIndex, Mode=TwoWay}" SelectedItem="{Binding Path=SelectedInputSource, Mode=TwoWay}" IsEnabled="{Binding ControlsEnabled}"/>
+        <StackPanel>
+            <ToggleButton             
+                MaxWidth="48"
+                MaxHeight="48"
+                Width="{Binding ElementName=modelValueContainer, Path=ActualHeight}" 
+                Height="{Binding ElementName=modelValueContainer, Path=ActualHeight}" 
+                ClickMode="Release" IsChecked="{Binding Path=IsRecording, Mode=TwoWay}" ToolTip="Enable sound recording">
+                <ToggleButton.Template>
+                    <ControlTemplate TargetType="{x:Type ToggleButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <Image>
+                                <Image.Style>
+                                    <Style>
+                                        <Setter Property="Image.Source" 
+                                Value="/FeenPhone;component/WPFApp/Resources/Images/audio-volume-muted.png" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsChecked, 
+                                    RelativeSource={RelativeSource AncestorType=
+                                    {x:Type ToggleButton}}}" Value="True">
+                                                <Setter Property="Image.Source" 
+                                        Value="/FeenPhone;component/WPFApp/Resources/Images/audio-volume-high.png" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Image.Style>
+                            </Image>
+                            <ContentPresenter Content="{TemplateBinding Content}" 
+                    Margin="5,0,0,0" />
+                        </StackPanel>
+                    </ControlTemplate>
+                </ToggleButton.Template>
+            </ToggleButton>
+        </StackPanel>
+        <StackPanel Name="modelValueContainer" DockPanel.Dock="Right">
+            <ComboBox DockPanel.Dock="Top" Name="comboBoxCodecs" IsEnabled="{Binding ControlsEnabled}" />
+            <ComboBox ItemsSource="{Binding Path=InputSourceList, Mode=TwoWay}" SelectedIndex="{Binding Path=SelectedInputSourceIndex, Mode=TwoWay}" SelectedItem="{Binding Path=SelectedInputSource, Mode=TwoWay}" IsEnabled="{Binding ControlsEnabled}"/>
+        </StackPanel>
     </DockPanel>
 </UserControl>

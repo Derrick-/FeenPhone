@@ -220,6 +220,13 @@
     <Content Include="opus.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="WPFApp\Resources\Images\audio-volume-off.png" />
+    <Resource Include="WPFApp\Resources\Images\audio-volume-high.png" />
+    <Resource Include="WPFApp\Resources\Images\audio-volume-medium.png" />
+    <Resource Include="WPFApp\Resources\Images\audio-volume-low.png" />
+    <Resource Include="WPFApp\Resources\Images\audio-volume-muted.png" />
+    <Resource Include="WPFApp\Resources\Images\emblem-ubuntuone-unsynchronized.png" />
+    <Resource Include="WPFApp\Resources\Images\sign_remove.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
