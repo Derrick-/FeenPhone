@@ -10,6 +10,8 @@ namespace FeenPhone.Audio.Codecs
     [Export(typeof(INetworkChatCodec))]
     class UncompressedPcmChatCodec : INetworkChatCodec
     {
+        public bool IsAvailable { get { return true; } }
+
         public UncompressedPcmChatCodec()
         {
             this.RecordFormat = new WaveFormat(8000, 16, 1);
@@ -48,7 +50,5 @@ namespace FeenPhone.Audio.Codecs
         public int BitsPerSecond { get { return this.RecordFormat.AverageBytesPerSecond * 8; } }
         
         public void Dispose() { }
-
-        public bool IsAvailable { get { return false; } }
     }
 }

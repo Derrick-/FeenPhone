@@ -12,6 +12,8 @@ namespace FeenPhone.Audio.Codecs
     [Export(typeof(INetworkChatCodec))]
     class G722ChatCodec : INetworkChatCodec
     {
+        public bool IsAvailable { get { return true; } }
+
         public CodecID CodecID { get { return CodecID.G722ChatCodec; } }
 
         private int bitrate;
@@ -86,7 +88,5 @@ namespace FeenPhone.Audio.Codecs
         {
             // nothing to do
         }
-
-        public bool IsAvailable { get { return false; } }
     }
 }

@@ -4,37 +4,34 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="100" d:DesignWidth="300">
     <DockPanel>
         <TextBlock Background="Wheat" DockPanel.Dock="Top" TextAlignment="Center">AUDIO IN</TextBlock>
         <StackPanel>
-            <ToggleButton             
+            <ToggleButton
                 MaxWidth="48"
                 MaxHeight="48"
                 Width="{Binding ElementName=modelValueContainer, Path=ActualHeight}" 
                 Height="{Binding ElementName=modelValueContainer, Path=ActualHeight}" 
-                ClickMode="Release" IsChecked="{Binding Path=IsRecording, Mode=TwoWay}" ToolTip="Enable sound recording">
+                ClickMode="Release" 
+                IsChecked="{Binding Path=IsRecording, Mode=TwoWay}" 
+                ToolTip="Enable sound recording">
                 <ToggleButton.Template>
                     <ControlTemplate TargetType="{x:Type ToggleButton}">
                         <StackPanel Orientation="Horizontal">
                             <Image>
                                 <Image.Style>
                                     <Style>
-                                        <Setter Property="Image.Source" 
-                                Value="/FeenPhone;component/WPFApp/Resources/Images/audio-volume-muted.png" />
+                                        <Setter Property="Image.Source" Value="/FeenPhone;component/WPFApp/Resources/Images/audio-volume-muted.png" />
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsChecked, 
-                                    RelativeSource={RelativeSource AncestorType=
-                                    {x:Type ToggleButton}}}" Value="True">
-                                                <Setter Property="Image.Source" 
-                                        Value="/FeenPhone;component/WPFApp/Resources/Images/audio-volume-high.png" />
+                                            <DataTrigger Binding="{Binding IsChecked,RelativeSource={RelativeSource AncestorType={x:Type ToggleButton}}}" Value="True">
+                                                <Setter Property="Image.Source" Value="/FeenPhone;component/WPFApp/Resources/Images/audio-volume-high.png" />
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </Image.Style>
                             </Image>
-                            <ContentPresenter Content="{TemplateBinding Content}" 
-                    Margin="5,0,0,0" />
+                            <ContentPresenter Content="{TemplateBinding Content}" Margin="5,0,0,0" />
                         </StackPanel>
                     </ControlTemplate>
                 </ToggleButton.Template>
