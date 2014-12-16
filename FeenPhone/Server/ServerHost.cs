@@ -50,7 +50,7 @@ namespace FeenPhone.Server
                 if (server.Start())
                 {
                     Console.WriteLine("Started server: {0} on port {1}", server, server.Port);
-                    server.OnListenerCrash += server_OnListenerCrash;
+                    server.OnCrash += server_OnCrash;
                 }
                 else
                 {
@@ -73,7 +73,7 @@ namespace FeenPhone.Server
             }
         }
 
-        void server_OnListenerCrash(INetworkServer server)
+        void server_OnCrash(INetworkServer server)
         {
             Console.WriteLine("Server Crash: {0} on Port {1}", server, server.Port);
 

@@ -2,7 +2,7 @@
 
 namespace  Alienseed.BaseNetworkServer
 {
-    public delegate void OnListenerCrashHandler(INetworkServer server);
+    public delegate void OnServerCrashHandler(INetworkServer server);
 
     public interface INetworkServer
     {
@@ -12,6 +12,6 @@ namespace  Alienseed.BaseNetworkServer
         void Stop();
         bool Running { get; }
 
-        event OnListenerCrashHandler OnListenerCrash;
+        event OnServerCrashHandler OnCrash;
     }
 }

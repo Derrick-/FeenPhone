@@ -27,30 +27,29 @@ namespace Alienseed.BaseNetworkServer
 
         public abstract bool Running { get; protected set; }
 
-        public event OnListenerCrashHandler OnListenerCrash;
+        public event OnServerCrashHandler OnCrash;
 
         protected void InvokeOnListenerCrash()
         {
-            if (OnListenerCrash != null)
-                OnListenerCrash(this);
+            if (OnCrash != null)
+                OnCrash(this);
         }
-
     }
 
-    public abstract class BaseTCPServer<TReader, TWriter, Tnetstate> : BaseServer
+    public abstract class BaseStateServer<TReader, TWriter, Tnetstate> : BaseServer
         where Tnetstate : NetState
         where TReader : BaseStreamReader, new()
         where TWriter : BaseStreamWriter, new()
     {
         public delegate void OnClientConnectionHandler(Tnetstate client);
         public delegate void OnClientLoginLogoutHandler(IUserClient client);
-        
+
         public event OnClientConnectionHandler OnClientConnected;
         public event OnClientConnectionHandler OnClientDisconnected;
         public event OnClientLoginLogoutHandler OnClientLogin;
         public event OnClientLoginLogoutHandler OnClientLogout;
 
-        public BaseTCPServer(int port, IPAddress address = null)
+        public BaseStateServer(int port, IPAddress address = null)
             : base(port, address)
         {
             this.OnClientConnected += ClientConnected;
@@ -63,6 +62,69 @@ namespace Alienseed.BaseNetworkServer
         protected abstract void ClientDisconnected(Tnetstate client);
         protected abstract void ClientLogin(IUserClient client);
         protected abstract void ClientLogout(IUserClient client);
+
+        protected abstract void PurgeAllClients();
+
+        protected abstract Tnetstate CreateNetstate(NetworkStream stream, EndPoint ep);
+
+        protected internal void AcceptClient(Tnetstate ns)
+        {
+            ns.OnDisposed += NetState_OnDisposed;
+            ns.OnLogin += NetState_OnLogin;
+            ns.OnLogout += NetState_OnLogout;
+            InvokeOnClientConnected(ns);
+        }
+        
+        private void InvokeOnClientConnected(Tnetstate ns)
+        {
+            if (OnClientConnected != null)
+                OnClientConnected(ns);
+        }
+
+        private void InvokeOnClientDisconnected(Tnetstate ns)
+        {
+            if (OnClientDisconnected != null)
+                OnClientDisconnected(ns);
+        }
+
+        private void InvokeOnClientLogin(IUserClient userClient)
+        {
+            if (OnClientLogin != null)
+                OnClientLogin(userClient);
+        }
+
+        private void InvokeOnClientLogout(IUserClient userClient)
+        {
+            if (OnClientLogout != null)
+                OnClientLogout(userClient);
+        }
+
+
+        private void NetState_OnDisposed(object sender, NetState.OnDisposedEventArgs e)
+        {
+            InvokeOnClientDisconnected(e.State as Tnetstate);
+        }
+
+        private void NetState_OnLogin(object sender, NetState.OnLoginLogoutEventArgs e)
+        {
+            InvokeOnClientLogin(e.Client);
+        }
+
+        private void NetState_OnLogout(object sender, NetState.OnLoginLogoutEventArgs e)
+        {
+            InvokeOnClientLogout(e.Client);
+        }
+    }
+
+    public abstract class BaseTCPServer<TReader, TWriter, Tnetstate> : BaseStateServer<TReader, TWriter, Tnetstate> 
+        where Tnetstate : NetState
+        where TReader : BaseStreamReader, new()
+        where TWriter : BaseStreamWriter, new()
+    {
+        public BaseTCPServer(int port, IPAddress address = null)
+            : base(port, address)
+        {
+        }
 
         #region INetworkServer Members
 
@@ -81,8 +143,6 @@ namespace Alienseed.BaseNetworkServer
             }
             return Running = Listen();
         }
-
-        protected abstract void PurgeAllClients();
 
         public override void Stop()
         {
@@ -135,10 +195,7 @@ namespace Alienseed.BaseNetworkServer
                     NetworkStream stream = client.GetStream();
 
                     var ns = CreateNetstate(stream, client.Client.RemoteEndPoint);
-                    ns.OnDisposed += NetState_OnDisposed;
-                    ns.OnLogin += NetState_OnLogin;
-                    ns.OnLogout += NetState_OnLogout;
-                    InvokeOnClientConnected(ns);
+                    base.AcceptClient(ns);
 
                 }
                 catch (ObjectDisposedException) { }
@@ -149,47 +206,6 @@ namespace Alienseed.BaseNetworkServer
             }
         }
 
-        private void NetState_OnDisposed(object sender, NetState.OnDisposedEventArgs e)
-        {
-            InvokeOnClientDisconnected(e.State as Tnetstate);
-        }
-
-        private void NetState_OnLogin(object sender, NetState.OnLoginLogoutEventArgs e)
-        {
-            InvokeOnClientLogin(e.Client);
-        }
-
-        private void NetState_OnLogout(object sender, NetState.OnLoginLogoutEventArgs e)
-        {
-            InvokeOnClientLogout(e.Client);
-        }
-
-        protected abstract Tnetstate CreateNetstate(NetworkStream stream, EndPoint ep);
-
         #endregion
-
-        private void InvokeOnClientConnected(Tnetstate ns)
-        {
-            if (OnClientConnected != null)
-                OnClientConnected(ns);
-        }
-
-        private void InvokeOnClientDisconnected(Tnetstate ns)
-        {
-            if (OnClientDisconnected != null)
-                OnClientDisconnected(ns);
-        }
-
-        private void InvokeOnClientLogin(IUserClient userClient)
-        {
-            if (OnClientLogin != null)
-                OnClientLogin(userClient);
-        }
-
-        private void InvokeOnClientLogout(IUserClient userClient)
-        {
-            if (OnClientLogout != null)
-                OnClientLogout(userClient);
-        }
     }
 }
