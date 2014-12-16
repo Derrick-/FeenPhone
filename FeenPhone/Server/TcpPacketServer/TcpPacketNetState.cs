@@ -17,7 +17,6 @@ namespace FeenPhone.Server.TcpPacketServer
             : base(stream, ep, readBufferSize)
         {
             Handler = new ServerPacketHandler(this);
-            Reader.PreviewIncoming += Reader_PreviewIncoming;
             Reader.OnReadData += OnRead;
         }
 
