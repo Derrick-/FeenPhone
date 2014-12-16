@@ -7,22 +7,20 @@ using System.Text;
 
 namespace FeenPhone.Client
 {
-    class RemoteClient : BaseClient
+    abstract class RemoteClient : BaseClient
     {
-        const int readerBufferSize = ushort.MaxValue;
+        protected const int readerBufferSize = ushort.MaxValue;
 
-        private readonly System.Net.IPAddress IP;
-        private readonly int Port;
+        protected readonly System.Net.IPAddress IP;
+        protected readonly int Port;
 
-        private readonly ClientPacketHandler Handler;
+        protected readonly ClientPacketHandler Handler;
 
-        TcpClient Client = null;
-        Alienseed.BaseNetworkServer.PacketServer.NetworkPacketReader Reader = new Alienseed.BaseNetworkServer.PacketServer.NetworkPacketReader();
-        NetworkStream Stream = null;
-        Alienseed.BaseNetworkServer.PacketServer.NetworkPacketWriter Writer = new Alienseed.BaseNetworkServer.PacketServer.NetworkPacketWriter();
+        protected Alienseed.BaseNetworkServer.PacketServer.NetworkPacketReader Reader = new Alienseed.BaseNetworkServer.PacketServer.NetworkPacketReader();
+        protected NetworkStream Stream = null;
+        protected Alienseed.BaseNetworkServer.PacketServer.NetworkPacketWriter Writer = new Alienseed.BaseNetworkServer.PacketServer.NetworkPacketWriter();
 
-        public RemoteClient(IUserClient localUser, System.Net.IPAddress IP, int port)
-            : base(localUser)
+        public RemoteClient(IUserClient localUser, System.Net.IPAddress IP, int port) : base(localUser)
         {
             this.IP = IP;
             this.Port = port;
@@ -49,77 +47,25 @@ namespace FeenPhone.Client
             Handler.Handle(e.data);
         }
 
-        volatile bool connecting = false;
-        public void Connect()
-        {
-            if (!connecting)
-            {
-                TcpClient client = new TcpClient();
-                connecting = true;
-                Console.WriteLine("Connecting to {0}...", IP);
-                client.BeginConnect(IP.ToString(), Port, new AsyncCallback(ConnectCallback), client);
-            }
-            else
-                Console.WriteLine("Already connecting...");
-        }
+        public abstract void Connect();
 
-        private void ConnectCallback(IAsyncResult ar)
-        {
-            TcpClient client = ar.AsyncState as TcpClient;
-            if (client != null)
-            {
-                try
-                {
-                    client.EndConnect(ar);
-                }
-                catch (SocketException ex)
-                {
-                    connecting = false;
-                    ConnectionFailed(ex.Message);
-                    return;
-                }
-                Client = client;
-                Stream = Client.GetStream();
-                Reader.SetStream(Stream, readerBufferSize);
-
-                Writer.SetStream(Stream);
-                _IsConnected = true;
-            }
-            connecting = false;
-        }
-
-        private void ConnectionFailed(string message)
+        protected virtual void ConnectionFailed(string message)
         {
             Console.WriteLine("Connection failed: {0}", message);
         }
 
-        private void Disconnect()
+        protected virtual void Disconnect()
         {
             EventSource.InvokeOnUserList(null, null);
             Writer.SetStream(null);
             if (Stream != null)
                 Stream.Dispose();
-            if (Client != null)
-            {
-                Console.WriteLine("Disconnected.");
-                Client.Close();
-            }
-            Client = null;
+
         }
 
-        private bool _IsConnected = false;
-        public override bool IsConnected
-        {
-            get { return Client != null && _IsConnected; }
-        }
+        public override abstract bool IsConnected{get;}
 
-        public override void Dispose()
-        {
-            if (Client != null)
-            {
-                Disconnect();
-            }
-        }
+        public override abstract void Dispose();
 
         internal override void SendChat(string text)
         {

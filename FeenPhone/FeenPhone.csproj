@@ -95,6 +95,7 @@
     <Compile Include="Client\EventSource.cs" />
     <Compile Include="Client\ClientPacketHandler.cs" />
     <Compile Include="Client\LocalClient.cs" />
+    <Compile Include="Client\RemoteTCPClient.cs" />
     <Compile Include="Client\RemoteClient.cs" />
     <Compile Include="Client\UserRepo.cs" />
     <Compile Include="Packets\BasePacketHandler.cs" />
