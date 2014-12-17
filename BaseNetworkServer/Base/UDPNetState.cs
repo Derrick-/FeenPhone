@@ -7,14 +7,14 @@ using System.Net;
 
 namespace Alienseed.BaseNetworkServer
 {
-    public abstract class TCPNetState<TReader, TWriter> : NetState, IDisposable
-        where TReader : BaseStreamReader, new()
-        where TWriter : BaseStreamWriter, new()
+    public abstract class UDPNetState<TReader, TWriter> : NetState, IDisposable
+        where TReader : BaseUDPReader, new()
+        where TWriter : BaseUDPWriter, new()
     {
         public TReader Reader { get; private set; }
         public TWriter Writer { get; private set; }
 
-        protected override string ClientIdentifier { get { return string.Format("TCP {0} {1}", Address.ToString(), User != null ? User.Username : "TCP NULL"); } }
+        protected override string ClientIdentifier { get { return string.Format("UDP {0} {1}", Address.ToString(), User != null ? User.Username : "UDP NULL"); } }
 
         public IPEndPoint IPEndPoint { get { return EndPoint as IPEndPoint; } }
         public IPAddress Address
@@ -27,15 +27,15 @@ namespace Alienseed.BaseNetworkServer
             }
         }
 
-        private Stream Stream { get; set; }
+        public abstract void ReceivedData(byte[] data);
 
-        internal TCPNetState(Stream stream, IPEndPoint ep, int readBufferSize)
+        internal UDPNetState(IPEndPoint ep, int readBufferSize)
             : base(ep)
         {
-            Stream = stream;
+            Reader = new TReader();
+            Writer = new TWriter();
 
-            Reader = new TReader(); Reader.SetStream(stream, readBufferSize);
-            Writer = new TWriter(); Writer.SetStream(stream);
+            Writer.SetEndpoint(ep);
 
             Reader.OnDisconnect += Dispose;
             Reader.OnBufferOverflow += Reader_OnBufferOverflow;
@@ -45,12 +45,12 @@ namespace Alienseed.BaseNetworkServer
 
         protected abstract void Reader_OnBufferOverflow(object sender, BufferOverflowArgs e);
 
+        protected virtual void OnConnected() { }
+
         public sealed override void Write(byte[] bytes)
         {
             Writer.Write(bytes);
         }
-
-        protected virtual void OnConnected() { }
 
         public override void Dispose()
         {
@@ -58,7 +58,6 @@ namespace Alienseed.BaseNetworkServer
 
             Reader.Dispose();
             Writer.Dispose();
-            Stream.Dispose();
         }
     }
 

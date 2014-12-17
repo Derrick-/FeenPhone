@@ -42,23 +42,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Base\BaseStreamReader.cs" />
-    <Compile Include="Base\BaseNetworkServer.cs" />
-    <Compile Include="Base\BaseStreamWriter.cs" />
+    <Compile Include="Base\BaseTcpServer.cs" />
+    <Compile Include="Base\BaseNetworkReaders.cs" />
+    <Compile Include="Base\BaseServer.cs" />
+    <Compile Include="Base\BaseNetworkWriters.cs" />
+    <Compile Include="Base\BaseUdpServer.cs" />
     <Compile Include="Base\TCPNetState.cs" />
+    <Compile Include="Interfaces\INetworkWriter.cs" />
+    <Compile Include="PacketServer\BaseUdpPacketServer.cs" />
+    <Compile Include="Base\UDPNetState.cs" />
     <Compile Include="Exceptions\BaseNetworkException.cs" />
     <Compile Include="Exceptions\IncomingBufferOverflowException.cs" />
     <Compile Include="Interfaces\IAccount.cs" />
     <Compile Include="Interfaces\INetState.cs" />
     <Compile Include="Interfaces\INetworkReader.cs" />
     <Compile Include="Interfaces\INetworkServer.cs" />
-    <Compile Include="Interfaces\INetworkWriter.cs" />
     <Compile Include="Interfaces\IUser.cs" />
     <Compile Include="Base\NetState.cs" />
     <Compile Include="PacketServer\BasePacketNetState.cs" />
-    <Compile Include="PacketServer\BasePacketServer.cs" />
-    <Compile Include="PacketServer\NetworkPacketReader.cs" />
-    <Compile Include="PacketServer\NetworkPacketWriter.cs" />
+    <Compile Include="PacketServer\BaseTcpPacketServer.cs" />
+    <Compile Include="PacketServer\PacketReaders.cs" />
+    <Compile Include="PacketServer\PacketWriters.cs" />
     <Compile Include="PacketServer\PacketBuffer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Telnet\BaseMenuPrompt.cs" />

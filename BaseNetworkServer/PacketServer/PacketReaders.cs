@@ -5,18 +5,13 @@ using System.Text;
 
 namespace Alienseed.BaseNetworkServer.PacketServer
 {
-    public class NetworkPacketReader : BaseStreamReader
+    interface IPacketReader
     {
+        event EventHandler<DataReadEventArgs> OnReadData;
+    }
 
-        public class DataReadEventArgs : EventArgs
-        {
-            public Queue<byte> data { get; set; }
-            public DataReadEventArgs(Queue<byte> data)
-            {
-                this.data = data;
-            }
-        }
-
+    public class TCPPacketReader : BaseStreamReader, IPacketReader
+    {
         public event EventHandler<DataReadEventArgs> OnReadData;
 
         protected override void OnRead()
@@ -25,6 +20,16 @@ namespace Alienseed.BaseNetworkServer.PacketServer
             {
                 OnReadData(this, new DataReadEventArgs(InStream));
             }
+        }
+    }
+
+    public class UDPPacketReader : BaseUDPReader, IPacketReader
+    {
+        public void ReceivedData(byte[] data)
+        {
+            foreach (byte b in data)
+                InStream.Enqueue(b);
+            OnRead();
         }
     }
 }

@@ -5,15 +5,81 @@ using System.Net.Sockets;
 
 namespace Alienseed.BaseNetworkServer
 {
-    public abstract class BaseStreamReader : INetworkReader
+    public class DataReadEventArgs : EventArgs
     {
-        private byte[] _buffer;
+        public Queue<byte> data { get; set; }
+        public DataReadEventArgs(Queue<byte> data)
+        {
+            this.data = data;
+        }
+    }
 
+    public abstract class BaseNetworkReader : INetworkReader
+    {
         public event OnDisconnectHandler OnDisconnect;
         public event EventHandler<BufferOverflowArgs> OnBufferOverflow;
 
         public delegate void PreviewIncomingHandler(ref byte[] bytes, ref int numbytes, ref bool handled);
         public event PreviewIncomingHandler PreviewIncoming;
+
+        public abstract void Dispose();
+
+        protected internal bool InvokePreviewIncoming(ref byte[] bytes, ref int numbytes)
+        {
+            bool handled = false;
+            if (PreviewIncoming != null)
+                PreviewIncoming(ref bytes, ref numbytes, ref handled);
+            return !handled;
+        }
+
+        protected internal void InvokeOnDisconnect()
+        {
+            if (OnDisconnect != null)
+                OnDisconnect();
+        }
+
+        protected internal bool InvokeOnBufferOverflow()
+        {
+            bool handled = false;
+            if (OnBufferOverflow != null)
+            {
+                var args = new BufferOverflowArgs();
+                OnBufferOverflow(this, args);
+                handled = args.handled;
+            }
+            return handled;
+        }
+
+        protected abstract void OnRead();
+
+
+    }
+
+    public class BaseUDPReader : BaseNetworkReader
+    {
+        public BaseUDPReader() { }
+
+        public event EventHandler<DataReadEventArgs> OnReadData;
+
+        protected Queue<byte> InStream = new Queue<byte>();
+
+        protected override void OnRead()
+        {
+            if (OnReadData != null)
+            {
+                OnReadData(this, new DataReadEventArgs(InStream));
+            }
+        }
+
+        public override void Dispose()
+        {
+        }
+
+    }
+
+    public abstract class BaseStreamReader : BaseNetworkReader
+    {
+        private byte[] _buffer;
 
         const int MaxQueueLength = ushort.MaxValue;
 
@@ -21,7 +87,7 @@ namespace Alienseed.BaseNetworkServer
 
         protected Queue<byte> InStream = new Queue<byte>();
 
-        public void SetStream(Stream stream, int buffersize=255)
+        public void SetStream(Stream stream, int buffersize = 255)
         {
             if (_buffer == null || _buffer.Length != buffersize)
                 _buffer = new byte[buffersize];
@@ -78,13 +144,7 @@ namespace Alienseed.BaseNetworkServer
 
                 if (InStream.Count + read > MaxQueueLength)
                 {
-                    bool handled = false;
-                    if (OnBufferOverflow != null)
-                    {
-                        var args = new BufferOverflowArgs();
-                        OnBufferOverflow(this, args);
-                        handled = args.handled;
-                    }
+                    bool handled = InvokeOnBufferOverflow();
                     if (!handled)
                         throw new IncomingBufferOverflowException();
                     else
@@ -102,24 +162,8 @@ namespace Alienseed.BaseNetworkServer
             }
         }
 
-        bool InvokePreviewIncoming(ref byte[] bytes, ref int numbytes)
-        {
-            bool handled = false;
-            if (PreviewIncoming != null)
-                PreviewIncoming(ref bytes, ref numbytes, ref handled);
-            return !handled;
-        }
-
-        void InvokeOnDisconnect()
-        {
-            if (OnDisconnect != null)
-                OnDisconnect();
-        }
-
-        protected abstract void OnRead();
-
         public bool IsDisposed { get; private set; }
-        public void Dispose()
+        public override void Dispose()
         {
             Stream = null;
             IsDisposed = true;

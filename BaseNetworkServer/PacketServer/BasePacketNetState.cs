@@ -7,11 +7,21 @@ using System.Text;
 
 namespace Alienseed.BaseNetworkServer.PacketServer
 {
-    public abstract class BasePacketNetState : TCPNetState<NetworkPacketReader, NetworkPacketWriter>
+    public abstract class BaseUdpPacketNetState : UDPNetState<UDPPacketReader, UDPPacketWriter>
     {
-        protected override string LogTitle { get { return "PacketServer"; } }
+        protected override string LogTitle { get { return "UDP PacketServer"; } }
 
-        public BasePacketNetState(Stream stream, IPEndPoint ep, int readBufferSize) : base(stream, ep, readBufferSize)
+        public BaseUdpPacketNetState(IPEndPoint ep, int readBufferSize) : base(ep, readBufferSize)
+        {
+        }
+
+   }
+  
+    public abstract class BaseTcpPacketNetState : TCPNetState<TCPPacketReader, TCPPacketWriter>
+    {
+        protected override string LogTitle { get { return "TCP PacketServer"; } }
+
+        public BaseTcpPacketNetState(Stream stream, IPEndPoint ep, int readBufferSize) : base(stream, ep, readBufferSize)
         {
 
         }
