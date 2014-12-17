@@ -257,6 +257,7 @@ namespace FeenPhone.WPFApp.Controls
                 }
             }
             RemoteClient remClient = new RemoteTCPClient(User, IP, port);
+            //RemoteClient remClient = new RemoteUDPClient(User, IP, port);
             Client = remClient;
             invalidLoginAttempts = 0;
             EventSource.InvokeOnUserList(null, null);
