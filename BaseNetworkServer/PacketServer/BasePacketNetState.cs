@@ -21,7 +21,7 @@ namespace Alienseed.BaseNetworkServer.PacketServer
     {
         protected override string LogTitle { get { return "TCP PacketServer"; } }
 
-        public BaseTcpPacketNetState(Stream stream, IPEndPoint ep, int readBufferSize) : base(stream, ep, readBufferSize)
+        public BaseTcpPacketNetState(System.Net.Sockets.NetworkStream stream, IPEndPoint ep, int readBufferSize) : base(stream, ep, readBufferSize)
         {
 
         }

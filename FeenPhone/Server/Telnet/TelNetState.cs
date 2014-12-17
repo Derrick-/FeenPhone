@@ -8,9 +8,9 @@ using System.Net;
 
 namespace FeenPhone.Server.Telnet
 {
-    class TelNetState : BaseTelNetState, IFeenPhoneNetstate
+    class TelNetState : BaseTelNetState, IFeenPhoneEvents
     {
-        public TelNetState(Stream stream, IPEndPoint ep) : base(stream, ep) { }
+        public TelNetState(System.Net.Sockets.NetworkStream stream, IPEndPoint ep) : base(stream, ep) { }
 
         protected override void Reader_OnBufferOverflow(object sender, BufferOverflowArgs e)
         {

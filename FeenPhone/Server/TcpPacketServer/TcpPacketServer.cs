@@ -8,7 +8,7 @@ using System.Net;
 
 namespace FeenPhone.Server.TcpPacketServer
 {
-    class TcpPacketServer : BasePacketServer<TcpPacketNetState>
+    class TcpPacketServer : BaseTCPPacketServer<TcpPacketNetState>
     {
         const int readerBufferSize = ushort.MaxValue;
 

@@ -1,4 +1,6 @@
-﻿using Alienseed.BaseNetworkServer.Accounting;
+﻿using Alienseed.BaseNetworkServer;
+using Alienseed.BaseNetworkServer.Accounting;
+using Alienseed.BaseNetworkServer.PacketServer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,9 +18,9 @@ namespace FeenPhone.Client
 
         protected readonly ClientPacketHandler Handler;
 
-        protected Alienseed.BaseNetworkServer.PacketServer.NetworkPacketReader Reader = new Alienseed.BaseNetworkServer.PacketServer.NetworkPacketReader();
+        protected TCPPacketReader Reader = new TCPPacketReader();
         protected NetworkStream Stream = null;
-        protected Alienseed.BaseNetworkServer.PacketServer.NetworkPacketWriter Writer = new Alienseed.BaseNetworkServer.PacketServer.NetworkPacketWriter();
+        protected TCPPacketWriter Writer = new TCPPacketWriter();
 
         public RemoteClient(IUserClient localUser, System.Net.IPAddress IP, int port) : base(localUser)
         {
@@ -31,7 +33,7 @@ namespace FeenPhone.Client
             Reader.OnBufferOverflow += Reader_OnBufferOverflow;
         }
 
-        void Reader_OnBufferOverflow(object sender, Alienseed.BaseNetworkServer.BufferOverflowArgs e)
+        void Reader_OnBufferOverflow(object sender, BufferOverflowArgs e)
         {
             Console.WriteLine("Client Buffer Overflow: Truncating Buffer");
             e.handled = true;
@@ -42,7 +44,7 @@ namespace FeenPhone.Client
             Disconnect();
         }
 
-        void Reader_OnReadData(object sender, Alienseed.BaseNetworkServer.PacketServer.NetworkPacketReader.DataReadEventArgs e)
+        void Reader_OnReadData(object sender, DataReadEventArgs e)
         {
             Handler.Handle(e.data);
         }

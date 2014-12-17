@@ -21,7 +21,7 @@ namespace FeenPhone
 
     static class Packet
     {
-        internal static void WriteLoginStatus(NetworkPacketWriter Writer, bool isLoggedIn)
+        internal static void WriteLoginStatus(IPacketWriter Writer, bool isLoggedIn)
         {
             using (var buffer = new FeenPacketBuffer(1))
             {
@@ -34,7 +34,7 @@ namespace FeenPhone
             }
         }
 
-        internal static void WriteLoginRequest(NetworkPacketWriter Writer, string username, string password)
+        internal static void WriteLoginRequest(IPacketWriter Writer, string username, string password)
         {
             if (username.Contains('\t') || password.Contains('\t'))
                 throw new ArgumentException("Username or password contains invalid character");
@@ -49,7 +49,7 @@ namespace FeenPhone
             }
         }
 
-        internal static void WriteUserLogin(NetworkPacketWriter Writer, IUser user)
+        internal static void WriteUserLogin(IPacketWriter Writer, IUser user)
         {
             using (var buffer = new FeenPacketBuffer(PacketID.UserLogin, UserData(user)))
             {
@@ -58,7 +58,7 @@ namespace FeenPhone
             }
         }
 
-        internal static void WriteUserLogout(NetworkPacketWriter Writer, IUser user)
+        internal static void WriteUserLogout(IPacketWriter Writer, IUser user)
         {
             using (var buffer = new FeenPacketBuffer(PacketID.UserLogout, UserData(user)))
             {
@@ -67,7 +67,7 @@ namespace FeenPhone
             }
         }
 
-        internal static void WriteChat(NetworkPacketWriter Writer, IUser user, string text)
+        internal static void WriteChat(IPacketWriter Writer, IUser user, string text)
         {
             byte[] dataText = Encoding.ASCII.GetBytes(text);
 
@@ -89,7 +89,7 @@ namespace FeenPhone
             }
         }
 
-        internal static void WriteUserList(NetworkPacketWriter Writer, IEnumerable<IUser> users)
+        internal static void WriteUserList(IPacketWriter Writer, IEnumerable<IUser> users)
         {
             if (users.Count() > byte.MaxValue)
                 throw new ArgumentException("Too many users, max is " + byte.MaxValue);
@@ -111,7 +111,7 @@ namespace FeenPhone
             }
         }
 
-        internal static void WriteAudioData(NetworkPacketWriter Writer, Audio.Codecs.CodecID Codec, byte[] AudioData, int AudioDataLen)
+        internal static void WriteAudioData(IPacketWriter Writer, Audio.Codecs.CodecID Codec, byte[] AudioData, int AudioDataLen)
         {
             using (var buffer = new FeenPacketBuffer())
             {

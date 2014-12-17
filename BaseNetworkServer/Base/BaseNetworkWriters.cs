@@ -45,7 +45,7 @@ namespace Alienseed.BaseNetworkServer
         public void SetStream(Stream stream)
         {
             Stream = stream;
-            if (stream != null && stream.WriteTimeout < 0)
+            if (stream is NetworkStream && stream.WriteTimeout < 0)
                 Stream.WriteTimeout = DefaultStreamWriteTimeout;
         }
 

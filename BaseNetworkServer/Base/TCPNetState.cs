@@ -27,9 +27,9 @@ namespace Alienseed.BaseNetworkServer
             }
         }
 
-        private Stream Stream { get; set; }
+        private System.Net.Sockets.NetworkStream Stream { get; set; }
 
-        internal TCPNetState(Stream stream, IPEndPoint ep, int readBufferSize)
+        internal TCPNetState(System.Net.Sockets.NetworkStream stream, IPEndPoint ep, int readBufferSize)
             : base(ep)
         {
             Stream = stream;

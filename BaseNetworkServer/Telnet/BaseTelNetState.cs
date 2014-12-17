@@ -16,7 +16,7 @@ namespace  Alienseed.BaseNetworkServer.Telnet
 
         protected virtual int screenWidth { get { return 80; } }
 
-        public BaseTelNetState(Stream stream, IPEndPoint ep) : base(stream, ep, 1024)
+        public BaseTelNetState(System.Net.Sockets.NetworkStream stream, IPEndPoint ep) : base(stream, ep, 1024)
         {
             Reader.OnTextLine += Reader_OnText;
             Reader.PreviewIncoming += Reader_PreviewIncoming;

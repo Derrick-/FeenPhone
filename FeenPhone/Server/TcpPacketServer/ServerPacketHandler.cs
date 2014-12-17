@@ -1,4 +1,5 @@
-﻿using Alienseed.BaseNetworkServer.Accounting;
+﻿using Alienseed.BaseNetworkServer;
+using Alienseed.BaseNetworkServer.Accounting;
 using FeenPhone.Accounting;
 using System;
 using System.Collections.Generic;
@@ -10,9 +11,9 @@ namespace FeenPhone.Server.TcpPacketServer
 
     class ServerPacketHandler : BasePacketHandler
     {
-        private readonly TcpPacketNetState state;
+        private readonly IFeenPhoneNetState state;
 
-        public ServerPacketHandler(TcpPacketNetState state)
+        public ServerPacketHandler(IFeenPhoneNetState state)
         {
             this.state = state;
         }

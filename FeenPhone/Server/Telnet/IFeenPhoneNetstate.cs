@@ -8,7 +8,14 @@ using System.Text;
 
 namespace FeenPhone.Server
 {
-    interface IFeenPhoneNetstate
+    internal interface IFeenPhoneNetState : IFeenPhoneEvents, INetState
+    {
+        bool Login(string username, string password);
+        void OnLoginSuccess();
+        void OnLoginFailed();
+    }
+
+    interface IFeenPhoneEvents
     {
         void OnUserConnected(INetState user);
         void OnUserDisconnected(INetState user);

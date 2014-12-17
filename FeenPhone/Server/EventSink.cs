@@ -9,9 +9,9 @@ namespace FeenPhone.Server
 {
     static class EventSink
     {
-        static IEnumerable<IFeenPhoneNetstate> AllFeens
+        static IEnumerable<IFeenPhoneEvents> AllFeens
         {
-            get { return BaseServer.Clients.Where(m => m is IFeenPhoneNetstate).Cast<IFeenPhoneNetstate>().ToList(); }
+            get { return BaseServer.Clients.Where(m => m is IFeenPhoneEvents).Cast<IFeenPhoneEvents>().ToList(); }
         }
 
         internal static void OnChat(INetState client, string text)

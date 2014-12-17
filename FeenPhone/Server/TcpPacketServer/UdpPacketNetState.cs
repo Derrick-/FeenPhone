@@ -9,12 +9,12 @@ using System.Text;
 
 namespace FeenPhone.Server.TcpPacketServer
 {
-    class TcpPacketNetState : BaseTcpPacketNetState, IFeenPhoneNetState
+    class UdpPacketNetState : BaseUdpPacketNetState, IFeenPhoneNetState
     {
 
         private readonly ServerPacketHandler Handler;
-        public TcpPacketNetState(System.Net.Sockets.NetworkStream stream, IPEndPoint ep, int readBufferSize)
-            : base(stream, ep, readBufferSize)
+        public UdpPacketNetState(IPEndPoint ep, int readBufferSize)
+            : base(ep, readBufferSize)
         {
             Handler = new ServerPacketHandler(this);
             Reader.OnReadData += OnRead;
@@ -26,6 +26,11 @@ namespace FeenPhone.Server.TcpPacketServer
             e.handled = true;
         }
 
+        public override void ReceivedData(byte[] data)
+        {
+            Reader.ReceivedData(data);
+        }
+        
         protected void OnRead(object sender, DataReadEventArgs args)
         {
             Queue<byte> InStream = args.data;

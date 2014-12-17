@@ -19,7 +19,7 @@ namespace FeenPhoneTest
         [TestMethod]
         public void UsersListTest()
         {
-            NetworkPacketWriter writer = new NetworkPacketWriter();
+            TCPPacketWriter writer = new TCPPacketWriter();
 
             List<IUser> UsersList = new List<IUser>();
 
@@ -58,7 +58,7 @@ namespace FeenPhoneTest
         [TestMethod]
         public void AudioPacketTest()
         {
-            NetworkPacketWriter writer = new NetworkPacketWriter();
+            TCPPacketWriter writer = new TCPPacketWriter();
             MemoryStream ms = new MemoryStream();
             writer.SetStream(ms);
 
