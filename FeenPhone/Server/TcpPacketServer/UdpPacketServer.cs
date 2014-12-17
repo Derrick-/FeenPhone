@@ -8,24 +8,24 @@ using System.Net;
 
 namespace FeenPhone.Server.TcpPacketServer
 {
-    class TcpPacketServer : BaseTCPPacketServer<TcpPacketNetState>
+    class UdpPacketServer : BaseUDPPacketServer<UdpPacketNetState>
     {
         const int readerBufferSize = ushort.MaxValue;
 
-        public TcpPacketServer(int port = ServerHost.DefaultServerPort, IPAddress ip = null) : base(port, ip) { }
+        public UdpPacketServer(int port = ServerHost.DefaultServerPort) : base(port) { }
 
-        protected override TcpPacketNetState NetstateFactory(System.Net.Sockets.NetworkStream stream, System.Net.EndPoint ep)
+        protected override UdpPacketNetState NetstateFactory(EndPoint ep)
         {
-            return new TcpPacketNetState(stream, ep as IPEndPoint, readerBufferSize);
+            return new UdpPacketNetState(ep as IPEndPoint, readerBufferSize);
         }
 
-        protected override void ClientConnected(TcpPacketNetState client)
+        protected override void ClientConnected(UdpPacketNetState client)
         {
             Packet.WriteLoginStatus(client.Writer, false);
             EventSink.OnConnect(client);
         }
 
-        protected override void ClientDisconnected(TcpPacketNetState client)
+        protected override void ClientDisconnected(UdpPacketNetState client)
         {
             EventSink.OnDisconnect(client);
         }

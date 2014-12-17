@@ -1,4 +1,5 @@
 ﻿using Alienseed.BaseNetworkServer.Accounting;
+using Alienseed.BaseNetworkServer.PacketServer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,8 +11,15 @@ namespace FeenPhone.Client
     class RemoteTCPClient : RemoteClient
     {
         TcpClient Client = null;
+        protected NetworkStream Stream = null;
 
         public RemoteTCPClient(IUserClient localUser, System.Net.IPAddress IP, int port) : base(localUser, IP, port) { }
+
+        TCPPacketReader _reader = new TCPPacketReader();
+        protected override IPacketReader Reader { get { return _reader; } }
+
+        TCPPacketWriter _writer = new TCPPacketWriter();
+        protected override IPacketWriter Writer { get { return _writer; } }
 
         volatile bool connecting = false;
         public override void Connect()
@@ -44,9 +52,9 @@ namespace FeenPhone.Client
                 }
                 Client = client;
                 Stream = Client.GetStream();
-                Reader.SetStream(Stream, readerBufferSize);
+                _reader.SetStream(Stream, readerBufferSize);
 
-                Writer.SetStream(Stream);
+                _writer.SetStream(Stream);
                 _IsConnected = true;
             }
             connecting = false;
@@ -55,6 +63,9 @@ namespace FeenPhone.Client
         protected override void Disconnect()
         {
             base.Disconnect();
+            _writer.SetStream(null);
+            if (Stream != null)
+                Stream.Dispose();
 
             if (Client != null)
             {

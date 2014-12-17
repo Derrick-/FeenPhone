@@ -8,6 +8,7 @@ namespace FeenPhone.Server
 {
     class ServerHost : IDisposable
     {
+        public const int DefaultServerPort = 5150;
 
         List<BaseServer> Servers = new List<BaseServer>();
 
@@ -25,19 +26,20 @@ namespace FeenPhone.Server
             }
         }
 
-        public ServerHost(int TcpServerPort = TcpPacketServer.TcpPacketServer.DefaultTcpServerPort)
+        public ServerHost(int TcpServerPort = DefaultServerPort)
         {
             InitServers();
             StartServers();
         }
 
-        void InitServers(int TcpServerPort = TcpPacketServer.TcpPacketServer.DefaultTcpServerPort)
+        void InitServers(int ServerPort = DefaultServerPort)
         {
             StopServers();
             Servers.Clear();
 
             Servers.Add(new Telnet.TelnetServer());
-            Servers.Add(new TcpPacketServer.TcpPacketServer(TcpServerPort));
+            Servers.Add(new TcpPacketServer.TcpPacketServer(ServerPort));
+            Servers.Add(new TcpPacketServer.UdpPacketServer(ServerPort));
         }
 
         void StartServers()

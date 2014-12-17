@@ -108,6 +108,7 @@
     <Compile Include="Server\EventSink.cs" />
     <Compile Include="Server\ServerHost.cs" />
     <Compile Include="Server\TcpPacketServer\ServerPacketHandler.cs" />
+    <Compile Include="Server\TcpPacketServer\UdpPacketServer.cs" />
     <Compile Include="Server\TcpPacketServer\UdpPacketNetState.cs" />
     <Compile Include="Server\TcpPacketServer\TcpPacketNetState.cs" />
     <Compile Include="Server\TcpPacketServer\TcpPacketServer.cs" />

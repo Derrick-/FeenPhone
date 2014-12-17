@@ -69,7 +69,7 @@ namespace Alienseed.BaseNetworkServer
                 if (!Connections.ContainsKey(endpoint))
                 {
                     var stream = new System.IO.MemoryStream();
-                    Tnetstate ns = null; CreateNetstate(endpoint);
+                    Tnetstate ns = null; NetstateFactory(endpoint);
                     connection = new Connection(ns);
                     base.AcceptClient(ns);
                 }
@@ -84,7 +84,7 @@ namespace Alienseed.BaseNetworkServer
             }
         }
 
-        protected abstract Tnetstate CreateNetstate(EndPoint ep);
+        protected abstract Tnetstate NetstateFactory(EndPoint ep);
 
         public override void Stop()
         {

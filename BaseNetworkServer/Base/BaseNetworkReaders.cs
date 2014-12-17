@@ -19,7 +19,6 @@ namespace Alienseed.BaseNetworkServer
         public event OnDisconnectHandler OnDisconnect;
         public event EventHandler<BufferOverflowArgs> OnBufferOverflow;
 
-        public delegate void PreviewIncomingHandler(ref byte[] bytes, ref int numbytes, ref bool handled);
         public event PreviewIncomingHandler PreviewIncoming;
 
         public abstract void Dispose();

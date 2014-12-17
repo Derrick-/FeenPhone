@@ -2,7 +2,7 @@
 
 namespace  Alienseed.BaseNetworkServer
 {
-    interface INetworkWriter : IDisposable
+    public interface INetworkWriter : IDisposable
     {
         void Write(byte[] bytes);
     }

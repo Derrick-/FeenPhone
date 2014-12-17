@@ -45,7 +45,7 @@ namespace FeenPhone.WPFApp.Controls
             if (!string.IsNullOrWhiteSpace(settings.Port) && int.TryParse(settings.Port, out port))
                 txtPort.Text = settings.Port;
             else
-                txtPort.Text = Server.TcpPacketServer.TcpPacketServer.DefaultTcpServerPort.ToString();
+                txtPort.Text = ServerHost.DefaultServerPort.ToString();
 
             if (settings.Nickname != null)
                 txtNickname.Text = settings.Nickname;
@@ -153,7 +153,7 @@ namespace FeenPhone.WPFApp.Controls
                     int port;
                     if (!int.TryParse(target.txtPort.Text, out port))
                     {
-                        port = FeenPhone.Server.TcpPacketServer.TcpPacketServer.DefaultTcpServerPort;
+                        port = ServerHost.DefaultServerPort;
                         target.txtPort.Text = port.ToString();
                     }
 

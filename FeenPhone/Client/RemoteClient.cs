@@ -18,9 +18,8 @@ namespace FeenPhone.Client
 
         protected readonly ClientPacketHandler Handler;
 
-        protected TCPPacketReader Reader = new TCPPacketReader();
-        protected NetworkStream Stream = null;
-        protected TCPPacketWriter Writer = new TCPPacketWriter();
+        protected abstract IPacketReader Reader {get;}
+        protected abstract IPacketWriter Writer { get; }
 
         public RemoteClient(IUserClient localUser, System.Net.IPAddress IP, int port) : base(localUser)
         {
@@ -59,10 +58,6 @@ namespace FeenPhone.Client
         protected virtual void Disconnect()
         {
             EventSource.InvokeOnUserList(null, null);
-            Writer.SetStream(null);
-            if (Stream != null)
-                Stream.Dispose();
-
         }
 
         public override abstract bool IsConnected{get;}

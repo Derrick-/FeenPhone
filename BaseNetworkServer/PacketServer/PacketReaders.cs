@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Alienseed.BaseNetworkServer.PacketServer
 {
-    interface IPacketReader
+    public interface IPacketReader : INetworkReader
     {
         event EventHandler<DataReadEventArgs> OnReadData;
     }

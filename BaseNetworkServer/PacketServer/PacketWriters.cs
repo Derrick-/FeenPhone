@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Alienseed.BaseNetworkServer.PacketServer
 {
-    public interface IPacketWriter
+    public interface IPacketWriter : INetworkWriter
     {
         void Write(PacketBuffer buffer);
     }
