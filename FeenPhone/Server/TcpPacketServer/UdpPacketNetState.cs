@@ -40,7 +40,6 @@ namespace FeenPhone.Server.TcpPacketServer
                 byte[] bytes = new byte[InStream.Count];
 
                 InStream.CopyTo(bytes, 0);
-                string read = Encoding.ASCII.GetString(bytes);
 
                 Handler.Handle(InStream);
             }

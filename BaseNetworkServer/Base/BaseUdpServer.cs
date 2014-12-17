@@ -68,8 +68,7 @@ namespace Alienseed.BaseNetworkServer
                 Connection connection;
                 if (!Connections.ContainsKey(endpoint))
                 {
-                    var stream = new System.IO.MemoryStream();
-                    Tnetstate ns = null; NetstateFactory(endpoint);
+                    Tnetstate ns = NetstateFactory(endpoint);
                     connection = new Connection(ns);
                     base.AcceptClient(ns);
                 }

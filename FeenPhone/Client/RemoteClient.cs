@@ -13,7 +13,7 @@ namespace FeenPhone.Client
     {
         protected const int readerBufferSize = ushort.MaxValue;
 
-        protected readonly System.Net.IPAddress IP;
+        protected readonly System.Net.IPAddress HostIP;
         protected readonly int Port;
 
         protected readonly ClientPacketHandler Handler;
@@ -23,7 +23,7 @@ namespace FeenPhone.Client
 
         public RemoteClient(IUserClient localUser, System.Net.IPAddress IP, int port) : base(localUser)
         {
-            this.IP = IP;
+            this.HostIP = IP;
             this.Port = port;
             Handler = new ClientPacketHandler();
 

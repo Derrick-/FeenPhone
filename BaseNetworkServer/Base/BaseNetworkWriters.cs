@@ -16,23 +16,25 @@ namespace Alienseed.BaseNetworkServer
     {
         IPEndPoint ep;
 
-        Socket socket = new System.Net.Sockets.Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        Socket Socket;
 
         public BaseUDPWriter() { }
 
-        internal void SetEndpoint(IPEndPoint ep)
+        public void SetEndpoint(IPEndPoint ep)
         {
             this.ep = ep;
+            Socket = new System.Net.Sockets.Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         }
 
         public override void Write(byte[] bytes)
         {
-            socket.SendTo(bytes, ep);
+            Socket.SendTo(bytes, ep);
         }
 
         public override void Dispose()
         {
-            socket.Dispose();
+            if (Socket != null)
+                Socket.Dispose();
         }
     }
 

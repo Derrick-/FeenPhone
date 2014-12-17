@@ -28,8 +28,8 @@ namespace FeenPhone.Client
             {
                 TcpClient client = new TcpClient();
                 connecting = true;
-                Console.WriteLine("Connecting to {0}...", IP);
-                client.BeginConnect(IP.ToString(), Port, new AsyncCallback(ConnectCallback), client);
+                Console.WriteLine("Connecting to {0}...", HostIP);
+                client.BeginConnect(HostIP.ToString(), Port, new AsyncCallback(ConnectCallback), client);
             }
             else
                 Console.WriteLine("Already connecting...");
