@@ -19,20 +19,6 @@ namespace Alienseed.BaseNetworkServer
         private IPEndPoint sender;
         private UdpClient Host;
 
-        class Connection
-        {
-            public DateTime LastActivity { get; set; }
-
-            public readonly Tnetstate Netstate;
-
-            public Connection(Tnetstate netstate)
-            {
-                Netstate = netstate;
-            }
-        }
-
-        Dictionary<IPEndPoint, Connection> Connections = new Dictionary<IPEndPoint, Connection>();
-
         class UdpState
         {
             public UdpClient host { get; set; }
@@ -54,7 +40,15 @@ namespace Alienseed.BaseNetworkServer
             UdpState state = new UdpState();
             state.endpoint = sender;
             state.host = Host;
-            Host.BeginReceive(new AsyncCallback(Host_RecieveCallback), state);
+            try
+            {
+                Host.BeginReceive(new AsyncCallback(Host_RecieveCallback), state);
+            }
+            catch (SocketException)
+            {
+                if (Running)
+                    Listen();
+            }
         }
 
         private void Host_RecieveCallback(IAsyncResult ar)
@@ -63,21 +57,20 @@ namespace Alienseed.BaseNetworkServer
             {
                 IPEndPoint endpoint = ((UdpState)(ar.AsyncState)).endpoint;
 
-                var data = Host.EndReceive(ar, ref endpoint);
+                Tnetstate ns = null;
 
-                Connection connection;
-                if (!Connections.ContainsKey(endpoint))
+                byte[] data = null;
+                try
                 {
-                    Tnetstate ns = NetstateFactory(endpoint);
-                    connection = new Connection(ns);
+                    data = ((UdpState)(ar.AsyncState)).host.EndReceive(ar, ref endpoint);
+                    ns = NetstateFactory(endpoint);
+                    int clientPort = ((IPEndPoint)(ns.Client.Client.LocalEndPoint)).Port;
+                    Host.Send(new byte[] { (byte)(clientPort >> 8), (byte)clientPort }, 2, endpoint);
                     base.AcceptClient(ns);
                 }
-                else
-                    connection = Connections[endpoint];
-
-                connection.Netstate.ReceivedData(data);
-
-                connection.LastActivity = DateTime.Now;
+                catch (SocketException ex)
+                {
+                }
 
                 Listen();
             }
@@ -91,6 +84,7 @@ namespace Alienseed.BaseNetworkServer
             {
                 Host.Close();
                 Host = null;
+                PurgeAllClients();
             }
             Running = false;
         }

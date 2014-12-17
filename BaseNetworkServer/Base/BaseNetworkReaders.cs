@@ -62,6 +62,17 @@ namespace Alienseed.BaseNetworkServer
 
         protected Queue<byte> InStream = new Queue<byte>();
 
+        private object readLock = new object();
+        public void ReceivedData(byte[] data)
+        {
+            lock (readLock)
+            {
+                foreach (byte b in data)
+                    InStream.Enqueue(b);
+                OnRead();
+            }
+        }
+
         protected override void OnRead()
         {
             if (OnReadData != null)

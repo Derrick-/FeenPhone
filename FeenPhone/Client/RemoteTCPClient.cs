@@ -56,6 +56,7 @@ namespace FeenPhone.Client
 
                 _writer.SetStream(Stream);
                 _IsConnected = true;
+                SendLoginInfo();
             }
             connecting = false;
         }

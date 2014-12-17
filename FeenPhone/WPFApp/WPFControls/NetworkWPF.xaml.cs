@@ -165,7 +165,8 @@ namespace FeenPhone.WPFApp.Controls
                 else
                 {
                     Client = ServerHost.LocalClient = null;
-                    target.server.Dispose();
+                    if (target.server != null)
+                        target.server.Dispose();
                     target.server = null;
                 }
             }
@@ -256,8 +257,8 @@ namespace FeenPhone.WPFApp.Controls
                     return;
                 }
             }
-            RemoteClient remClient = new RemoteTCPClient(User, IP, port);
-            //RemoteClient remClient = new RemoteUDPClient(User, IP, port);
+            //RemoteClient remClient = new RemoteTCPClient(User, IP, port);
+            RemoteClient remClient = new RemoteUDPClient(User, IP, port);
             Client = remClient;
             invalidLoginAttempts = 0;
             EventSource.InvokeOnUserList(null, null);

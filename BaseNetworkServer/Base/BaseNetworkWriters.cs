@@ -14,27 +14,47 @@ namespace Alienseed.BaseNetworkServer
 
     public class BaseUDPWriter : BaseNetworkWriter
     {
-        IPEndPoint ep;
-
-        Socket Socket;
+        UdpClient client;
 
         public BaseUDPWriter() { }
 
-        public void SetEndpoint(IPEndPoint ep)
+        public void SetClient(UdpClient client)
         {
-            this.ep = ep;
-            Socket = new System.Net.Sockets.Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            this.client = client;
         }
 
         public override void Write(byte[] bytes)
         {
-            Socket.SendTo(bytes, ep);
+            if (client != null)
+            {
+                if (client.Client == null)
+                {
+                    Dispose();
+                }
+                else
+                {
+                    if (client.Client.Connected)
+                        client.Send(bytes, bytes.Length);
+                    else
+                        client.BeginSend(bytes, bytes.Length, new AsyncCallback(EndSend), null);
+                }
+            }
+        }
+
+        private void EndSend(IAsyncResult ar)
+        {
+            if (client != null)
+            {
+                int sent=client.EndSend(ar);
+            }
         }
 
         public override void Dispose()
         {
-            if (Socket != null)
-                Socket.Dispose();
+            if (client != null)
+            {
+                client = null;
+            }
         }
     }
 

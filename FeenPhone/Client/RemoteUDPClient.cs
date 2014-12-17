@@ -22,26 +22,54 @@ namespace FeenPhone.Client
         UDPPacketWriter _writer = new UDPPacketWriter();
         protected override IPacketWriter Writer { get { return _writer; } }
 
+        volatile bool _isconnecting = false;
         public override void Connect()
         {
-            Client = new UdpClient();
+            _isconnecting = true;
+            var client = new UdpClient();
             Console.WriteLine("Connecting to {0}...", HostIP);
 
             var ep = new IPEndPoint(HostIP, Port);
-            Client.Connect(ep);
-            Listen();
-
-            _writer.SetEndpoint(ep);
-            Packet.WriteLoginRequest(Writer, LocalUser.Username, LocalUser.Username);
-
+            client.Connect(ep);
+            client.Send(new byte[] { 1 }, 1);
+            client.BeginReceive(new AsyncCallback(ConnectCallback), client);
         }
 
-        private void Listen()
+        private void ConnectCallback(IAsyncResult ar)
         {
-            if (Client != null)
+            try
             {
-                Client.BeginReceive(new AsyncCallback(RecieveCallback), this);
+                var client = ar.AsyncState as UdpClient;
+                IPEndPoint endpoint = new IPEndPoint(HostIP, 0);
+                byte[] data = client.EndReceive(ar, ref endpoint);
+
+                if (_isconnecting && data.Length == 2)
+                {
+                    int port = data[0] << 8 | data[1];
+                    IPEndPoint localep = client.Client.LocalEndPoint as IPEndPoint;
+                    client.Close();
+                    if (Client != null)
+                        Client.Close();
+                    Client = new UdpClient(localep);
+                    Client.Connect(endpoint.Address, port);
+                    _writer.SetClient(Client);
+                    Client.BeginReceive(new AsyncCallback(RecieveCallback), null);
+                    Console.WriteLine("Connected UDP.");
+                    SendLoginInfo();
+                    return;
+                }
             }
+            catch (SocketException)
+            {
+                Disconnect();
+                return;
+            }
+            catch (ObjectDisposedException)
+            {
+                Disconnect();
+                return;
+            }
+            _isconnecting = false;
         }
 
         private void RecieveCallback(IAsyncResult ar)
@@ -49,11 +77,25 @@ namespace FeenPhone.Client
             IPEndPoint endpoint = new IPEndPoint(HostIP, 0);
             if (Client != null)
             {
-                var data = Client.EndReceive(ar, ref endpoint);
-                if (endpoint.Address == HostIP)
+                byte[] data;
+                try
+                {
+                    data = Client.EndReceive(ar, ref endpoint);
+                }
+                catch (SocketException)
+                {
+                    Disconnect();
+                    return;
+                }
+                catch (ObjectDisposedException)
+                {
+                    Disconnect();
+                    return;
+                }
+                Client.BeginReceive(new AsyncCallback(RecieveCallback), null);
+                if (HostIP.Equals(endpoint.Address))
                 {
                     _reader.ReceivedData(data);
-                    Listen();
                 }
             }
         }
@@ -68,6 +110,7 @@ namespace FeenPhone.Client
                 Client.Close();
             }
             Client = null;
+            _isconnecting = false;
         }
 
         public override bool IsConnected

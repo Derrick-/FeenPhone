@@ -25,11 +25,5 @@ namespace Alienseed.BaseNetworkServer.PacketServer
 
     public class UDPPacketReader : BaseUDPReader, IPacketReader
     {
-        public void ReceivedData(byte[] data)
-        {
-            foreach (byte b in data)
-                InStream.Enqueue(b);
-            OnRead();
-        }
     }
 }

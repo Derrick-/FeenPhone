@@ -83,7 +83,7 @@ namespace Alienseed.BaseNetworkServer
             }
             else
             {
-                if (BaseServer.Users.Contains(user))
+                if (this.User != user && BaseServer.Users.Contains(user))
                 {
                     LogLine("Login Rejected (online)");
                     return false;
@@ -93,7 +93,7 @@ namespace Alienseed.BaseNetworkServer
 
             if (OnLogin != null)
                 OnLogin(this, new OnLoginLogoutEventArgs(User));
-            
+
             return true;
         }
 
@@ -102,8 +102,8 @@ namespace Alienseed.BaseNetworkServer
             LogLine("Logout");
 
             if (OnLogout != null)
-                OnLogout(this,new OnLoginLogoutEventArgs(User));
-            
+                OnLogout(this, new OnLoginLogoutEventArgs(User));
+
             User = null;
         }
 
@@ -156,7 +156,7 @@ namespace Alienseed.BaseNetworkServer
             RemoveClient(this);
 
             isDisposed = true;
-          
+
             if (OnDisposed != null)
                 OnDisposed(this, new OnDisposedEventArgs(this));
             User = null;

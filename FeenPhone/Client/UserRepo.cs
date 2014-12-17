@@ -26,10 +26,13 @@ namespace FeenPhone.Client
         internal static IUser CreateOrUpdateUser(Guid id, bool isadmin, string username, string nickname)
         {
             UserInfo user;
-            if (KnownUsers.ContainsKey(id))
-                user = KnownUsers[id];
-            else
-                KnownUsers.Add(id, user = new UserInfo() { ID = id });
+            lock (KnownUsers)
+            {
+                if (KnownUsers.ContainsKey(id))
+                    user = KnownUsers[id];
+                else
+                    KnownUsers.Add(id, user = new UserInfo() { ID = id });
+            }
 
             user.IsAdmin = isadmin;
             user.Username = username;

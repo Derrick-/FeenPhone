@@ -26,11 +26,6 @@ namespace FeenPhone.Server.TcpPacketServer
             e.handled = true;
         }
 
-        public override void ReceivedData(byte[] data)
-        {
-            Reader.ReceivedData(data);
-        }
-        
         protected void OnRead(object sender, DataReadEventArgs args)
         {
             Queue<byte> InStream = args.data;
