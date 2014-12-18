@@ -51,6 +51,7 @@ namespace FeenPhone.Client
                     return;
                 }
                 Client = client;
+                client.NoDelay = true;
                 Stream = Client.GetStream();
                 _reader.SetStream(Stream, readerBufferSize);
 
