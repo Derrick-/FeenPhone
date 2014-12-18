@@ -72,12 +72,18 @@ namespace Alienseed.BaseNetworkServer
         int DefaultStreamWriteTimeout = 50;
 
         public Stream Stream { get; private set; }
+        public Socket Socket { get; private set; }
 
         public void SetStream(Stream stream)
         {
             Stream = stream;
             if (stream is NetworkStream && stream.WriteTimeout < 0)
                 Stream.WriteTimeout = DefaultStreamWriteTimeout;
+        }
+
+        internal void SetSocket(System.Net.Sockets.Socket socket)
+        {
+            Socket = socket;
         }
 
 #if NET45
@@ -88,15 +94,17 @@ namespace Alienseed.BaseNetworkServer
 
         internal async System.Threading.Tasks.Task WriteAsync(byte[] bytes, int numbytes)
         {
-            if (Stream != null)
+            try
             {
-                try
+                if (Socket != null)
+                    WriteDirect(bytes);
+                else if (Stream != null)
                 {
                     await Stream.WriteAsync(bytes, 0, numbytes);
                 }
-                catch (IOException)
-                {
-                }
+            }
+            catch (IOException)
+            {
             }
         }
 #endif
@@ -108,20 +116,29 @@ namespace Alienseed.BaseNetworkServer
 
         internal void Write(byte[] bytes, int numbytes)
         {
-            if (Stream != null)
+            try
             {
-                try
+                if (Socket != null)
+                    WriteDirect(bytes);
+                else if (Stream != null)
                 {
                     Stream.Write(bytes, 0, numbytes);
                 }
-                catch (IOException)
-                {
-                }
+            }
+            catch (IOException)
+            {
             }
         }
+
+        private void WriteDirect(byte[] bytes)
+        {
+            Socket.Send(bytes);
+        }
+
         public override void Dispose()
         {
             Stream = null;
+            Socket = null;
         }
     }
 }

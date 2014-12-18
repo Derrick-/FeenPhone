@@ -14,6 +14,14 @@ namespace Alienseed.BaseNetworkServer
         public TReader Reader { get; private set; }
         public TWriter Writer { get; private set; }
 
+        protected System.Net.Sockets.Socket Socket;
+        internal void SetSocket(System.Net.Sockets.Socket socket)
+        {
+            Socket=socket;
+            if (Writer != null)
+                Writer.SetSocket(socket);
+        }
+
         protected override string ClientIdentifier { get { return string.Format("TCP {0} {1}", Address.ToString(), User != null ? User.Username : "TCP NULL"); } }
 
         public IPEndPoint IPEndPoint { get { return EndPoint as IPEndPoint; } }
@@ -47,7 +55,15 @@ namespace Alienseed.BaseNetworkServer
 
         public sealed override void Write(byte[] bytes)
         {
-            Writer.Write(bytes);
+            if (Socket != null)
+                WriteDirect(bytes);
+            else
+                Writer.Write(bytes);
+        }
+
+        public void WriteDirect(byte[] bytes)
+        {
+            Socket.Send(bytes);
         }
 
         protected virtual void OnConnected() { }

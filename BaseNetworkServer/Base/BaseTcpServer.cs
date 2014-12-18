@@ -13,13 +13,15 @@ namespace Alienseed.BaseNetworkServer
         where TReader : BaseStreamReader, new()
         where TWriter : BaseStreamWriter, new()
     {
-        public BaseTCPServer(int port, IPAddress address = null, bool noDelay=false)
-            : base(port, address) 
+        public BaseTCPServer(int port, IPAddress address = null, bool noDelay = false, bool useDirectSocketWrite = false)
+            : base(port, address)
         {
             NoDelay = noDelay;
+            DirectSocketWrite = useDirectSocketWrite;
         }
 
         public bool NoDelay { get; private set; }
+        public bool DirectSocketWrite { get; private set; }
 
         #region INetworkServer Members
 
@@ -90,6 +92,10 @@ namespace Alienseed.BaseNetworkServer
                     client.NoDelay = NoDelay;
                     NetworkStream stream = client.GetStream();
                     var ns = CreateNetstate(stream, client.Client.RemoteEndPoint);
+
+                    if (this.DirectSocketWrite)
+                        ns.SetSocket(client.Client);
+
                     base.AcceptClient(ns);
 
                 }
