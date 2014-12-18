@@ -1,6 +1,7 @@
 ﻿using Alienseed.BaseNetworkServer.Accounting;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
@@ -38,7 +39,10 @@ namespace FeenPhone
             while (handler != null)
             {
                 if (handler != null)
+                {
+                    Trace.WriteLine(string.Format("BasePacketHandler: Handler:{0} Bytes:{1}, Queue.Count:{2}", handler.Method.Name, len, data.Count()), "Network");
                     handler(data.Skip(3).Take(len));
+                }
 
                 for (int i = 0; i < consumed && data.Any(); i++)
                 {

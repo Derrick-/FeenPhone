@@ -10,6 +10,9 @@ namespace Alienseed.BaseNetworkServer
         public abstract void Dispose();
 
         public abstract void Write(byte[] bytes);
+#if NET45
+        public abstract System.Threading.Tasks.Task WriteAsync(byte[] bytes);
+#endif
     }
 
     public class BaseUDPWriter : BaseNetworkWriter
@@ -23,6 +26,12 @@ namespace Alienseed.BaseNetworkServer
             this.client = client;
         }
 
+#if NET45
+        public override System.Threading.Tasks.Task WriteAsync(byte[] bytes)
+        {
+            return System.Threading.Tasks.Task.Run(() => Write(bytes));
+        }
+#endif
         public override void Write(byte[] bytes)
         {
             if (client != null)
@@ -45,7 +54,7 @@ namespace Alienseed.BaseNetworkServer
         {
             if (client != null)
             {
-                int sent=client.EndSend(ar);
+                int sent = client.EndSend(ar);
             }
         }
 
@@ -71,6 +80,27 @@ namespace Alienseed.BaseNetworkServer
                 Stream.WriteTimeout = DefaultStreamWriteTimeout;
         }
 
+#if NET45
+        public override async System.Threading.Tasks.Task WriteAsync(byte[] bytes)
+        {
+            await WriteAsync(bytes, bytes.Length);
+        }
+
+        internal async System.Threading.Tasks.Task WriteAsync(byte[] bytes, int numbytes)
+        {
+            if (Stream != null)
+            {
+                try
+                {
+                    await Stream.WriteAsync(bytes, 0, numbytes);
+                }
+                catch (IOException)
+                {
+                }
+            }
+        }
+#endif
+
         public override void Write(byte[] bytes)
         {
             Write(bytes, bytes.Length);
@@ -89,7 +119,6 @@ namespace Alienseed.BaseNetworkServer
                 }
             }
         }
-
         public override void Dispose()
         {
             Stream = null;
