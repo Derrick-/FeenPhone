@@ -40,7 +40,7 @@ namespace FeenPhone.Accounting
                 if (AutoCreateAccounts)
                 {
                     var newAccount = new MockAccount(username.ToLowerInvariant(), textInfo.ToTitleCase(username));
-                    accounts.Add(username, newAccount);
+                    accounts.Add(newAccount.Username, newAccount);
                     return newAccount;
                 }
             }
