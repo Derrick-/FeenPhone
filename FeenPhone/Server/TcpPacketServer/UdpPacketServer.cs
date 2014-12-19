@@ -19,14 +19,14 @@ namespace FeenPhone.Server.TcpPacketServer
             return new UdpPacketNetState(ep as IPEndPoint, readerBufferSize);
         }
 
-        protected override void ClientConnected(UdpPacketNetState client)
+        protected override void ClientConnected(UdpPacketNetState state)
         {
-            EventSink.OnConnect(client);
+            EventSink.OnConnect(state);
         }
 
-        protected override void ClientDisconnected(UdpPacketNetState client)
+        protected override void ClientDisconnected(UdpPacketNetState state)
         {
-            EventSink.OnDisconnect(client);
+            EventSink.OnDisconnect(state);
         }
 
         protected override void ClientLogin(UdpPacketNetState state)

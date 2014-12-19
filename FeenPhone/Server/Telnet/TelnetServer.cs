@@ -15,14 +15,14 @@ namespace FeenPhone.Server.Telnet
             return new TelNetState(stream, ep as IPEndPoint);
         }
 
-        protected override void ClientConnected(TelNetState client)
+        protected override void ClientConnected(TelNetState state)
         {
-            EventSink.OnConnect(client);
+            EventSink.OnConnect(state);
         }
 
-        protected override void ClientDisconnected(TelNetState client)
+        protected override void ClientDisconnected(TelNetState state)
         {
-            EventSink.OnDisconnect(client);
+            EventSink.OnDisconnect(state);
         }
 
         protected override void ClientLogin(TelNetState state)

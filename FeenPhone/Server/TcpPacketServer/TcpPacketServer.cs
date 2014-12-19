@@ -19,14 +19,14 @@ namespace FeenPhone.Server.TcpPacketServer
             return new TcpPacketNetState(stream, ep as IPEndPoint, readerBufferSize);
         }
 
-        protected override void ClientConnected(TcpPacketNetState client)
+        protected override void ClientConnected(TcpPacketNetState state)
         {
-            EventSink.OnConnect(client);
+            EventSink.OnConnect(state);
         }
 
-        protected override void ClientDisconnected(TcpPacketNetState client)
+        protected override void ClientDisconnected(TcpPacketNetState state)
         {
-            EventSink.OnDisconnect(client);
+            EventSink.OnDisconnect(state);
         }
 
         protected override void ClientLogin(TcpPacketNetState state)
@@ -34,9 +34,9 @@ namespace FeenPhone.Server.TcpPacketServer
             EventSink.OnLogin(state);
         }
 
-        protected override void ClientLogout(TcpPacketNetState client)
+        protected override void ClientLogout(TcpPacketNetState state)
         {
-            EventSink.OnLogout(client);
+            EventSink.OnLogout(state);
         }
     }
 }
