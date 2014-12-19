@@ -11,6 +11,8 @@ namespace FeenPhone.Client
 {
     abstract class RemoteClient : BaseClient
     {
+        public static EventHandler OnDisconnected;
+
         protected const int readerBufferSize = ushort.MaxValue;
 
         protected readonly System.Net.IPAddress HostIP;
@@ -18,10 +20,11 @@ namespace FeenPhone.Client
 
         protected readonly ClientPacketHandler Handler;
 
-        protected abstract IPacketReader Reader {get;}
+        protected abstract IPacketReader Reader { get; }
         protected abstract IPacketWriter Writer { get; }
 
-        public RemoteClient(IUserClient localUser, System.Net.IPAddress IP, int port) : base(localUser)
+        public RemoteClient(IUserClient localUser, System.Net.IPAddress IP, int port)
+            : base(localUser)
         {
             this.HostIP = IP;
             this.Port = port;
@@ -57,10 +60,13 @@ namespace FeenPhone.Client
 
         protected virtual void Disconnect()
         {
+            if (OnDisconnected != null)
+                OnDisconnected(this, null);
+
             EventSource.InvokeOnUserList(null, null);
         }
 
-        public override abstract bool IsConnected{get;}
+        public override abstract bool IsConnected { get; }
 
         public override abstract void Dispose();
 

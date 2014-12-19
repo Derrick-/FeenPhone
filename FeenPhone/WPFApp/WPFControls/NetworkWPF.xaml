@@ -35,12 +35,16 @@
             </Grid.ColumnDefinitions>
             <CheckBox ClickMode="Release" IsChecked="{Binding Path=IsServer, Mode=TwoWay}" ToolTip="Run as server"></CheckBox>
             <Label Grid.Row="0" Grid.Column="0">Server</Label>
-            <TextBox Grid.Row="0" Grid.Column="1" Name="txtServer">localhost</TextBox>
+            <TextBox Grid.Row="0" Grid.Column="1" Name="txtServer" IsEnabled="{Binding ControlsEnabled}">localhost</TextBox>
             <Label Grid.Row="0" Grid.Column="2">Port</Label>
-            <TextBox Grid.Row="0" Grid.Column="3" Name="txtPort">5150</TextBox>
+            <TextBox Grid.Row="0" Grid.Column="3" Name="txtPort" IsEnabled="{Binding ControlsEnabled}" >5150</TextBox>
             <Label Grid.Row="1" Grid.Column="0">Nickname</Label>
-            <TextBox TextChanged="txtNickname_TextChanged" Name="txtNickname" Grid.Row="1" Grid.Column="1">Derrick</TextBox>
-            <Button Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" Click="Connect_Click">Connect</Button>
+            <TextBox IsEnabled="{Binding ControlsEnabled}" TextChanged="txtNickname_TextChanged" Name="txtNickname" Grid.Row="1" Grid.Column="1">Derrick</TextBox>
+            <ComboBox IsEnabled="{Binding ControlsEnabled}" Name="comboProt" Grid.Row="1" Grid.Column="2" Height="20">
+                <ComboBoxItem IsSelected="True">TCP</ComboBoxItem>
+                <ComboBoxItem>UDP</ComboBoxItem>
+            </ComboBox>
+            <Button Name="btnConnect" Grid.Row="1" Grid.Column="3" Click="Connect_Click">Connect</Button>
         </Grid>
     </DockPanel>
 </UserControl>

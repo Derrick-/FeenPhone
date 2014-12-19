@@ -27,7 +27,7 @@ namespace FeenPhone.Client
         {
             _isconnecting = true;
             var client = new UdpClient();
-            Console.WriteLine("Connecting to {0}...", HostIP);
+            Console.WriteLine("Connecting UDP to {0}...", HostIP);
 
             var ep = new IPEndPoint(HostIP, Port);
             client.Connect(ep);

@@ -28,7 +28,7 @@ namespace FeenPhone.Client
             {
                 TcpClient client = new TcpClient();
                 connecting = true;
-                Console.WriteLine("Connecting to {0}...", HostIP);
+                Console.WriteLine("Connecting TCP to {0}...", HostIP);
                 client.BeginConnect(HostIP.ToString(), Port, new AsyncCallback(ConnectCallback), client);
             }
             else

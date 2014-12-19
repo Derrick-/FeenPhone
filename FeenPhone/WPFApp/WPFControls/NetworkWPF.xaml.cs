@@ -31,7 +31,28 @@ namespace FeenPhone.WPFApp.Controls
             LoadSettings();
             Settings.SaveSettings += Settings_SaveSettings;
 
+            RemoteClient.OnDisconnected += RemoteClient_OnDisconnected;
+
             EventSource.OnLoginStatus += EventSource_OnLoginStatus;
+        }
+
+        public static DependencyProperty ControlsEnabledProperty = DependencyProperty.Register("ControlsEnabled", typeof(bool), typeof(NetworkWPF), new PropertyMetadata(true));
+        public bool ControlsEnabled
+        {
+            get { return (bool)this.GetValue(ControlsEnabledProperty); }
+            set { this.SetValue(ControlsEnabledProperty, value); }
+        }
+
+        private void RemoteClient_OnDisconnected(object sender, EventArgs e)
+        {
+            if (sender == Client)
+                Dispatcher.BeginInvoke(new Action(OnDisconnected));
+        }
+        
+        public void OnDisconnected()
+        {
+            ControlsEnabled = true;
+            Disconnect();
         }
 
         private void LoadSettings()
@@ -157,10 +178,9 @@ namespace FeenPhone.WPFApp.Controls
                         target.txtPort.Text = port.ToString();
                     }
 
-                    if (Client != null)
-                        Client.Dispose();
-                    target.server = new FeenPhone.Server.ServerHost(TcpServerPort: port);
+                    target.Disconnect();
                     Client = ServerHost.LocalClient = new LocalClient(target.User);
+                    target.server = new FeenPhone.Server.ServerHost(TcpServerPort: port);
                 }
                 else
                 {
@@ -170,6 +190,14 @@ namespace FeenPhone.WPFApp.Controls
                     target.server = null;
                 }
             }
+        }
+
+        private void Disconnect()
+        {
+            if (Client != null)
+                Client.Dispose();
+            btnConnect.Content = "Connect";
+            Client = null;
         }
 
         private void txtNickname_TextChanged(object sender, TextChangedEventArgs e)
@@ -188,17 +216,10 @@ namespace FeenPhone.WPFApp.Controls
         {
             if (Client != null)
             {
-                if (Client.IsConnected)
-                {
-                    Console.WriteLine("You are already connected.");
-                    return;
-                }
-                else
-                {
-                    Client.Dispose();
-                    Client = null;
-                }
+                Disconnect();
+                return;
             }
+
             IPAddress IP;
             int port = 0;
 
@@ -257,11 +278,18 @@ namespace FeenPhone.WPFApp.Controls
                     return;
                 }
             }
-            //RemoteClient remClient = new RemoteTCPClient(User, IP, port);
-            RemoteClient remClient = new RemoteUDPClient(User, IP, port);
+
+            RemoteClient remClient;
+            if (comboProt.Text == "UDP")
+                remClient = new RemoteUDPClient(User, IP, port);
+            else
+                remClient = new RemoteTCPClient(User, IP, port);
+            
             Client = remClient;
             invalidLoginAttempts = 0;
             EventSource.InvokeOnUserList(null, null);
+            ControlsEnabled = false;
+            btnConnect.Content = "Disconnect";
             remClient.Connect();
         }
     }
