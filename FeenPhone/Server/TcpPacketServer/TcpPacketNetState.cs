@@ -42,14 +42,16 @@ namespace FeenPhone.Server.TcpPacketServer
 
         }
 
-        public void OnUserConnected(Alienseed.BaseNetworkServer.INetState user)
+        public void OnUserConnected(Alienseed.BaseNetworkServer.INetState state)
         {
-            // Send Connected Packet
+            if (state.User != null)
+                Packet.WriteUserLogin(Writer, state.User);
         }
 
-        public void OnUserDisconnected(Alienseed.BaseNetworkServer.INetState user)
+        public void OnUserDisconnected(Alienseed.BaseNetworkServer.INetState state)
         {
-            // Send Disconnected Packet
+            if (state.User != null)
+                Packet.WriteUserLogout(Writer, state.User);
         }
 
         public void OnUserLogin(Alienseed.BaseNetworkServer.Accounting.IUserClient client)

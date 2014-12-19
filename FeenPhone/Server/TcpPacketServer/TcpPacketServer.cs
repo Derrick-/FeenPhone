@@ -29,12 +29,12 @@ namespace FeenPhone.Server.TcpPacketServer
             EventSink.OnDisconnect(client);
         }
 
-        protected override void ClientLogin(Alienseed.BaseNetworkServer.Accounting.IUserClient client)
+        protected override void ClientLogin(TcpPacketNetState state)
         {
-            EventSink.OnLogin(client);
+            EventSink.OnLogin(state);
         }
 
-        protected override void ClientLogout(Alienseed.BaseNetworkServer.Accounting.IUserClient client)
+        protected override void ClientLogout(TcpPacketNetState client)
         {
             EventSink.OnLogout(client);
         }

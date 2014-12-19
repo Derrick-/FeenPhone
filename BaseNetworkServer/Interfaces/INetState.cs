@@ -1,7 +1,8 @@
 ﻿
+using System;
 namespace Alienseed.BaseNetworkServer
 {
-    public interface INetState : Alienseed.BaseNetworkServer.Accounting.IClient
+    public interface INetState : Alienseed.BaseNetworkServer.Accounting.IClient, IDisposable
     {
     }
 }

@@ -42,31 +42,31 @@ namespace FeenPhone.Server
                 ServerHost.LocalClient.OnUserConnected(client);
         }
 
-        internal static void OnDisconnect(INetState client)
+        internal static void OnDisconnect(INetState state)
         {
             foreach (var feen in AllFeens.ToList())
-                if (feen != client)
-                    feen.OnUserDisconnected(client);
+                if (feen != state)
+                    feen.OnUserDisconnected(state);
             if (ServerHost.LocalClient != null)
-                ServerHost.LocalClient.OnUserDisconnected(client);
+                ServerHost.LocalClient.OnUserDisconnected(state);
         }
 
-        internal static void OnLogin(IUserClient client)
+        internal static void OnLogin(INetState state)
         {
             foreach (var feen in AllFeens)
-                if (feen != client)
-                    feen.OnUserLogin(client);
+                if (feen != state)
+                    feen.OnUserLogin(state.User);
             if (ServerHost.LocalClient != null)
-                ServerHost.LocalClient.OnUserLogin(client);
+                ServerHost.LocalClient.OnUserLogin(state.User);
         }
 
-        internal static void OnLogout(IUserClient client)
+        internal static void OnLogout(INetState state)
         {
             foreach (var feen in AllFeens)
-                if (feen != client)
-                    feen.OnUserLogout(client);
+                if (feen != state)
+                    feen.OnUserLogout(state.User);
             if (ServerHost.LocalClient != null)
-                ServerHost.LocalClient.OnUserLogout(client);
+                ServerHost.LocalClient.OnUserLogout(state.User);
         }
     }
 }

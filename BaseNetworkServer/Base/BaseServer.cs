@@ -41,7 +41,7 @@ namespace Alienseed.BaseNetworkServer
         where Tnetstate : NetState
     {
         public delegate void OnClientConnectionHandler(Tnetstate client);
-        public delegate void OnClientLoginLogoutHandler(IUserClient client);
+        public delegate void OnClientLoginLogoutHandler(Tnetstate client);
 
         public event OnClientConnectionHandler OnClientConnected;
         public event OnClientConnectionHandler OnClientDisconnected;
@@ -61,8 +61,8 @@ namespace Alienseed.BaseNetworkServer
 
         protected abstract void ClientConnected(Tnetstate client);
         protected abstract void ClientDisconnected(Tnetstate client);
-        protected abstract void ClientLogin(IUserClient client);
-        protected abstract void ClientLogout(IUserClient client);
+        protected abstract void ClientLogin(Tnetstate client);
+        protected abstract void ClientLogout(Tnetstate client);
 
         protected abstract void PurgeAllClients();
 
@@ -86,13 +86,13 @@ namespace Alienseed.BaseNetworkServer
                 OnClientDisconnected(ns);
         }
 
-        private void InvokeOnClientLogin(IUserClient userClient)
+        private void InvokeOnClientLogin(Tnetstate userClient)
         {
             if (OnClientLogin != null)
                 OnClientLogin(userClient);
         }
 
-        private void InvokeOnClientLogout(IUserClient userClient)
+        private void InvokeOnClientLogout(Tnetstate userClient)
         {
             if (OnClientLogout != null)
                 OnClientLogout(userClient);
@@ -106,12 +106,12 @@ namespace Alienseed.BaseNetworkServer
 
         private void NetState_OnLogin(object sender, NetState.OnLoginLogoutEventArgs e)
         {
-            InvokeOnClientLogin(e.Client);
+            InvokeOnClientLogin(e.State as Tnetstate);
         }
 
         private void NetState_OnLogout(object sender, NetState.OnLoginLogoutEventArgs e)
         {
-            InvokeOnClientLogout(e.Client);
+            InvokeOnClientLogout(e.State as Tnetstate);
         }
     }
 }

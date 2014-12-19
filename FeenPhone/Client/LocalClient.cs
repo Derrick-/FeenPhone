@@ -63,7 +63,7 @@ namespace FeenPhone.Client
 
         internal override void SendLoginInfo()
         {
-            Server.EventSink.OnLogin(_LocalUser);
+            Server.EventSink.OnLogin(this);
         }
 
 

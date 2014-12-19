@@ -24,10 +24,10 @@ namespace Alienseed.BaseNetworkServer
 
         public class OnLoginLogoutEventArgs : EventArgs
         {
-            public IUserClient Client { get; private set; }
-            public OnLoginLogoutEventArgs(IUserClient client)
+            public INetState State { get; private set; }
+            public OnLoginLogoutEventArgs(INetState client)
             {
-                this.Client = client;
+                this.State = client;
             }
         }
 
@@ -92,7 +92,7 @@ namespace Alienseed.BaseNetworkServer
             User = user;
 
             if (OnLogin != null)
-                OnLogin(this, new OnLoginLogoutEventArgs(User));
+                OnLogin(this, new OnLoginLogoutEventArgs(this));
 
             return true;
         }
@@ -102,7 +102,7 @@ namespace Alienseed.BaseNetworkServer
             LogLine("Logout");
 
             if (OnLogout != null)
-                OnLogout(this, new OnLoginLogoutEventArgs(User));
+                OnLogout(this, new OnLoginLogoutEventArgs(this));
 
             User = null;
         }

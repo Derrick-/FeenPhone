@@ -25,14 +25,14 @@ namespace FeenPhone.Server.Telnet
             EventSink.OnDisconnect(client);
         }
 
-        protected override void ClientLogin(Alienseed.BaseNetworkServer.Accounting.IUserClient client)
+        protected override void ClientLogin(TelNetState state)
         {
-            EventSink.OnLogin(client);
+            EventSink.OnLogin(state);
         }
 
-        protected override void ClientLogout(Alienseed.BaseNetworkServer.Accounting.IUserClient client)
+        protected override void ClientLogout(TelNetState state)
         {
-            EventSink.OnLogout(client);
+            EventSink.OnLogout(state);
         }
     }
 }

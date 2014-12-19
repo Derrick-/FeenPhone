@@ -29,14 +29,14 @@ namespace FeenPhone.Server.TcpPacketServer
             EventSink.OnDisconnect(client);
         }
 
-        protected override void ClientLogin(Alienseed.BaseNetworkServer.Accounting.IUserClient client)
+        protected override void ClientLogin(UdpPacketNetState state)
         {
-            EventSink.OnLogin(client);
+            EventSink.OnLogin(state);
         }
 
-        protected override void ClientLogout(Alienseed.BaseNetworkServer.Accounting.IUserClient client)
+        protected override void ClientLogout(UdpPacketNetState state)
         {
-            EventSink.OnLogout(client);
+            EventSink.OnLogout(state);
         }
     }
 }
