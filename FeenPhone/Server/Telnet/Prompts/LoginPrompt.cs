@@ -43,9 +43,15 @@ namespace FeenPhone.Server.Telnet.Prompts
         public override BaseTextPrompt OnResponse(TelNetState client, string password, bool cancel)
         {
             if (!cancel && client.Login(Username, password.Trim()))
+            {
+                client.LoginSuccess();
                 return new MainMenu(client.User.IsAdmin);
+            }
             else
+            {
+                client.LoginFailed();
                 return new LoginPrompt();
+            }
         }
     }
 

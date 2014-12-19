@@ -129,7 +129,7 @@ namespace FeenPhone
 
         internal static void WritePingReq(IPacketWriter Writer)
         {
-            var timestamp = (int)FeenPhone.Client.BaseClient.Elapsed.TotalMilliseconds;
+            var timestamp = (int)Timekeeper.Elapsed.TotalMilliseconds;
             using (var buffer = new FeenPacketBuffer(PacketID.PingReq, new byte[] { (byte)(timestamp >> 8), (byte)(timestamp) }))
             {
                 if (Writer != null)

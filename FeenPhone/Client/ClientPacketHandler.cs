@@ -33,6 +33,11 @@ namespace FeenPhone.Client
             EventSource.InvokeOnPingReq(this, timestamp);
         }
 
+        protected override void OnPingResp(ushort elapsed)
+        {
+            FeenPhone.Client.EventSource.InvokeOnPingResp(this, elapsed);
+        }
+
         protected override void OnLoginStatus(bool isLoggedIn)
         {
             EventSource.InvokeOnLoginStatus(this, isLoggedIn);

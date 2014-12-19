@@ -116,14 +116,16 @@
     <Compile Include="Server\TcpPacketServer\UdpPacketNetState.cs" />
     <Compile Include="Server\TcpPacketServer\TcpPacketNetState.cs" />
     <Compile Include="Server\TcpPacketServer\TcpPacketServer.cs" />
-    <Compile Include="Server\Telnet\IFeenPhoneNetstate.cs" />
+    <Compile Include="Server\IFeenPhoneNetstate.cs" />
     <Compile Include="Server\Telnet\Prompts\ChatPrompt.cs" />
     <Compile Include="Server\Telnet\Prompts\LoginPrompt.cs" />
     <Compile Include="Server\Telnet\Prompts\MainMenu.cs" />
     <Compile Include="Server\Telnet\Prompts\TextPrompt.cs" />
     <Compile Include="Server\Telnet\TelnetServer.cs" />
     <Compile Include="Server\Telnet\TelNetState.cs" />
+    <Compile Include="Utils\Timekeeper.cs" />
     <Compile Include="WPFApp\Models\OutputDeviceModel.cs" />
+    <Compile Include="WPFApp\Models\UserStatusModel.cs" />
     <Compile Include="WPFApp\Settings.cs" />
     <Compile Include="WPFApp\WPFControls\AudioInWPF.xaml.cs">
       <DependentUpon>AudioInWPF.xaml</DependentUpon>

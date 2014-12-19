@@ -8,13 +8,6 @@ namespace FeenPhone.Client
 {
     abstract class BaseClient : IDisposable
     {
-        private static System.Diagnostics.Stopwatch StopWatch = new System.Diagnostics.Stopwatch();
-        static BaseClient()
-        {
-            StopWatch.Start();
-        }
-        public static TimeSpan Elapsed { get { return StopWatch.Elapsed; } }
-
         protected readonly IUserClient _LocalUser;
         public IUser LocalUser { get { return _LocalUser; } }
 

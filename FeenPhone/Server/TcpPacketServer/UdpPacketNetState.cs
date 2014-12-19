@@ -9,8 +9,20 @@ using System.Text;
 
 namespace FeenPhone.Server.TcpPacketServer
 {
-    class UdpPacketNetState : BaseUdpPacketNetState, IFeenPhoneNetState
+    class UdpPacketNetState : BaseUdpPacketNetState, IFeenPhonePacketNetState
     {
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        private ushort _LastPing;
+        public ushort LastPing
+        {
+            get { return _LastPing; }
+            set
+            {
+                _LastPing = value;
+                if (PropertyChanged != null)
+                    PropertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs("LastPing"));
+            }
+        }
 
         private readonly ServerPacketHandler Handler;
         public UdpPacketNetState(IPEndPoint ep, int readBufferSize)
@@ -71,12 +83,12 @@ namespace FeenPhone.Server.TcpPacketServer
             Packet.WriteAudioData(Writer, Codec, data, dataLen);
         }
 
-        public void OnLoginFailed()
+        public void LoginFailed()
         {
             Packet.WriteLoginStatus(Writer, false);
         }
 
-        public void OnLoginSuccess()
+        public void LoginSuccess()
         {
             Packet.WriteLoginStatus(Writer, true);
 
@@ -99,7 +111,13 @@ namespace FeenPhone.Server.TcpPacketServer
             return LoginSetUser(user);
         }
 
-        IPacketWriter IFeenPhoneNetState.Writer
+        private void InvokePropertyChanged(string propName)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propName));
+        }
+
+        IPacketWriter IFeenPhonePacketNetState.Writer
         {
             get { return (IPacketWriter)Writer; }
         }

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace FeenPhone.Client
 {
-    class LocalClient : BaseClient, FeenPhone.Server.IFeenPhoneEvents, Alienseed.BaseNetworkServer.INetState
+    class LocalClient : BaseClient, FeenPhone.Server.IFeenPhoneClient, Alienseed.BaseNetworkServer.INetState
     {
         public LocalClient(IUserClient localUser) : base(localUser) { }
 
@@ -65,7 +65,6 @@ namespace FeenPhone.Client
         {
             Server.EventSink.OnLogin(this);
         }
-
 
         internal override void SendPingReq()
         {

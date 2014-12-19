@@ -1,5 +1,6 @@
 ﻿using Alienseed.BaseNetworkServer.Accounting;
 using FeenPhone.Client;
+using FeenPhone.WPFApp.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -22,7 +23,7 @@ namespace FeenPhone.WPFApp.Controls
     /// </summary>
     public partial class UserListWPF : UserControl
     {
-        public ObservableCollection<IUser> Users = new ObservableCollection<IUser>();
+        public ObservableCollection<UserStatusModel> Users = new ObservableCollection<UserStatusModel>();
 
         public UserListWPF()
         {
@@ -56,13 +57,13 @@ namespace FeenPhone.WPFApp.Controls
             Users.Clear();
             if (users != null)
                 foreach (var user in users)
-                    Users.Add(user);
+                    Users.Add(new UserStatusModel(user));
         }
 
         private void OnConnected(IUser user)
         {
             if (!Users.Any(m => m.ID == user.ID))
-                Users.Add(user);
+                Users.Add(new UserStatusModel(user));
         }
 
         private void OnDisconnected(IUser user)

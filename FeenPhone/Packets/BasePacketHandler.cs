@@ -186,13 +186,14 @@ namespace FeenPhone
             OnPingReq(timestamp);
         }
 
+        protected abstract void OnPingResp(ushort elapsed);
         protected void Handle_PingResp(IEnumerable<byte> payload)
         {
             ushort timestamp = ReadPingTimestamp(payload);
-            int now = (int)BaseClient.Elapsed.TotalMilliseconds;
+            int now = (int)Timekeeper.Elapsed.TotalMilliseconds;
             ushort elapsed;
             unchecked { elapsed = (ushort)(now - timestamp); }
-            FeenPhone.Client.EventSource.InvokeOnPingResp(this, elapsed);
+            OnPingResp(elapsed);
         }
 
         private static ushort ReadPingTimestamp(IEnumerable<byte> payload)

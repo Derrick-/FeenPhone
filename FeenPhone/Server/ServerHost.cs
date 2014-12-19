@@ -26,10 +26,33 @@ namespace FeenPhone.Server
             }
         }
 
+        public const int PingTimerIntervalMs = 250;
+        Timer PingTimer;
         public ServerHost(int TcpServerPort = DefaultServerPort)
         {
             InitServers();
             StartServers();
+
+            PingTimer = new Timer(PingTimer_Elapsed, this, PingTimerIntervalMs, PingTimerIntervalMs);
+        }
+
+        private int lastClientIndex=0;
+        private void PingTimer_Elapsed(object state)
+        {
+            var clients = BaseServer.Clients.Where(m => m is IFeenPhonePacketNetState).Cast<IFeenPhonePacketNetState>().ToArray();
+            int count = clients.Count();
+            if(count>0)
+            {
+                IFeenPhonePacketNetState client;
+                if (lastClientIndex >= count)
+                {
+                    lastClientIndex = 0;
+                    client = clients.First();
+                }
+                else
+                    client = clients.Skip(lastClientIndex).First();
+                Packet.WritePingReq(client.Writer);
+            }
         }
 
         void InitServers(int ServerPort = DefaultServerPort)

@@ -11,9 +11,9 @@ namespace FeenPhone.Server.TcpPacketServer
 
     class ServerPacketHandler : BasePacketHandler
     {
-        private readonly IFeenPhoneNetState state;
+        private readonly IFeenPhonePacketNetState state;
 
-        public ServerPacketHandler(IFeenPhoneNetState state)
+        public ServerPacketHandler(IFeenPhonePacketNetState state)
         {
             this.state = state;
         }
@@ -31,7 +31,7 @@ namespace FeenPhone.Server.TcpPacketServer
         protected override void OnChat(IUser user, string text)
         {
             if (state.User == null)
-                state.OnLoginFailed();
+                state.LoginFailed();
             else
                 EventSink.OnChat(state, text);
         }
@@ -39,7 +39,7 @@ namespace FeenPhone.Server.TcpPacketServer
         protected override void OnAudio(Audio.Codecs.CodecID Codec, byte[] data, int dataLen)
         {
             if (state.User == null)
-                state.OnLoginFailed();
+                state.LoginFailed();
             else
                 EventSink.OnAudio(state, Codec, data, dataLen);
         }
@@ -52,14 +52,19 @@ namespace FeenPhone.Server.TcpPacketServer
         protected override void LoginInfo(string username, string password)
         {
             if (state.Login(username, password))
-                state.OnLoginSuccess();
+                state.LoginSuccess();
             else
-                state.OnLoginFailed();
+                state.LoginFailed();
         }
 
         protected override void OnPingReq(ushort timestamp)
         {
             Packet.WritePingResp(state.Writer, timestamp);
+        }
+
+        protected override void OnPingResp(ushort elapsed)
+        {
+            state.LastPing = elapsed;
         }
 
         protected override void OnUserList(IEnumerable<IUser> users)

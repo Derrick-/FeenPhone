@@ -8,15 +8,21 @@ using System.Text;
 
 namespace FeenPhone.Server
 {
-    internal interface IFeenPhoneNetState : IFeenPhoneEvents, INetState
-    {
-        bool Login(string username, string password);
-        void OnLoginSuccess();
-        void OnLoginFailed();
+    internal interface IFeenPhonePacketNetState : IFeenPhoneNetState
+     {
         Alienseed.BaseNetworkServer.PacketServer.IPacketWriter Writer { get; }
+     }
+
+    internal interface IFeenPhoneNetState : IFeenPhoneClient, INetState, System.ComponentModel.INotifyPropertyChanged
+    {
+        ushort LastPing { get; set; }
+
+        bool Login(string username, string password);
+        void LoginSuccess();
+        void LoginFailed();
     }
 
-    interface IFeenPhoneEvents
+    interface IFeenPhoneClient
     {
         void OnUserConnected(INetState user);
         void OnUserDisconnected(INetState user);

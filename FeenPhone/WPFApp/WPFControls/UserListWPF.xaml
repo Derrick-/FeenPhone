@@ -12,6 +12,7 @@
                 <DataTemplate>
                     <WrapPanel>
                         <TextBlock Text="{Binding Path=Nickname}" />
+                        <TextBlock Margin="10 0" Text="{Binding Path=LastPing}" />
                     </WrapPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>

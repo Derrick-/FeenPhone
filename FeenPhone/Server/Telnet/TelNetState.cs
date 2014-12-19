@@ -8,8 +8,10 @@ using System.Net;
 
 namespace FeenPhone.Server.Telnet
 {
-    class TelNetState : BaseTelNetState, IFeenPhoneEvents
+    class TelNetState : BaseTelNetState, IFeenPhoneNetState
     {
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+
         public TelNetState(System.Net.Sockets.NetworkStream stream, IPEndPoint ep) : base(stream, ep) { }
 
         protected override void Reader_OnBufferOverflow(object sender, BufferOverflowArgs e)
@@ -29,7 +31,7 @@ namespace FeenPhone.Server.Telnet
 
         #region ConnectionState
 
-        internal bool Login(string Username, string password)
+        public bool Login(string Username, string password)
         {
             var user = FeenPhone.Accounting.AccountHandler.Login(Username, password);
 
@@ -85,6 +87,28 @@ namespace FeenPhone.Server.Telnet
             if (user is NetState)
                 return ((NetState)user).EndPoint.ToString();
             return "Unknown";
+        }
+
+        public ushort LastPing
+        {
+            get
+            {
+                return 0;
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public void LoginSuccess()
+        {
+            WriteLine("  Welcome.");
+        }
+
+        public void LoginFailed()
+        {
+            WriteLine("  Login failed.");
         }
     }
 }
