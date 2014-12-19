@@ -55,7 +55,11 @@ namespace FeenPhone.Server.TcpPacketServer
                 state.OnLoginSuccess();
             else
                 state.OnLoginFailed();
+        }
 
+        protected override void OnPingReq(ushort timestamp)
+        {
+            Packet.WritePingResp(state.Writer, timestamp);
         }
 
         protected override void OnUserList(IEnumerable<IUser> users)

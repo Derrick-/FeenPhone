@@ -50,6 +50,15 @@ namespace FeenPhone.Client
         }
     }
 
+    public class PingEventArgs : EventArgs
+    {
+        public ushort Value { get; private set; }
+        public PingEventArgs(ushort value)
+        {
+            Value = value;
+        }
+    }
+
     public class BoolEventArgs : EventArgs
     {
         public bool Value { get; private set; }
@@ -67,6 +76,8 @@ namespace FeenPhone.Client
         public static event EventHandler<UserListEventArgs> OnUserList;
         public static event EventHandler<BoolEventArgs> OnLoginStatus;
         public static event EventHandler<AudioDataEventArgs> OnAudioData;
+        public static event EventHandler<PingEventArgs> OnPingReq;
+        public static event EventHandler<PingEventArgs> OnPingResp;
 
         public static void InvokeOnUserConnected(object sender, IUser user)
         {
@@ -102,6 +113,18 @@ namespace FeenPhone.Client
         {
             if (OnAudioData != null)
                 OnAudioData(sender, new AudioDataEventArgs(codec, data, dataLen));
+        }
+
+        internal static void InvokeOnPingReq(object sender, ushort timestamp)
+        {
+            if (OnPingReq != null)
+                OnPingReq(sender, new PingEventArgs(timestamp));
+        }
+
+        internal static void InvokeOnPingResp(object sender, ushort timestamp)
+        {
+            if (OnPingResp != null)
+                OnPingResp(sender, new PingEventArgs(timestamp));
         }
     }
 }

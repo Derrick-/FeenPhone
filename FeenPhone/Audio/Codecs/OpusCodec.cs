@@ -311,7 +311,7 @@ namespace FeenPhone.Audio.Codecs
                 int len;
                 byte[] buff = Decoder.Decode(frame.Data, frame.Len, out len);
 
-                Debug.WriteLine(String.Format("Opus: In {0} bytes, decoded {1} bytes [dec frame size = {2}]", frame.Len, len, _bytesPerSegment));
+                //Debug.WriteLine(String.Format("Opus: In {0} bytes, decoded {1} bytes [dec frame size = {2}]", frame.Len, len, _bytesPerSegment));
 
                 wavData.Add(buff.Take(len));
             }

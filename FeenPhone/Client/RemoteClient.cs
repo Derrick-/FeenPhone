@@ -86,5 +86,10 @@ namespace FeenPhone.Client
             Console.WriteLine("Logging in as {0}", LocalUser.Nickname);
             Packet.WriteLoginRequest(Writer, LocalUser.Nickname, LocalUser.Nickname);
         }
+
+        internal override void SendPingResp(ushort timestamp)
+        {
+            Packet.WritePingResp(Writer, timestamp);
+        }
     }
 }

@@ -34,6 +34,13 @@ namespace FeenPhone.WPFApp.Controls
             RemoteClient.OnDisconnected += RemoteClient_OnDisconnected;
 
             EventSource.OnLoginStatus += EventSource_OnLoginStatus;
+            EventSource.OnPingReq += EventSource_OnPingReq;
+            EventSource.OnPingResp += EventSource_OnPingResp;
+        }
+
+        void EventSource_OnPingResp(object sender, PingEventArgs e)
+        {
+            Console.WriteLine("Ping resp: {0}", e.Value);
         }
 
         public static DependencyProperty ControlsEnabledProperty = DependencyProperty.Register("ControlsEnabled", typeof(bool), typeof(NetworkWPF), new PropertyMetadata(true));
@@ -104,6 +111,11 @@ namespace FeenPhone.WPFApp.Controls
                 Console.WriteLine("Server login accepted.");
                 invalidLoginAttempts = 0;
             }
+        }
+
+        void EventSource_OnPingReq(object sender, PingEventArgs e)
+        {
+            Client.SendPingResp(e.Value);
         }
 
         public static DependencyProperty IsServerProperty = DependencyProperty.Register("IsServer", typeof(bool?), typeof(NetworkWPF), new PropertyMetadata(false, OnIsServerChanged));

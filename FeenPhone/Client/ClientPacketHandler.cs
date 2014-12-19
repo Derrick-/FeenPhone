@@ -28,6 +28,11 @@ namespace FeenPhone.Client
             EventSource.InvokeOnAudio(this, Codec, data, dataLen);
         }
 
+        protected override void OnPingReq(ushort timestamp)
+        {
+            EventSource.InvokeOnPingReq(this, timestamp);
+        }
+
         protected override void OnLoginStatus(bool isLoggedIn)
         {
             EventSource.InvokeOnLoginStatus(this, isLoggedIn);

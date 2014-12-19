@@ -13,6 +13,7 @@ namespace FeenPhone.Server
         bool Login(string username, string password);
         void OnLoginSuccess();
         void OnLoginFailed();
+        Alienseed.BaseNetworkServer.PacketServer.IPacketWriter Writer { get; }
     }
 
     interface IFeenPhoneEvents

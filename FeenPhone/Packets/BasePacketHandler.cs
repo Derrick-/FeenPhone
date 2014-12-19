@@ -1,4 +1,5 @@
 ﻿using Alienseed.BaseNetworkServer.Accounting;
+using FeenPhone.Client;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -24,7 +25,9 @@ namespace FeenPhone
                     {PacketID.UserLogout, Handle_UserLogout},
                     {PacketID.UserList, Handle_UserList},
                     {PacketID.Chat, Handle_OnChat},
-                    {PacketID.Audio, Handle_OnAudio}
+                    {PacketID.Audio, Handle_OnAudio},
+                    {PacketID.PingReq, Handle_PingReq},
+                    {PacketID.PingResp, Handle_PingResp},
                 };
         }
 
@@ -176,7 +179,33 @@ namespace FeenPhone
             OnAudio(Codec, payload.Skip(1).ToArray(), payload.Count() - 1);
         }
 
+        protected abstract void OnPingReq(ushort timestamp);
+        protected void Handle_PingReq(IEnumerable<byte> payload)
+        {
+            ushort timestamp = ReadPingTimestamp(payload);
+            OnPingReq(timestamp);
+        }
 
+        protected void Handle_PingResp(IEnumerable<byte> payload)
+        {
+            ushort timestamp = ReadPingTimestamp(payload);
+            int now = (int)BaseClient.Elapsed.TotalMilliseconds;
+            ushort elapsed;
+            unchecked { elapsed = (ushort)(now - timestamp); }
+            FeenPhone.Client.EventSource.InvokeOnPingResp(this, elapsed);
+        }
+
+        private static ushort ReadPingTimestamp(IEnumerable<byte> payload)
+        {
+            var count = payload.Count();
+
+            if (count < 2)
+                throw new ArgumentException("Out of data in ReadPingTimestamp");
+
+            byte[] tsBytes = payload.Take(2).ToArray();
+            ushort timestamp = (ushort)(tsBytes[0] << 8 | tsBytes[1]);
+            return timestamp;
+        }
 
         protected abstract IUser GetUserObject(Guid id, bool isadmin, string username, string nickname);
         private int ReadUser(IEnumerable<byte> payload, out IUser user)

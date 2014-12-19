@@ -66,6 +66,11 @@ namespace FeenPhone.Client
             Server.EventSink.OnLogin(_LocalUser);
         }
 
+        internal override void SendPingResp(ushort timestamp)
+        {
+            // ping to self is zero
+        }
+
         IUserClient IClient.User
         {
             get { return _LocalUser; }

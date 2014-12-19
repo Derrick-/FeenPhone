@@ -16,7 +16,9 @@ namespace FeenPhone
         UserList = 12,
         UserLogout = 14,
         UserLogin = 15,
-        Audio = 16
+        Audio = 16,
+        PingReq = 22,
+        PingResp = 23,
     }
 
     static class Packet
@@ -120,6 +122,25 @@ namespace FeenPhone
                 buffer.WriteLength(Codec);
                 buffer.Write(AudioData, AudioDataLen);
 
+                if (Writer != null)
+                    Writer.Write(buffer);
+            }
+        }
+
+        internal static void WritePingReq(IPacketWriter Writer)
+        {
+            var timestamp = (int)FeenPhone.Client.BaseClient.Elapsed.TotalMilliseconds;
+            using (var buffer = new FeenPacketBuffer(PacketID.UserLogin, new byte[] { (byte)(timestamp << 8), (byte)(timestamp) }))
+            {
+                if (Writer != null)
+                    Writer.Write(buffer);
+            }
+        }
+
+        internal static void WritePingResp(IPacketWriter Writer, ushort timestamp)
+        {
+            using (var buffer = new FeenPacketBuffer(PacketID.UserLogin, new byte[] { (byte)(timestamp << 8), (byte)(timestamp) }))
+            {
                 if (Writer != null)
                     Writer.Write(buffer);
             }

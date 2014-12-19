@@ -98,5 +98,10 @@ namespace FeenPhone.Server.TcpPacketServer
 
             return LoginSetUser(user);
         }
+
+        IPacketWriter IFeenPhoneNetState.Writer
+        {
+            get { return (IPacketWriter)Writer; }
+        }
     }
 }
