@@ -12,7 +12,7 @@ namespace FeenPhone.Server.TcpPacketServer
     {
         const int readerBufferSize = ushort.MaxValue;
 
-        public TcpPacketServer(int port = ServerHost.DefaultServerPort, IPAddress ip = null, bool noDelay = false, bool useDirectSocketWrite = false) : base(port, ip, noDelay, useDirectSocketWrite) { }
+        public TcpPacketServer(int port = ServerHost.DefaultServerPort, IPAddress ip = null, bool noDelay = false) : base(port, ip, noDelay) { }
 
         protected override TcpPacketNetState NetstateFactory(System.Net.Sockets.NetworkStream stream, System.Net.EndPoint ep)
         {

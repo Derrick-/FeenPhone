@@ -38,7 +38,7 @@ namespace FeenPhone.Server
             Servers.Clear();
 
             Servers.Add(new Telnet.TelnetServer());
-            Servers.Add(new TcpPacketServer.TcpPacketServer(ServerPort, noDelay: true, useDirectSocketWrite: true));
+            Servers.Add(new TcpPacketServer.TcpPacketServer(ServerPort, noDelay: true));
             Servers.Add(new TcpPacketServer.UdpPacketServer(ServerPort));
         }
 

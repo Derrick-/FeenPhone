@@ -12,7 +12,7 @@ namespace Alienseed.BaseNetworkServer.PacketServer
         public new static IEnumerable<Tnetstate> Clients { get { return BaseServer.Clients.Where(m => m is Tnetstate).Cast<Tnetstate>(); } }
         public new static IEnumerable<IUser> Users { get { return BaseTCPPacketServer<Tnetstate>.Clients.Select(m => m.User); } }
 
-        public BaseTCPPacketServer(int port, IPAddress address, bool noDelay = false, bool useDirectSocketWrite = false) : base(port, address, noDelay, useDirectSocketWrite)
+        public BaseTCPPacketServer(int port, IPAddress address, bool noDelay = false) : base(port, address, noDelay)
         {
         }
         

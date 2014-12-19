@@ -97,7 +97,7 @@ namespace Alienseed.BaseNetworkServer
 
         protected Queue<byte> InStream = new Queue<byte>();
 
-        public void SetStream(NetworkStream stream, int buffersize = 255)
+        public void SetStream(Stream stream, int buffersize = 255)
         {
             if (_buffer == null || _buffer.Length != buffersize)
                 _buffer = new byte[buffersize];
@@ -128,7 +128,7 @@ namespace Alienseed.BaseNetworkServer
 
         private void OnRead(IAsyncResult ar)
         {
-            NetworkStream stream = ar.AsyncState as NetworkStream;
+            Stream stream = ar.AsyncState as Stream;
             if (stream != null && stream == Stream)
             {
                 int read = 0;

@@ -13,15 +13,13 @@ namespace Alienseed.BaseNetworkServer
         where TReader : BaseStreamReader, new()
         where TWriter : BaseStreamWriter, new()
     {
-        public BaseTCPServer(int port, IPAddress address = null, bool noDelay = false, bool useDirectSocketWrite = false)
+        public BaseTCPServer(int port, IPAddress address = null, bool noDelay = false)
             : base(port, address)
         {
             NoDelay = noDelay;
-            DirectSocketWrite = useDirectSocketWrite;
         }
 
         public bool NoDelay { get; private set; }
-        public bool DirectSocketWrite { get; private set; }
 
         #region INetworkServer Members
 
@@ -41,8 +39,13 @@ namespace Alienseed.BaseNetworkServer
 
         public override void Stop()
         {
-            Listener.Stop();
             Running = false;
+            if (_Listener != null)
+            {
+                var listener = Listener;
+                _Listener = null;
+                listener.Stop();
+            }
             PurgeAllClients();
         }
 
@@ -93,13 +96,12 @@ namespace Alienseed.BaseNetworkServer
                     NetworkStream stream = client.GetStream();
                     var ns = CreateNetstate(stream, client.Client.RemoteEndPoint);
 
-                    if (this.DirectSocketWrite)
-                        ns.SetSocket(client.Client);
-
                     base.AcceptClient(ns);
 
                 }
-                catch (ObjectDisposedException) { }
+                catch (ObjectDisposedException) {
+                    Stop();
+                }
 
                 if (Running && !Listen())
                     InvokeOnListenerCrash();

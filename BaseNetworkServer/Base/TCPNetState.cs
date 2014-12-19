@@ -14,14 +14,6 @@ namespace Alienseed.BaseNetworkServer
         public TReader Reader { get; private set; }
         public TWriter Writer { get; private set; }
 
-        protected System.Net.Sockets.Socket Socket;
-        internal void SetSocket(System.Net.Sockets.Socket socket)
-        {
-            Socket=socket;
-            if (Writer != null)
-                Writer.SetSocket(socket);
-        }
-
         protected override string ClientIdentifier { get { return string.Format("TCP {0} {1}", Address.ToString(), User != null ? User.Username : "TCP NULL"); } }
 
         public IPEndPoint IPEndPoint { get { return EndPoint as IPEndPoint; } }
@@ -35,12 +27,21 @@ namespace Alienseed.BaseNetworkServer
             }
         }
 
-        private System.Net.Sockets.NetworkStream Stream { get; set; }
+        int DefaultStreamReadTimeout = 50;
+        int DefaultStreamWriteTimeout = 50;
+        
+        private readonly System.Net.Sockets.NetworkStream netStream;
+        private readonly BufferedStream Stream;
 
         internal TCPNetState(System.Net.Sockets.NetworkStream stream, IPEndPoint ep, int readBufferSize)
             : base(ep)
         {
-            Stream = stream;
+            netStream = stream;
+            
+            netStream.WriteTimeout = DefaultStreamWriteTimeout;
+            stream.ReadTimeout = DefaultStreamReadTimeout;
+
+            Stream = new BufferedStream(netStream);
 
             Reader = new TReader(); Reader.SetStream(stream, readBufferSize);
             Writer = new TWriter(); Writer.SetStream(stream);
@@ -55,15 +56,7 @@ namespace Alienseed.BaseNetworkServer
 
         public sealed override void Write(byte[] bytes)
         {
-            if (Socket != null)
-                WriteDirect(bytes);
-            else
-                Writer.Write(bytes);
-        }
-
-        public void WriteDirect(byte[] bytes)
-        {
-            Socket.Send(bytes);
+            Writer.Write(bytes);
         }
 
         protected virtual void OnConnected() { }
@@ -74,6 +67,7 @@ namespace Alienseed.BaseNetworkServer
 
             Reader.Dispose();
             Writer.Dispose();
+            netStream.Dispose();
             Stream.Dispose();
         }
     }

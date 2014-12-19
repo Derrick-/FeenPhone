@@ -49,6 +49,7 @@ namespace Alienseed.BaseNetworkServer
                 if (Running)
                     Listen();
             }
+            catch (NullReferenceException) { }
         }
 
         private void Host_RecieveCallback(IAsyncResult ar)
@@ -71,6 +72,11 @@ namespace Alienseed.BaseNetworkServer
                 catch (SocketException ex)
                 {
                 }
+                catch (ObjectDisposedException ex)
+                {
+                    Stop();
+                    return;
+                }
 
                 Listen();
             }
@@ -80,13 +86,13 @@ namespace Alienseed.BaseNetworkServer
 
         public override void Stop()
         {
+            Running = false;
             if (Host != null)
             {
                 Host.Close();
                 Host = null;
                 PurgeAllClients();
             }
-            Running = false;
         }
 
     }
