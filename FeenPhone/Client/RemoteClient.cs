@@ -87,6 +87,11 @@ namespace FeenPhone.Client
             Packet.WriteLoginRequest(Writer, LocalUser.Nickname, LocalUser.Nickname);
         }
 
+        internal override void SendPingReq()
+        {
+            Packet.WritePingReq(Writer);
+        }
+        
         internal override void SendPingResp(ushort timestamp)
         {
             Packet.WritePingResp(Writer, timestamp);

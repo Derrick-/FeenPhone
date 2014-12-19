@@ -23,6 +23,7 @@ namespace FeenPhone.WPFApp.Controls
     public partial class NetworkWPF : UserControl
     {
 
+        System.Timers.Timer UIUpdateTimer;
         public NetworkWPF()
         {
             InitializeComponent();
@@ -36,8 +37,18 @@ namespace FeenPhone.WPFApp.Controls
             EventSource.OnLoginStatus += EventSource_OnLoginStatus;
             EventSource.OnPingReq += EventSource_OnPingReq;
             EventSource.OnPingResp += EventSource_OnPingResp;
+
+            UIUpdateTimer = new System.Timers.Timer(5000);
+            UIUpdateTimer.Start();
+            UIUpdateTimer.Elapsed += UIUpdateTimer_Elapsed;
         }
 
+        void UIUpdateTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            if (Client is RemoteClient)
+                Client.SendPingReq();
+        }
+        
         void EventSource_OnPingResp(object sender, PingEventArgs e)
         {
             Console.WriteLine("Ping resp: {0}", e.Value);
@@ -209,6 +220,7 @@ namespace FeenPhone.WPFApp.Controls
             if (Client != null)
                 Client.Dispose();
             btnConnect.Content = "Connect";
+            ControlsEnabled = true;
             Client = null;
         }
 

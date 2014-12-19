@@ -130,7 +130,7 @@ namespace FeenPhone
         internal static void WritePingReq(IPacketWriter Writer)
         {
             var timestamp = (int)FeenPhone.Client.BaseClient.Elapsed.TotalMilliseconds;
-            using (var buffer = new FeenPacketBuffer(PacketID.UserLogin, new byte[] { (byte)(timestamp << 8), (byte)(timestamp) }))
+            using (var buffer = new FeenPacketBuffer(PacketID.PingReq, new byte[] { (byte)(timestamp >> 8), (byte)(timestamp) }))
             {
                 if (Writer != null)
                     Writer.Write(buffer);
@@ -139,7 +139,7 @@ namespace FeenPhone
 
         internal static void WritePingResp(IPacketWriter Writer, ushort timestamp)
         {
-            using (var buffer = new FeenPacketBuffer(PacketID.UserLogin, new byte[] { (byte)(timestamp << 8), (byte)(timestamp) }))
+            using (var buffer = new FeenPacketBuffer(PacketID.PingResp, new byte[] { (byte)(timestamp >> 8), (byte)(timestamp) }))
             {
                 if (Writer != null)
                     Writer.Write(buffer);

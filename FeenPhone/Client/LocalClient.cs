@@ -66,6 +66,12 @@ namespace FeenPhone.Client
             Server.EventSink.OnLogin(_LocalUser);
         }
 
+
+        internal override void SendPingReq()
+        {
+            throw new NotImplementedException();
+        }
+        
         internal override void SendPingResp(ushort timestamp)
         {
             // ping to self is zero
