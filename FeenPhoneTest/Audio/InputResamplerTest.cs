@@ -12,10 +12,8 @@ namespace FeenPhoneTest.Audio
         public void ChannelCountChangeTest()
         {
             int samples = 1000;
-
             byte[] left = CreateTestStream(samples, 0);
             byte[] right = CreateTestStream(samples, 1);
-
             byte[] stream = Multiplex(samples, left, right);
 
             WaveFormat sourceFormat = new WaveFormat(8000, 2);
@@ -46,14 +44,13 @@ namespace FeenPhoneTest.Audio
         public void MonoRateResampleTest()
         {
             int samples = 1000;
-
             byte[] stream = CreateTestStream(samples, 0);
 
             WaveFormat sourceFormat = new WaveFormat(44100, 1);
             WaveFormat destFormat = new WaveFormat(8000, 1);
 
             int sourceLength = stream.Length;
-            int expectedResultLen = (int)((float)sourceLength * ((float)destFormat.SampleRate / (float)sourceFormat.SampleRate));
+            int expectedResultLen = GetExpectedConversionLength(sourceLength, sourceFormat, destFormat);
 
             int resultLength;
             byte[] resultStream = InputResampler.Resample(stream, sourceLength, sourceFormat, destFormat, out resultLength);
@@ -63,20 +60,39 @@ namespace FeenPhoneTest.Audio
         }
 
         [TestMethod]
+        public void LongerSourceStereoResampleTest()
+        {
+            int samples = 500;
+            byte[] testStream = CreateStereoSampleStream(samples);
+
+            byte[] stream = new byte[testStream.Length + 1000];
+            testStream.CopyTo(stream, 0);
+
+            WaveFormat sourceFormat = new WaveFormat(48000, 2);
+            WaveFormat destFormat = new WaveFormat(44100, 1);
+
+            int sourceLength = testStream.Length;
+            int expectedResultLen = GetExpectedConversionLength(sourceLength, sourceFormat, destFormat);
+
+            int resultLength;
+            byte[] resultStream = InputResampler.Resample(stream, sourceLength, sourceFormat, destFormat, out resultLength);
+
+            Assert.AreEqual(expectedResultLen, resultLength);
+
+        }
+
+
+        [TestMethod]
         public void StereoRateResampleTest()
         {
             int samples = 1000;
-
-            byte[] left = CreateTestStream(samples, 0);
-            byte[] right = CreateTestStream(samples, 1);
-
-            byte[] stream = Multiplex(samples, left, right);
+            byte[] stream = CreateStereoSampleStream(samples);
 
             WaveFormat sourceFormat = new WaveFormat(8000, 2);
             WaveFormat destFormat = new WaveFormat(2000, 2);
 
             int sourceLength = stream.Length;
-            int expectedResultLen = (int)((float)sourceLength * ((float)destFormat.SampleRate / (float)sourceFormat.SampleRate));
+            int expectedResultLen = GetExpectedConversionLength(sourceLength, sourceFormat, destFormat);
 
             int resultLength;
             byte[] resultStream = InputResampler.Resample(stream, sourceLength, sourceFormat, destFormat, out resultLength);
@@ -89,17 +105,13 @@ namespace FeenPhoneTest.Audio
         public void StereoToMonoRateResampleTest()
         {
             int samples = 1000;
-
-            byte[] left = CreateTestStream(samples, 0);
-            byte[] right = CreateTestStream(samples, 1);
-
-            byte[] stream = Multiplex(samples, left, right);
+            byte[] stream = CreateStereoSampleStream(samples);
 
             WaveFormat sourceFormat = new WaveFormat(8000, 2);
             WaveFormat destFormat = new WaveFormat(2000, 1);
 
             int sourceLength = stream.Length;
-            int expectedResultLen = (int)((float)sourceLength * ((float)destFormat.SampleRate / (float)sourceFormat.SampleRate)) / 2;
+            int expectedResultLen = GetExpectedConversionLength(sourceLength, sourceFormat, destFormat);
 
             int resultLength;
             byte[] resultStream = InputResampler.Resample(stream, sourceLength, sourceFormat, destFormat, out resultLength);
@@ -108,6 +120,20 @@ namespace FeenPhoneTest.Audio
 
         }
 
+        private static int GetExpectedConversionLength(int sourceLength, WaveFormat sourceFormat, WaveFormat destFormat)
+        {
+            float channelFactor = (float)destFormat.Channels / (float)sourceFormat.Channels;
+            int expectedResultLen = (int)((float)sourceLength * ((float)destFormat.SampleRate / (float)sourceFormat.SampleRate) * channelFactor);
+            return expectedResultLen;
+        }
+
+        private static byte[] CreateStereoSampleStream(int samples)
+        {
+            byte[] left = CreateTestStream(samples, 0);
+            byte[] right = CreateTestStream(samples, 1);
+            byte[] stream = Multiplex(samples, left, right);
+            return stream;
+        }
 
         private static byte[] CreateTestStream(int samples, byte chanNum)
         {

@@ -57,7 +57,7 @@ namespace FeenPhone.Audio
             {
                 if (destFormat.Channels == 1 && sourceFormat.Channels == 2)
                 {
-                    toResample = MixStereoToMono(toResample);
+                    toResample = MixStereoToMono(toResample, sourceLength);
                     sourceLength = toResample.Length;
                 }
                 else
@@ -79,11 +79,11 @@ namespace FeenPhone.Audio
             return resampleRateStream.DestBuffer;
         }
 
-        private static byte[] StereoToLeftChannel(byte[] input)
+        private static byte[] StereoToLeftChannel(byte[] input, int length)
         {
-            byte[] output = new byte[input.Length / 2];
+            byte[] output = new byte[length / 2];
             int outputIndex = 0;
-            for (int n = 0; n < input.Length; n += 4)
+            for (int n = 0; n < length; n += 4)
             {
                 output[outputIndex++] = (byte)(input[n] + input[n + 2]);
                 output[outputIndex++] = (byte)(input[n + 1] + input[n + 3]);
@@ -91,11 +91,11 @@ namespace FeenPhone.Audio
             return output;
         }
 
-        private static byte[] MixStereoToMono(byte[] input)
+        private static byte[] MixStereoToMono(byte[] input, int length)
         {
-            byte[] output = new byte[input.Length / 2];
+            byte[] output = new byte[length / 2];
             int outputIndex = 0;
-            for (int n = 0; n < input.Length; n += 4)
+            for (int n = 0; n < length; n += 4)
             {
                 int leftChannel = BitConverter.ToInt16(input, n);
                 int rightChannel = BitConverter.ToInt16(input, n + 2);
