@@ -44,6 +44,9 @@ namespace FeenPhone.WPFApp
         {
             Settings.InvokeSaveSettings(this);
             Settings.Container.Save();
+
+            AudioIn.Dispose();
+            AudioOut.Dispose();
         }
 
     }

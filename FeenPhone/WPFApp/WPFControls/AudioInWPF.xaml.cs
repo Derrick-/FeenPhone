@@ -29,7 +29,7 @@ namespace FeenPhone.WPFApp.Controls
     /// <summary>
     /// Interaction logic for AudioWPF.xaml
     /// </summary>
-    public partial class AudioInWPF : UserControl, INotifyPropertyChanged
+    public partial class AudioInWPF : UserControl, INotifyPropertyChanged, IDisposable
     {
         static ObservableCollection<InputDeviceModel> InputList = new ObservableCollection<InputDeviceModel>();
 
@@ -221,7 +221,7 @@ namespace FeenPhone.WPFApp.Controls
                         canUseExclusive = false;
                         deviceFormat = codec.RecordFormat;
                     }
-                    else if (deviceFormat.BitsPerSample != 16 || deviceFormat.Encoding!= WaveFormatEncoding.Pcm)
+                    else if (deviceFormat.BitsPerSample != 16 || deviceFormat.Encoding != WaveFormatEncoding.Pcm)
                     {
                         WaveFormat altFormat = new WaveFormat(deviceFormat.SampleRate, 16, deviceFormat.Channels);
 
@@ -304,6 +304,8 @@ namespace FeenPhone.WPFApp.Controls
         {
             if (waveIn != null)
             {
+                //if (SelectedInputSource.Provider == InputDeviceModel.InputDeviceProvider.Wasapi)
+                //    SelectedInputSource.MMDevice.AudioClient.Reset();
                 waveIn.DataAvailable -= waveIn_DataAvailable;
                 waveIn.StopRecording();
                 waveIn.Dispose();
@@ -316,7 +318,7 @@ namespace FeenPhone.WPFApp.Controls
         {
             Dispatcher.BeginInvoke(new Action<WaveInEventArgs>((args) =>
                 {
-                    if (IsRecording == true)
+                    if (IsRecording == true && !isDisposed)
                     {
                         byte[] toEncode = args.Buffer;
 
@@ -354,5 +356,11 @@ namespace FeenPhone.WPFApp.Controls
             }
         }
 
+        bool isDisposed = false;
+        public void Dispose()
+        {
+            StopRecording();
+            isDisposed = true;
+        }
     }
 }

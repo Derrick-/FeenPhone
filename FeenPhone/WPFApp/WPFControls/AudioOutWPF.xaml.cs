@@ -26,7 +26,7 @@ namespace FeenPhone.WPFApp.Controls
     /// <summary>
     /// Interaction logic for AudioOutWPF.xaml
     /// </summary>
-    public partial class AudioOutWPF : UserControl
+    public partial class AudioOutWPF : UserControl, IDisposable
     {
         static ObservableCollection<OutputDeviceModel> OutputList = new ObservableCollection<OutputDeviceModel>();
 
@@ -329,6 +329,8 @@ namespace FeenPhone.WPFApp.Controls
 
         private void HandleAudio(Audio.Codecs.CodecID codecid, byte[] encoded)
         {
+            if (isDisposed) return; 
+
             Audio.Codecs.INetworkChatCodec remoteCodec = Codecs.SingleOrDefault(m => m.CodecID == codecid);
             if (remoteCodec == null)
             {
@@ -473,6 +475,13 @@ namespace FeenPhone.WPFApp.Controls
         private void Buffer_Clear_Click(object sender, RoutedEventArgs e)
         {
             Stop();
+        }
+
+        bool isDisposed = false;
+        public void Dispose()
+        {
+            Stop();
+            isDisposed = true;
         }
     }
 }
