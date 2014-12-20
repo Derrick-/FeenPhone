@@ -230,9 +230,15 @@ namespace FeenPhone.WPFApp.Controls
                         else if (mmdevice.AudioClient.IsFormatSupported(AudioClientShareMode.Shared, altFormat))
                             canUseExclusive = false;
                         else
-                            throw new Exception("Device does not support 16bit PCM");
+                            throw new Exception("Device does not support 16bit PCM, or device is in use");
 
                         deviceFormat = altFormat;
+
+                        Console.WriteLine("Initializing Wasapi\n  Device: {0}\n  Format: {1}\n  Mode: {2}\n  Resampling: {3}",
+                            mmdevice.FriendlyName,
+                            deviceFormat,
+                            canUseExclusive ? "Exclusive" : "Shared",
+                            deviceFormat.Equals(codec.RecordFormat) ? "NO" : "YES");
 
                     }
                     else
