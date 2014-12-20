@@ -93,6 +93,7 @@
     <Compile Include="Audio\Codecs\SpeexChatCodec.cs" />
     <Compile Include="Audio\Codecs\TrueSpeechChatCodec.cs" />
     <Compile Include="Audio\Codecs\UncompressedPcmChatCodec.cs" />
+    <Compile Include="Audio\InputResampler.cs" />
     <Compile Include="Audio\SampleAggregator.cs" />
     <Compile Include="Client\BaseClient.cs" />
     <Compile Include="Client\EventSource.cs" />
@@ -124,6 +125,7 @@
     <Compile Include="Server\Telnet\TelnetServer.cs" />
     <Compile Include="Server\Telnet\TelNetState.cs" />
     <Compile Include="Utils\Timekeeper.cs" />
+    <Compile Include="WPFApp\Models\InputDeviceModel.cs" />
     <Compile Include="WPFApp\Models\OutputDeviceModel.cs" />
     <Compile Include="WPFApp\Models\UserStatusModel.cs" />
     <Compile Include="WPFApp\Settings.cs" />

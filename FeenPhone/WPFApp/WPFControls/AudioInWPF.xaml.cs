@@ -18,6 +18,11 @@ using FeenPhone.Audio;
 using System.ComponentModel.Composition.Hosting;
 using System.Reflection;
 using System.ComponentModel.Composition;
+using NAudio.CoreAudioApi;
+using FeenPhone.WPFApp.Models;
+using NAudio.Wave.SampleProviders;
+using NAudio.Wave.Compression;
+using System.Diagnostics;
 
 namespace FeenPhone.WPFApp.Controls
 {
@@ -26,7 +31,7 @@ namespace FeenPhone.WPFApp.Controls
     /// </summary>
     public partial class AudioInWPF : UserControl, INotifyPropertyChanged
     {
-        static ObservableCollection<string> InputList = new ObservableCollection<string>();
+        static ObservableCollection<InputDeviceModel> InputList = new ObservableCollection<InputDeviceModel>();
 
         [ImportMany(typeof(Audio.Codecs.INetworkChatCodec))]
         public IEnumerable<Audio.Codecs.INetworkChatCodec> Codecs { get; set; }
@@ -64,7 +69,7 @@ namespace FeenPhone.WPFApp.Controls
 
             if (!string.IsNullOrWhiteSpace(strInputDevice))
             {
-                var selectInputDevice = InputList.Where(m => m == strInputDevice).FirstOrDefault();
+                var selectInputDevice = InputList.Where(m => m.ToString() == strInputDevice).FirstOrDefault();
                 if (selectInputDevice != null)
                     SelectedInputSource = selectInputDevice;
             }
@@ -73,7 +78,7 @@ namespace FeenPhone.WPFApp.Controls
         private void Settings_SaveSettings(object sender, EventArgs e)
         {
             var settings = Settings.Container;
-           
+
             var selectedCodec = comboBoxCodecs.SelectedItem as CodecComboItem;
             if (selectedCodec != null)
                 settings.Codec = selectedCodec.Text;
@@ -82,7 +87,7 @@ namespace FeenPhone.WPFApp.Controls
 
             var selectedMic = SelectedInputSource;
             if (selectedMic != null)
-                settings.InputDevice = selectedMic;
+                settings.InputDevice = selectedMic.ToString();
             else
                 settings.InputDevice = null;
         }
@@ -93,8 +98,19 @@ namespace FeenPhone.WPFApp.Controls
             for (int n = 0; n < WaveIn.DeviceCount; n++)
             {
                 var capabilities = WaveIn.GetCapabilities(n);
-                InputList.Add(capabilities.ProductName);
+                InputList.Add(new InputDeviceModel(n, capabilities));
             }
+
+            var deviceEnum = new MMDeviceEnumerator();
+            var devices = deviceEnum.EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active).ToList();
+
+
+            foreach (var device in devices)
+            {
+                InputList.Add(new InputDeviceModel(device));
+
+            }
+
         }
 
         private void PopulateCodecsCombo(IEnumerable<Audio.Codecs.INetworkChatCodec> codecs)
@@ -126,10 +142,9 @@ namespace FeenPhone.WPFApp.Controls
             }
         }
 
-
         public static DependencyProperty IsRecordingProperty = DependencyProperty.Register("IsRecording", typeof(bool?), typeof(AudioInWPF), new PropertyMetadata(false, OnIsRecordingChanged));
-        public static DependencyProperty InputSourceListProperty = DependencyProperty.Register("InputSourceList", typeof(ObservableCollection<string>), typeof(AudioInWPF), new PropertyMetadata(InputList));
-        public static DependencyProperty SelectedInputSourceProperty = DependencyProperty.Register("SelectedInputSource", typeof(string), typeof(AudioInWPF), new PropertyMetadata(null));
+        public static DependencyProperty InputSourceListProperty = DependencyProperty.Register("InputSourceList", typeof(ObservableCollection<InputDeviceModel>), typeof(AudioInWPF), new PropertyMetadata(InputList));
+        public static DependencyProperty SelectedInputSourceProperty = DependencyProperty.Register("SelectedInputSource", typeof(InputDeviceModel), typeof(AudioInWPF), new PropertyMetadata(null));
         public static DependencyProperty SelectedInputSourceIndexProperty = DependencyProperty.Register("SelectedInputSourceIndex", typeof(int?), typeof(AudioInWPF), new PropertyMetadata(null));
         public static DependencyProperty ControlsEnabledProperty = DependencyProperty.Register("ControlsEnabled", typeof(bool), typeof(AudioInWPF), new PropertyMetadata(true));
 
@@ -149,9 +164,9 @@ namespace FeenPhone.WPFApp.Controls
             }
         }
 
-        public string SelectedInputSource
+        public InputDeviceModel SelectedInputSource
         {
-            get { return (string)this.GetValue(SelectedInputSourceProperty); }
+            get { return (InputDeviceModel)this.GetValue(SelectedInputSourceProperty); }
             set { this.SetValue(SelectedInputSourceProperty, value); }
         }
 
@@ -160,7 +175,7 @@ namespace FeenPhone.WPFApp.Controls
             get { return (int?)this.GetValue(SelectedInputSourceIndexProperty); }
             set { this.SetValue(SelectedInputSourceIndexProperty, value); }
         }
-        
+
         private static void OnIsRecordingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             AudioInWPF target = d as AudioInWPF;
@@ -178,20 +193,84 @@ namespace FeenPhone.WPFApp.Controls
                 StopRecording();
         }
 
-        private WaveIn waveIn;
+        private IWaveIn waveIn;
+
         private Audio.Codecs.INetworkChatCodec codec;
         public Audio.Codecs.INetworkChatCodec Codec { get { return codec; } }
-        private void StartRecording()
+        private void StartRecording(bool shouldTryUseExclusive = true)
         {
             if (SelectedInputSourceIndex.HasValue)
             {
                 this.codec = ((CodecComboItem)comboBoxCodecs.SelectedItem).Codec;
 
-                int source = SelectedInputSourceIndex.Value;
-                waveIn = new WaveIn();                          //TODO: Try WasapiCapture
-                waveIn.BufferMilliseconds = 50;
-                waveIn.DeviceNumber = source;
-                waveIn.WaveFormat = codec.RecordFormat;
+                bool canUseExclusive = false;
+
+                if (SelectedInputSource.Provider == InputDeviceModel.InputDeviceProvider.Wasapi)
+                {
+                    var mmdevice = SelectedInputSource.MMDevice;
+
+                    WaveFormat deviceFormat = mmdevice.AudioClient.MixFormat;
+
+                    if (mmdevice.AudioClient.IsFormatSupported(AudioClientShareMode.Exclusive, codec.RecordFormat))
+                    {
+                        canUseExclusive = true;
+                        deviceFormat = codec.RecordFormat;
+                    }
+                    else if (mmdevice.AudioClient.IsFormatSupported(AudioClientShareMode.Shared, codec.RecordFormat))
+                    {
+                        canUseExclusive = false;
+                        deviceFormat = codec.RecordFormat;
+                    }
+                    else if (deviceFormat.BitsPerSample != 16 || deviceFormat.Encoding!= WaveFormatEncoding.Pcm)
+                    {
+                        WaveFormat altFormat = new WaveFormat(deviceFormat.SampleRate, 16, deviceFormat.Channels);
+
+                        if (mmdevice.AudioClient.IsFormatSupported(AudioClientShareMode.Exclusive, altFormat))
+                            canUseExclusive = true;
+                        else if (mmdevice.AudioClient.IsFormatSupported(AudioClientShareMode.Shared, altFormat))
+                            canUseExclusive = false;
+                        else
+                            throw new Exception("Device does not support 16bit PCM");
+
+                        deviceFormat = altFormat;
+
+                    }
+                    else
+                    {
+                        canUseExclusive = mmdevice.AudioClient.IsFormatSupported(AudioClientShareMode.Exclusive, deviceFormat);
+                    }
+
+                    AudioClientShareMode shareMode;
+                    if (canUseExclusive && shouldTryUseExclusive)
+                        shareMode = AudioClientShareMode.Exclusive;
+                    else
+                        shareMode = AudioClientShareMode.Shared;
+
+                    Guid audioSessionGuid = Guid.NewGuid();
+                    try
+                    {
+                        mmdevice.AudioClient.Reset();
+                    }
+                    catch { }
+
+                    var w = new WasapiCapture(mmdevice);
+
+                    waveIn = w;
+                    waveIn.WaveFormat = deviceFormat;
+                    w.ShareMode = shareMode;
+                }
+                else
+                {
+                    var w = new WaveIn();
+                    w.BufferMilliseconds = 50;
+                    w.DeviceNumber = SelectedInputSource.WavDeviceNumber;
+                    waveIn = w;
+
+                    waveIn.WaveFormat = codec.RecordFormat;
+                    canUseExclusive = false;
+
+                }
+
                 waveIn.DataAvailable += waveIn_DataAvailable;
                 try
                 {
@@ -204,6 +283,18 @@ namespace FeenPhone.WPFApp.Controls
                     waveIn = null;
                     IsRecording = false;
                 }
+                catch (ArgumentException ex)
+                {
+                    Console.WriteLine("Couldn't start recording: {0}", ex.Message);
+                    IsRecording = false;
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Couldn't start recording: {0}", ex);
+                    IsRecording = false;
+                    return;
+                }
             }
             else
                 IsRecording = false;
@@ -215,19 +306,42 @@ namespace FeenPhone.WPFApp.Controls
             {
                 waveIn.DataAvailable -= waveIn_DataAvailable;
                 waveIn.StopRecording();
+                waveIn.Dispose();
+                waveIn = null;
             }
             ControlsEnabled = true;
         }
 
-        private void waveIn_DataAvailable(object sender, WaveInEventArgs e)
+        private void waveIn_DataAvailable(object sender, WaveInEventArgs waveInArgs)
         {
-            if (IsEnabled)
-            {
-                byte[] encoded = codec.Encode(e.Buffer, e.BytesRecorded);
+            Dispatcher.BeginInvoke(new Action<WaveInEventArgs>((args) =>
+                {
+                    if (IsRecording == true)
+                    {
+                        byte[] toEncode = args.Buffer;
 
-                if (NetworkWPF.Client != null)
-                    NetworkWPF.Client.SendAudio(codec.CodecID, encoded, encoded.Length);
-            }
+                        int length = args.BytesRecorded;
+                        if (length > 0)
+                        {
+                            if (waveIn.WaveFormat != codec.RecordFormat)
+                            {
+                                toEncode = InputResampler.Resample(toEncode, args.BytesRecorded, waveIn.WaveFormat, codec.RecordFormat, out length);
+                            }
+                            if (toEncode == null)
+                            {
+                                Console.WriteLine("Encode Error: Disabling input. Please choose another record format and report this bug..");
+                                StopRecording();
+                            }
+                            else
+                            {
+                                byte[] encoded = codec.Encode(toEncode, length);
+
+                                if (NetworkWPF.Client != null)
+                                    NetworkWPF.Client.SendAudio(codec.CodecID, encoded, encoded.Length);
+                            }
+                        }
+                    }
+                }), waveInArgs);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

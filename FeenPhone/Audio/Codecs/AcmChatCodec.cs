@@ -14,6 +14,8 @@ namespace FeenPhone.Audio.Codecs
     /// </summary>
     abstract class AcmChatCodec : INetworkChatCodec
     {
+        static bool disableAll = false;
+
         public abstract CodecID CodecID { get; }
 
         private WaveFormat encodeFormat;
@@ -102,8 +104,7 @@ namespace FeenPhone.Audio.Codecs
             }
         }
 
-        static bool disableAll = true;
-        public bool IsAvailable
+        public virtual bool IsAvailable
         {
             get
             {
