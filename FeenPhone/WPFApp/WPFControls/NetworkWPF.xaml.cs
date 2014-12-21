@@ -30,7 +30,7 @@ namespace FeenPhone.WPFApp.Controls
             DataContext = this;
 
             LoadSettings();
-            Settings.SaveSettings += Settings_SaveSettings;
+            Settings.AppClosing += Settings_SaveSettings;
 
             RemoteClient.OnDisconnected += RemoteClient_OnDisconnected;
 

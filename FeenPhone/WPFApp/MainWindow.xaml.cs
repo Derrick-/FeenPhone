@@ -26,7 +26,7 @@ namespace FeenPhone.WPFApp
 
             LoadSettings();
             this.Closed += new EventHandler(Window_Closed);
-            Settings.SaveSettings += Settings_SaveSettings;
+            Settings.AppClosing += Settings_SaveSettings;
         }
 
         private void LoadSettings()
@@ -42,7 +42,7 @@ namespace FeenPhone.WPFApp
         
         void Window_Closed(object sender, EventArgs e)
         {
-            Settings.InvokeSaveSettings(this);
+            Settings.InvokeAppClosing(this);
             Settings.Container.Save();
 
             AudioIn.Dispose();

@@ -11,6 +11,11 @@ namespace FeenPhone.Audio
 {
     static class InputResampler
     {
+        static InputResampler()
+        {
+            Settings.AppClosing += Settings_AppClosing;
+        }
+
         static bool EnableTraces = false;
 
         private const float IeeeFloatToPcmOffset = 32767;
@@ -156,5 +161,24 @@ namespace FeenPhone.Audio
             return bufferB;
         }
 
+
+        private static void Settings_AppClosing(object sender, EventArgs e)
+        {
+            Dispose();
+        }
+
+        internal static void Dispose()
+        {
+            if (resampleChannelStream != null)
+            {
+                resampleChannelStream.Dispose();
+                resampleChannelStream = null;
+            }
+            if (resampleRateStream != null)
+            {
+                resampleRateStream.Dispose();
+                resampleRateStream = null;
+            }
+        }
     }
 }

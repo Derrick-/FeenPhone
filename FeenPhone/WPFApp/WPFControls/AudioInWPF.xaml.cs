@@ -47,7 +47,7 @@ namespace FeenPhone.WPFApp.Controls
             PopulateCodecsCombo(Codecs);
 
             LoadSettings();
-            Settings.SaveSettings += Settings_SaveSettings;
+            Settings.AppClosing += Settings_SaveSettings;
         }
 
         private void LoadSettings()
@@ -366,6 +366,8 @@ namespace FeenPhone.WPFApp.Controls
         public void Dispose()
         {
             StopRecording();
+            foreach (var codec in Codecs)
+                codec.Dispose();
             isDisposed = true;
         }
     }

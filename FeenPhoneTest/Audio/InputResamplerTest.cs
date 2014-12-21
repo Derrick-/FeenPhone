@@ -8,6 +8,12 @@ namespace FeenPhoneTest.Audio
     [TestClass]
     public class InputResamplerTest
     {
+        [TestCleanup]
+        public void Cleanup()
+        {
+            InputResampler.Dispose();
+        }
+
         [TestMethod]
         public void ChannelCountChangeTest()
         {

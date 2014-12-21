@@ -9,13 +9,13 @@ namespace FeenPhone
     static class Settings
     {
 
-        public static event EventHandler SaveSettings;
+        public static event EventHandler AppClosing;
 
 
-        public static void InvokeSaveSettings(object sender)
+        public static void InvokeAppClosing(object sender)
         {
-            if (SaveSettings != null)
-                SaveSettings(sender, null);
+            if (AppClosing != null)
+                AppClosing(sender, null);
         }
 
         public static Properties.Settings Container { get { return Properties.Settings.Default; } }

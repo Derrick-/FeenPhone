@@ -191,7 +191,7 @@ namespace FeenPhone.WPFApp.Controls
             InitializeOutputDevices();
 
             LoadSettings();
-            Settings.SaveSettings += Settings_SaveSettings;
+            Settings.AppClosing += Settings_SaveSettings;
 
             FeenPhone.Client.EventSource.OnAudioData += EventSource_OnAudioData;
 
