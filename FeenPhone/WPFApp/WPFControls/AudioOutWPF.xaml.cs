@@ -295,7 +295,7 @@ namespace FeenPhone.WPFApp.Controls
 
         void EventSource_OnAudioData(object sender, Client.AudioDataEventArgs e)
         {
-            Dispatcher.BeginInvoke(new Action<Audio.Codecs.CodecID, byte[]>(HandleAudio), e.Codec, e.Data);
+            Dispatcher.BeginInvoke(new Action<Guid, Audio.Codecs.CodecID, byte[]>(HandleAudio), e.UserID, e.Codec, e.Data);
         }
 
         private IWavePlayer waveOut;
@@ -327,9 +327,9 @@ namespace FeenPhone.WPFApp.Controls
 
         }
 
-        private void HandleAudio(Audio.Codecs.CodecID codecid, byte[] encoded)
+        private void HandleAudio(Guid userID, Audio.Codecs.CodecID codecid, byte[] encoded)
         {
-            if (isDisposed) return; 
+            if (isDisposed) return;
 
             Audio.Codecs.INetworkChatCodec remoteCodec = Codecs.SingleOrDefault(m => m.CodecID == codecid);
             if (remoteCodec == null)

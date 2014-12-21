@@ -169,14 +169,26 @@ namespace FeenPhone
             OnUserList(users);
         }
 
-        protected abstract void OnAudio(Audio.Codecs.CodecID Codec, byte[] data, int dataLen);
+        protected abstract void OnAudio(Guid userID, Audio.Codecs.CodecID Codec, byte[] data, int dataLen);
         protected void Handle_OnAudio(IEnumerable<byte> payload)
         {
-            if (!payload.Any())
-                throw new ArgumentException("No audio payload");
+            if (payload.Count() < 1)
+                throw new ArgumentException("Invalid AudioData length");
 
-            Audio.Codecs.CodecID Codec = (Audio.Codecs.CodecID)payload.First();
-            OnAudio(Codec, payload.Skip(1).ToArray(), payload.Count() - 1);
+            bool hasGuid = payload.First() == 1;
+            int guidLen = hasGuid ? 17 : 1;
+
+            if (payload.Count() < guidLen + 1)
+                throw new ArgumentException("Invalid AudioData length");
+
+            Guid userID;
+            if (hasGuid)
+                userID = new Guid(payload.Skip(1).Take(16).ToArray());
+            else
+                userID = Guid.Empty;
+
+            Audio.Codecs.CodecID Codec = (Audio.Codecs.CodecID)payload.Skip(guidLen).First();
+            OnAudio(userID, Codec, payload.Skip(guidLen + 1).ToArray(), payload.Count() - guidLen - 1);
         }
 
         protected abstract void OnPingReq(ushort timestamp);

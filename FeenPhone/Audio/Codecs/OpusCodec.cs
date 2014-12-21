@@ -200,8 +200,8 @@ namespace FeenPhone.Audio.Codecs
         byte[] _notEncodedBuffer = new byte[0];
         public byte[] Encode(byte[] data, int length)
         {
-            Stopwatch watch = new Stopwatch();
-            watch.Start();
+            //Stopwatch watch = new Stopwatch();
+            //watch.Start();
 
             byte[] soundBuffer = new byte[length + _notEncodedBuffer.Length];
             for (int i = 0; i < _notEncodedBuffer.Length; i++)
@@ -240,8 +240,8 @@ namespace FeenPhone.Audio.Codecs
 
             var result = frames.SelectMany(m => m.GetPacket()).ToArray();
 
-            watch.Stop();
-            Debug.WriteLine("Encode time: {0}ms", watch.ElapsedMilliseconds);
+            //watch.Stop();
+            //Debug.WriteLine("Encode time: {0}ms", watch.ElapsedMilliseconds);
 
             return result;
         }
@@ -300,8 +300,8 @@ namespace FeenPhone.Audio.Codecs
 
         public byte[] Decode(byte[] data, int length)
         {
-            Stopwatch watch = new Stopwatch();
-            watch.Start();
+            //Stopwatch watch = new Stopwatch();
+            //watch.Start();
 
             List<IEnumerable<byte>> wavData = new List<IEnumerable<byte>>();
             var frames = OpusFrame.ReadPackets(data, length);
@@ -318,8 +318,8 @@ namespace FeenPhone.Audio.Codecs
 
             var result = wavData.SelectMany(m => m).ToArray();
 
-            watch.Stop();
-            Debug.WriteLine("Decode time: {0}ms", watch.ElapsedMilliseconds);
+            //watch.Stop();
+            //Debug.WriteLine("Decode time: {0}ms", watch.ElapsedMilliseconds);
 
             return result;
         }

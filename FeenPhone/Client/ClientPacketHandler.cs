@@ -17,15 +17,15 @@ namespace FeenPhone.Client
         {
             EventSource.InvokeOnUserDisconnected(this, user);
         }
-        
+
         protected override void OnChat(IUser user, string text)
         {
             EventSource.InvokeOnChat(this, user, text);
         }
 
-        protected override void OnAudio(Audio.Codecs.CodecID Codec, byte[] data, int dataLen)
+        protected override void OnAudio(Guid userID, Audio.Codecs.CodecID Codec, byte[] data, int dataLen)
         {
-            EventSource.InvokeOnAudio(this, Codec, data, dataLen);
+            EventSource.InvokeOnAudio(this, userID, Codec, data, dataLen);
         }
 
         protected override void OnPingReq(ushort timestamp)

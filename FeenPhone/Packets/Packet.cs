@@ -113,12 +113,19 @@ namespace FeenPhone
             }
         }
 
-        internal static void WriteAudioData(IPacketWriter Writer, Audio.Codecs.CodecID Codec, byte[] AudioData, int AudioDataLen)
+        internal static void WriteAudioData(IPacketWriter Writer, Guid userID, Audio.Codecs.CodecID Codec, byte[] AudioData, int AudioDataLen)
         {
             using (var buffer = new FeenPacketBuffer())
             {
                 buffer.Write(PacketID.Audio);
-                buffer.WriteLength(AudioDataLen + 1);
+                buffer.WriteLength(AudioDataLen + (userID == Guid.Empty ? 1 : 17) + 1);
+                if (userID == Guid.Empty)
+                    buffer.Write(true);
+                else
+                {
+                    buffer.Write(false);
+                    buffer.Write(userID.ToByteArray());
+                }
                 buffer.WriteLength(Codec);
                 buffer.Write(AudioData, AudioDataLen);
 

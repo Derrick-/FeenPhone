@@ -32,6 +32,6 @@ namespace FeenPhone.Server
 
         void OnChat(INetState user, string text);
 
-        void OnAudio(Audio.Codecs.CodecID Codec, byte[] data, int dataLen);
+        void OnAudio(Guid userID, Audio.Codecs.CodecID Codec, byte[] data, int dataLen);
     }
 }

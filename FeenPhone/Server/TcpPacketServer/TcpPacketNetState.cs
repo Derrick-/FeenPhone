@@ -80,9 +80,9 @@ namespace FeenPhone.Server.TcpPacketServer
             Packet.WriteChat(Writer, user.User, text);
         }
 
-        public void OnAudio(Audio.Codecs.CodecID Codec, byte[] data, int dataLen)
+        public void OnAudio(Guid userID, Audio.Codecs.CodecID Codec, byte[] data, int dataLen)
         {
-            Packet.WriteAudioData(Writer, Codec, data, dataLen);
+            Packet.WriteAudioData(Writer, userID, Codec, data, dataLen);
         }
 
         public void LoginFailed()

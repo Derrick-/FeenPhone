@@ -36,12 +36,12 @@ namespace FeenPhone.Server.TcpPacketServer
                 EventSink.OnChat(state, text);
         }
 
-        protected override void OnAudio(Audio.Codecs.CodecID Codec, byte[] data, int dataLen)
+        protected override void OnAudio(Guid IGNOREDBYSERVER, Audio.Codecs.CodecID Codec, byte[] data, int dataLen)
         {
             if (state.User == null)
                 state.LoginFailed();
             else
-                EventSink.OnAudio(state, Codec, data, dataLen);
+                EventSink.OnAudio(state, state.User.ID, Codec, data, dataLen);
         }
 
         protected override void OnLoginStatus(bool isLoggedIn)

@@ -24,13 +24,13 @@ namespace FeenPhone.Server
                 ServerHost.LocalClient.OnChat(client, text);
         }
 
-        internal static void OnAudio(INetState client, Audio.Codecs.CodecID Codec, byte[] data, int dataLen)
+        internal static void OnAudio(INetState client, Guid userID, Audio.Codecs.CodecID Codec, byte[] data, int dataLen)
         {
             foreach (var feen in AllFeens)
                 if (feen != client)
-                    feen.OnAudio(Codec, data, dataLen);
+                    feen.OnAudio(userID, Codec, data, dataLen);
             if (ServerHost.LocalClient != null && ServerHost.LocalClient != client)
-                ServerHost.LocalClient.OnAudio(Codec, data, dataLen);
+                ServerHost.LocalClient.OnAudio(userID, Codec, data, dataLen);
         }
 
         internal static void OnConnect(INetState client)

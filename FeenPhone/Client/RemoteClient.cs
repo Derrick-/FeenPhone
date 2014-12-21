@@ -78,7 +78,7 @@ namespace FeenPhone.Client
 
         internal override void SendAudio(Audio.Codecs.CodecID codec, byte[] data, int dataLen)
         {
-            Packet.WriteAudioData(Writer, codec, data, dataLen);
+            Packet.WriteAudioData(Writer, Guid.Empty, codec, data, dataLen);
         }
 
         internal override void SendLoginInfo()

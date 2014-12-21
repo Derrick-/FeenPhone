@@ -20,9 +20,9 @@ namespace FeenPhone.Client
             EventSource.InvokeOnChat(this, client.User, text);
         }
 
-        public void OnAudio(Audio.Codecs.CodecID Codec, byte[] data, int dataLen)
+        public void OnAudio(Guid userID, Audio.Codecs.CodecID Codec, byte[] data, int dataLen)
         {
-            EventSource.InvokeOnAudio(this, Codec, data, dataLen);
+            EventSource.InvokeOnAudio(this, userID, Codec, data, dataLen);
         }
 
         public void OnUserLogin(Alienseed.BaseNetworkServer.Accounting.IUserClient client)
@@ -58,7 +58,7 @@ namespace FeenPhone.Client
 
         internal override void SendAudio(Audio.Codecs.CodecID codec, byte[] data, int dataLen)
         {
-            Server.EventSink.OnAudio(this, codec, data, dataLen);
+            Server.EventSink.OnAudio(this, Guid.Empty, codec, data, dataLen);
         }
 
         internal override void SendLoginInfo()
@@ -70,7 +70,7 @@ namespace FeenPhone.Client
         {
             throw new NotImplementedException();
         }
-        
+
         internal override void SendPingResp(ushort timestamp)
         {
             // ping to self is zero

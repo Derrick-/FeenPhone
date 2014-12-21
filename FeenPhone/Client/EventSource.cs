@@ -38,12 +38,14 @@ namespace FeenPhone.Client
 
     public class AudioDataEventArgs : EventArgs
     {
+        public readonly Guid UserID;
         public readonly Audio.Codecs.CodecID Codec;
         public readonly byte[] Data;
         public readonly int DataLen;
 
-        public AudioDataEventArgs(Audio.Codecs.CodecID codec, byte[] data, int dataLen)
+        public AudioDataEventArgs(Guid userID, Audio.Codecs.CodecID codec, byte[] data, int dataLen)
         {
+            UserID = userID;
             Codec = codec;
             Data = data;
             DataLen = dataLen;
@@ -109,10 +111,10 @@ namespace FeenPhone.Client
                 OnUserList(sender, new UserListEventArgs(users));
         }
 
-        internal static void InvokeOnAudio(object sender, Audio.Codecs.CodecID codec, byte[] data, int dataLen)
+        internal static void InvokeOnAudio(object sender, Guid userID, Audio.Codecs.CodecID codec, byte[] data, int dataLen)
         {
             if (OnAudioData != null)
-                OnAudioData(sender, new AudioDataEventArgs(codec, data, dataLen));
+                OnAudioData(sender, new AudioDataEventArgs(userID, codec, data, dataLen));
         }
 
         internal static void InvokeOnPingReq(object sender, ushort timestamp)
