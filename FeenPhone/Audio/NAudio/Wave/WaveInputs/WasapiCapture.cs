@@ -16,7 +16,7 @@ namespace NAudio.CoreAudioApi
     public class WasapiCapture : IWaveIn
     {
         private const long REFTIMES_PER_SEC = 10000000;
-        private const long REFTIMES_PER_MILLISEC = 10000;
+        public const long REFTIMES_PER_MILLISEC = 10000;
         private volatile bool requestStop;
         private byte[] recordBuffer;
         private Thread captureThread;
@@ -44,12 +44,25 @@ namespace NAudio.CoreAudioApi
         {
         }
 
+        private int audioBufferMillisecondsLength;
+
         /// <summary>
         /// Initialises a new instance of the WASAPI capture class
         /// </summary>
         /// <param name="captureDevice">Capture device to use</param>
-        public WasapiCapture(MMDevice captureDevice)
+        public WasapiCapture(MMDevice captureDevice) :
+            this(captureDevice, 100)
         {
+        }
+
+        /// <summary>
+        /// Initialises a new instance of the WASAPI capture class
+        /// </summary>
+        /// <param name="captureDevice">Capture device to use</param>
+        /// <param name="audioBufferMillisecondsLength">Length of the audio buffer milliseconds</param>
+        public WasapiCapture(MMDevice captureDevice, int audioBufferMillisecondsLength)
+        {
+            this.audioBufferMillisecondsLength = audioBufferMillisecondsLength;
             syncContext = SynchronizationContext.Current;
             audioClient = captureDevice.AudioClient;
             ShareMode = AudioClientShareMode.Shared;
@@ -68,7 +81,6 @@ namespace NAudio.CoreAudioApi
                 }
             }
         }
-
         /// <summary>
         /// Share Mode - set before calling StartRecording
         /// </summary>
@@ -98,7 +110,7 @@ namespace NAudio.CoreAudioApi
             if (initialized)
                 return;
 
-            long requestedDuration = REFTIMES_PER_MILLISEC * 100;
+            long requestedDuration = REFTIMES_PER_MILLISEC * this.audioBufferMillisecondsLength;
 
             if (!audioClient.IsFormatSupported(ShareMode, WaveFormat))
             {

@@ -259,7 +259,7 @@ namespace FeenPhone.WPFApp.Controls
                     }
                     catch { }
 
-                    var w = new WasapiCapture(mmdevice);
+                    var w = new WasapiCapture(mmdevice, mmdevice.MinBufferDurationMs);
 
                     waveIn = w;
                     waveIn.WaveFormat = deviceFormat;

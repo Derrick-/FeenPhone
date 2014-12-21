@@ -92,6 +92,11 @@ namespace NAudio.CoreAudioApi
         }
 
         /// <summary>
+        /// Minimum supported buffer duration in miliseconds for Audio Client
+        /// </summary>
+        public int MinBufferDurationMs { get { return (int)(AudioClient.MinimumDevicePeriod / WasapiCapture.REFTIMES_PER_MILLISEC); } }
+
+        /// <summary>
         /// Audio Meter Information
         /// </summary>
         public AudioMeterInformation AudioMeterInformation

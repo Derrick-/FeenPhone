@@ -26,8 +26,9 @@ namespace NAudio.Wave
         /// </summary>
         /// <param name="sourceProvider">Source provider, must be PCM</param>
         /// <param name="outputFormat">Output format, must also be PCM</param>
-        public MediaFoundationResampler(IWaveProvider sourceProvider, WaveFormat outputFormat)
-            : base(sourceProvider, outputFormat)
+        /// <param name="bufferLenMs">Source buffer size in Miliseconds</param>
+        public MediaFoundationResampler(IWaveProvider sourceProvider, WaveFormat outputFormat, int bufferLenMs = 10)
+            : base(sourceProvider, outputFormat, bufferLenMs)
         {
             if (!IsPcmOrIeeeFloat(sourceProvider.WaveFormat))
                 throw new ArgumentException("Input must be PCM or IEEE float", "sourceProvider");
@@ -86,8 +87,9 @@ namespace NAudio.Wave
         /// </summary>
         /// <param name="sourceProvider">Source provider</param>
         /// <param name="outputSampleRate">Output sample rate</param>
-        public MediaFoundationResampler(IWaveProvider sourceProvider, int outputSampleRate)
-            : this(sourceProvider, CreateOutputFormat(sourceProvider.WaveFormat, outputSampleRate))
+        /// <param name="bufferLenMs">Source buffer size in Miliseconds</param>
+        public MediaFoundationResampler(IWaveProvider sourceProvider, int outputSampleRate, int bufferLenMs = 10)
+            : this(sourceProvider, CreateOutputFormat(sourceProvider.WaveFormat, outputSampleRate), bufferLenMs)
         {
 
         }

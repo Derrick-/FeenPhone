@@ -33,16 +33,23 @@ namespace NAudio.MediaFoundation
 
         /// <summary>
         /// Constructs a new MediaFoundationTransform wrapper
-        /// Will read one second at a time
         /// </summary>
         /// <param name="sourceProvider">The source provider for input data to the transform</param>
         /// <param name="outputFormat">The desired output format</param>
-        public MediaFoundationTransform(IWaveProvider sourceProvider, WaveFormat outputFormat)
+        /// <param name="bufferLenMs">Source buffer size in Miliseconds</param>
+        public MediaFoundationTransform(IWaveProvider sourceProvider, WaveFormat outputFormat, int bufferLenMs = 10)
         {
+            int bufferDiviser = 1000 / bufferLenMs;
+
             this.outputWaveFormat = outputFormat;
             this.sourceProvider = sourceProvider;
-            sourceBuffer = new byte[sourceProvider.WaveFormat.AverageBytesPerSecond];
-            outputBuffer = new byte[outputWaveFormat.AverageBytesPerSecond + outputWaveFormat.BlockAlign]; // we will grow this buffer if needed, but try to make something big enough
+
+            // This class has been modified so audio is taken from the source provider and added to the output buffer in 10 milliseconds byte arrays.
+            // Before this change, you would have to wait for 1 second of audio to be buffered before it would be converted.
+            // Calculation:
+            // 1000 milliseconds (i.e. 1 second) / 10 = 100, which is why the source buffer and output buffer average bytes per second is divided by 100.
+            sourceBuffer = new byte[sourceProvider.WaveFormat.AverageBytesPerSecond / bufferDiviser];
+            outputBuffer = new byte[(outputWaveFormat.AverageBytesPerSecond / bufferDiviser) + outputWaveFormat.BlockAlign]; // we will grow this buffer if needed, but try to make something big enough
         }
 
         private void InitializeTransformForStreaming()
@@ -112,7 +119,6 @@ namespace NAudio.MediaFoundation
                 InitializeTransformForStreaming();
             }
 
-            // strategy will be to always read 1 second from the source, and give it to the resampler
             int bytesWritten = 0;
             
             // read in any leftovers from last time
@@ -235,7 +241,6 @@ namespace NAudio.MediaFoundation
 
         private IMFSample ReadFromSource()
         {
-            // we always read a full second
             int bytesRead = sourceProvider.Read(sourceBuffer, 0, sourceBuffer.Length);
             if (bytesRead == 0) return null;
 
