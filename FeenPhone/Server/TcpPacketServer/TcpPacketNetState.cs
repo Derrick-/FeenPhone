@@ -110,7 +110,7 @@ namespace FeenPhone.Server.TcpPacketServer
 
             if (user == null) return false;
 
-            return LoginSetUser(user);
+            return LoginSetUser(user, true);
         }
 
         private void InvokePropertyChanged(string propName)

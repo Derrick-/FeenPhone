@@ -39,7 +39,7 @@ namespace FeenPhone.Server.Telnet
 
             if (user == null) return false;
 
-            return LoginSetUser(user);
+            return LoginSetUser(user, false);
         }
 
         #endregion

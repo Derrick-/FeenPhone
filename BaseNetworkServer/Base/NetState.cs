@@ -74,7 +74,7 @@ namespace Alienseed.BaseNetworkServer
 
         public abstract void Write(byte[] bytes);
 
-        protected bool LoginSetUser(IUserClient user)
+        protected bool LoginSetUser(IUserClient user, bool dcIfLoggedIn)
         {
             if (User != null)
             {
@@ -85,16 +85,25 @@ namespace Alienseed.BaseNetworkServer
             {
                 if (this.User != user && BaseServer.Users.Contains(user))
                 {
-                    LogLine("Login Rejected (online)");
-                    return false;
+                    if (dcIfLoggedIn)
+                    {
+                        var onlineInstances = BaseServer.Clients.Where(m => m.User == user).ToList();
+                        foreach (var online in onlineInstances)
+                            online.Dispose();
+                    }
+                    else
+                    {
+                        LogLine("Login Rejected (online)");
+                        return false;
+                    }
                 }
             }
             User = user;
 
-            if (OnLogin != null)
+            if (User != null && OnLogin != null)
                 OnLogin(this, new OnLoginLogoutEventArgs(this));
 
-            return true;
+            return User != null;
         }
 
         public void Logout()
