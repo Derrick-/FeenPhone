@@ -532,6 +532,7 @@
     <Compile Include="Utils\Timekeeper.cs" />
     <Compile Include="WPFApp\Models\InputDeviceModel.cs" />
     <Compile Include="WPFApp\Models\OutputDeviceModel.cs" />
+    <Compile Include="WPFApp\Models\UserAudioPlayer.cs" />
     <Compile Include="WPFApp\Models\UserStatusModel.cs" />
     <Compile Include="WPFApp\Settings.cs" />
     <Compile Include="WPFApp\WPFControls\AudioInWPF.xaml.cs">
