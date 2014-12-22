@@ -36,17 +36,6 @@ namespace FeenPhone.Server.Telnet
 
         #region ConnectionState
 
-        public bool Login(string Username, string password)
-        {
-            var user = FeenPhone.Accounting.AccountHandler.Login(Username, password);
-
-            LogLine("Login {0}: {1}", user != null ? "SUCCESS" : "FAILED", user != null ? user.Username : Username);
-
-            if (user == null) return false;
-
-            return LoginSetUser(user, false);
-        }
-
         #endregion
 
         public override void Dispose()
@@ -62,6 +51,7 @@ namespace FeenPhone.Server.Telnet
             {
                 this.telNetState = telNetState;
             }
+     
             public void OnUserConnected(INetState user)
             {
                 telNetState.SendInfoLine("  {0} connected.", NicknameOrIP(user));
@@ -91,6 +81,17 @@ namespace FeenPhone.Server.Telnet
             public void OnAudio(Guid userID, Audio.Codecs.CodecID Codec, byte[] data, int dataLen)
             {
                 // nothing for telnet
+            }
+
+            public bool Login(string Username, string password)
+            {
+                var user = FeenPhone.Accounting.AccountHandler.Login(Username, password);
+
+                telNetState.LogLine("Login {0}: {1}", user != null ? "SUCCESS" : "FAILED", user != null ? user.Username : Username);
+
+                if (user == null) return false;
+
+                return telNetState.LoginSetUser(user, false);
             }
 
             public void LoginSuccess()

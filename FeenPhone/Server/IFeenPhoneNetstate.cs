@@ -17,12 +17,12 @@ namespace FeenPhone.Server
     {
         ushort LastPing { get; set; }
 
-        bool Login(string username, string password);
         IFeenPhoneClientNotifier Notifier { get; }
     }
 
     interface IFeenPhoneClientNotifier
     {
+        bool Login(string username, string password);
         void LoginSuccess();
         void LoginFailed();
 

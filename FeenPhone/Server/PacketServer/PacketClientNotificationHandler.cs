@@ -19,6 +19,17 @@ namespace FeenPhone.Server.PacketServer
             this.Writer = state.Writer;
         }
 
+        public bool Login(string Username, string password)
+        {
+            var user = FeenPhone.Accounting.AccountHandler.Login(Username, password);
+
+            State.LogLine("Login {0}: {1}", user != null ? "SUCCESS" : "FAILED", user != null ? user.Username : Username);
+
+            if (user == null) return false;
+
+            return State.LoginSetUser(user, true);
+        }
+
         public void LoginSuccess()
         {
             Packet.WriteLoginStatus(Writer, true);

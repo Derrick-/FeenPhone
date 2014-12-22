@@ -30,7 +30,7 @@ namespace FeenPhone.Client
             this.Port = port;
             Handler = new ClientPacketHandler();
 
-            Reader.OnReadData += Reader_OnReadData;
+            Reader.OnReadData += Handler.OnRead;
             Reader.OnDisconnect += Reader_OnDisconnect;
             Reader.OnBufferOverflow += Reader_OnBufferOverflow;
         }
@@ -44,11 +44,6 @@ namespace FeenPhone.Client
         void Reader_OnDisconnect()
         {
             Disconnect();
-        }
-
-        void Reader_OnReadData(object sender, DataReadEventArgs e)
-        {
-            Handler.Handle(e.data);
         }
 
         public abstract void Connect();

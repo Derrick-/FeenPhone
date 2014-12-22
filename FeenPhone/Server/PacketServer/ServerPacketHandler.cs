@@ -51,7 +51,7 @@ namespace FeenPhone.Server.PacketServer
 
         protected override void LoginInfo(string username, string password)
         {
-            if (state.Login(username, password))
+            if (state.Notifier.Login(username, password))
                 state.Notifier.LoginSuccess();
             else
                 state.Notifier.LoginFailed();

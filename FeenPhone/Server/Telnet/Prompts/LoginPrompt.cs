@@ -42,7 +42,7 @@ namespace FeenPhone.Server.Telnet.Prompts
 
         public override BaseTextPrompt OnResponse(TelNetState client, string password, bool cancel)
         {
-            if (!cancel && client.Login(Username, password.Trim()))
+            if (!cancel && client.Notifier.Login(Username, password.Trim()))
             {
                 client.Notifier.LoginSuccess();
                 return new MainMenu(client.User.IsAdmin);

@@ -31,51 +31,13 @@ namespace FeenPhone.Server.PacketServer
         {
             Handler = new ServerPacketHandler(this);
             Notifier = new PacketClientNotificationHandler(this);
-            Reader.OnReadData += OnRead;
+            Reader.OnReadData += Handler.OnRead;
         }
 
         protected override void Reader_OnBufferOverflow(object sender, BufferOverflowArgs e)
         {
             Console.WriteLine("Buffer overflow from {0}", this.ClientIdentifier);
             e.handled = true;
-        }
-
-        protected void OnRead(object sender, DataReadEventArgs args)
-        {
-            Queue<byte> InStream = args.data;
-
-            if (InStream.Count > 0)
-            {
-                byte[] bytes = new byte[InStream.Count];
-
-                InStream.CopyTo(bytes, 0);
-
-                Handler.Handle(InStream);
-            }
-
-        }
-
-        public void LoginSuccess()
-        {
-            Packet.WriteLoginStatus(Writer, true);
-
-            var users = BaseServer.Users.Where(m => m != null);
-            if (ServerHost.LocalClient != null)
-            {
-                users = users.Concat(new Alienseed.BaseNetworkServer.Accounting.IUser[] { ServerHost.LocalClient.LocalUser });
-            }
-            Packet.WriteUserList(Writer, users.Where(m => m.ID != this.User.ID));
-        }
-
-        public bool Login(string Username, string password)
-        {
-            var user = FeenPhone.Accounting.AccountHandler.Login(Username, password);
-
-            LogLine("Login {0}: {1}", user != null ? "SUCCESS" : "FAILED", user != null ? user.Username : Username);
-
-            if (user == null) return false;
-
-            return LoginSetUser(user, true);
         }
 
         private void InvokePropertyChanged(string propName)

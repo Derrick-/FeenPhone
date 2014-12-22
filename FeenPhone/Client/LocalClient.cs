@@ -57,6 +57,11 @@ namespace FeenPhone.Client
                     EventSource.InvokeOnUserDisconnected(this, client.User);
             }
 
+            bool Server.IFeenPhoneClientNotifier.Login(string username, string password)
+            {
+                throw new NotImplementedException();
+            }
+
             void Server.IFeenPhoneClientNotifier.LoginSuccess()
             {
                 throw new NotImplementedException();
@@ -113,5 +118,25 @@ namespace FeenPhone.Client
             return true;
         }
 
+
+        public bool LoginSetUser(IUserClient user, bool dcIfLoggedIn)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void LogLine(string format, object arg0)
+        {
+            LogLine(string.Format(format, arg0));
+        }
+
+        public void LogLine(string format, params object[] args)
+        {
+            LogLine(string.Format(format, args));
+        }
+
+        public void LogLine(string text)
+        {
+            Console.Write("{Local}: [{LocalClient}] {0}", text);
+        }
     }
 }

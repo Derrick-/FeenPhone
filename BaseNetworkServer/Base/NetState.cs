@@ -74,7 +74,7 @@ namespace Alienseed.BaseNetworkServer
 
         public abstract void Write(byte[] bytes);
 
-        protected bool LoginSetUser(IUserClient user, bool dcIfLoggedIn)
+        public bool LoginSetUser(IUserClient user, bool dcIfLoggedIn)
         {
             if (User != null)
             {

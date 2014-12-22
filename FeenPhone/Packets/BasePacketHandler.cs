@@ -1,4 +1,5 @@
-﻿using Alienseed.BaseNetworkServer.Accounting;
+﻿using Alienseed.BaseNetworkServer;
+using Alienseed.BaseNetworkServer.Accounting;
 using FeenPhone.Client;
 using System;
 using System.Collections.Generic;
@@ -29,6 +30,11 @@ namespace FeenPhone
                     {PacketID.PingReq, Handle_PingReq},
                     {PacketID.PingResp, Handle_PingResp},
                 };
+        }
+
+        public void OnRead(object sender, DataReadEventArgs args)
+        {
+            Handle(args.data);
         }
 
         public bool ValidPacketID(byte id) { return ValidPacketID((PacketID)id); }
