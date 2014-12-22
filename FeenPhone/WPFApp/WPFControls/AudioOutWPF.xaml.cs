@@ -179,21 +179,21 @@ namespace FeenPhone.WPFApp.Controls
                 FftCalculated += new EventHandler<FftEventArgs>(audioGraph_FftCalculated);
             }
 
-            public static DependencyProperty CodecNameProperty = DependencyProperty.Register("CodecName", typeof(string), typeof(AudioOutWPF), new PropertyMetadata(null));
+            public static DependencyProperty CodecNameProperty = DependencyProperty.Register("CodecName", typeof(string), typeof(UserAudioPlayer), new PropertyMetadata(null));
             public string CodecName
             {
                 get { return (string)this.GetValue(CodecNameProperty); }
                 set { SetValue(CodecNameProperty, value); }
             }
 
-            public static DependencyProperty OutputFormatProperty = DependencyProperty.Register("OutputFormat", typeof(string), typeof(AudioOutWPF), new PropertyMetadata(null));
+            public static DependencyProperty OutputFormatProperty = DependencyProperty.Register("OutputFormat", typeof(string), typeof(UserAudioPlayer), new PropertyMetadata(null));
             public string OutputFormat
             {
                 get { return (string)this.GetValue(OutputFormatProperty); }
                 set { SetValue(OutputFormatProperty, value); }
             }
 
-            public static DependencyProperty UnderRunsProperty = DependencyProperty.Register("UnderRuns", typeof(int), typeof(AudioOutWPF), new PropertyMetadata(0));
+            public static DependencyProperty UnderRunsProperty = DependencyProperty.Register("UnderRuns", typeof(int), typeof(UserAudioPlayer), new PropertyMetadata(0));
             public int UnderRuns
             {
                 get { return (int)this.GetValue(UnderRunsProperty); }
@@ -205,7 +205,7 @@ namespace FeenPhone.WPFApp.Controls
             int addedSilence = 0;
             int underruns = 0;
 
-            public static DependencyProperty MinProperty = DependencyProperty.Register("Min", typeof(int), typeof(AudioOutWPF));
+            public static DependencyProperty MinProperty = DependencyProperty.Register("Min", typeof(int), typeof(UserAudioPlayer));
             float _Min;
             public float Min
             {
@@ -213,15 +213,15 @@ namespace FeenPhone.WPFApp.Controls
                 set { _Min = value; SetValue(MinProperty, (int)(value * 100)); }
             }
 
-            public static DependencyProperty MaxProperty = DependencyProperty.Register("Max", typeof(int), typeof(AudioOutWPF));
+            public static DependencyProperty MaxProperty = DependencyProperty.Register("Max", typeof(int), typeof(UserAudioPlayer));
             float _Max;
             public float Max
             {
                 get { return _Max; }
                 set { _Max = value; SetValue(MaxProperty, (int)(value * 100)); }
             }
-            public static DependencyProperty BufferedDurationStringProperty = DependencyProperty.Register("BufferedDurationString", typeof(string), typeof(AudioOutWPF), new PropertyMetadata(null));
-            public static DependencyProperty BufferedDurationProperty = DependencyProperty.Register("BufferedDuration", typeof(int), typeof(AudioOutWPF), new PropertyMetadata(0));
+            public static DependencyProperty BufferedDurationStringProperty = DependencyProperty.Register("BufferedDurationString", typeof(string), typeof(UserAudioPlayer), new PropertyMetadata(null));
+            public static DependencyProperty BufferedDurationProperty = DependencyProperty.Register("BufferedDuration", typeof(int), typeof(UserAudioPlayer), new PropertyMetadata(0));
             TimeSpan _BufferedDuration = TimeSpan.Zero;
             public TimeSpan BufferedDuration
             {
@@ -243,7 +243,7 @@ namespace FeenPhone.WPFApp.Controls
             static int BufferWarningDurationMs = 250;
             static int BufferCriticalDurationMs = 1000;
 
-            public static DependencyProperty MaxBufferedDurationDurationProperty = DependencyProperty.Register("MaxBufferedDuration", typeof(int), typeof(AudioOutWPF), new PropertyMetadata(DefaultMaxBufferedDurationMs));
+            public static DependencyProperty MaxBufferedDurationDurationProperty = DependencyProperty.Register("MaxBufferedDuration", typeof(int), typeof(UserAudioPlayer), new PropertyMetadata(DefaultMaxBufferedDurationMs));
             TimeSpan _MaxBufferedDuration = TimeSpan.FromMilliseconds(DefaultMaxBufferedDurationMs);
             public TimeSpan MaxBufferedDuration
             {
@@ -255,28 +255,28 @@ namespace FeenPhone.WPFApp.Controls
                 }
             }
 
-            public static DependencyProperty DroppedPacketsProperty = DependencyProperty.Register("DroppedPackets", typeof(int), typeof(AudioOutWPF), new PropertyMetadata(0));
+            public static DependencyProperty DroppedPacketsProperty = DependencyProperty.Register("DroppedPackets", typeof(int), typeof(UserAudioPlayer), new PropertyMetadata(0));
             public int DroppedPackets
             {
                 get { return (int)this.GetValue(DroppedPacketsProperty); }
                 set { SetValue(DroppedPacketsProperty, value); }
             }
 
-            public static DependencyProperty DroppedSilenceProperty = DependencyProperty.Register("DroppedSilence", typeof(int), typeof(AudioOutWPF), new PropertyMetadata(0));
+            public static DependencyProperty DroppedSilenceProperty = DependencyProperty.Register("DroppedSilence", typeof(int), typeof(UserAudioPlayer), new PropertyMetadata(0));
             public int DroppedSilence
             {
                 get { return (int)this.GetValue(DroppedSilenceProperty); }
                 set { SetValue(DroppedSilenceProperty, value); }
             }
 
-            public static DependencyProperty AddedSilenceProperty = DependencyProperty.Register("AddedSilence", typeof(int), typeof(AudioOutWPF), new PropertyMetadata(0));
+            public static DependencyProperty AddedSilenceProperty = DependencyProperty.Register("AddedSilence", typeof(int), typeof(UserAudioPlayer), new PropertyMetadata(0));
             public int AddedSilence
             {
                 get { return (int)this.GetValue(AddedSilenceProperty); }
                 set { SetValue(AddedSilenceProperty, value); }
             }
 
-            public static DependencyProperty BufferTargetProperty = DependencyProperty.Register("BufferTarget", typeof(int), typeof(AudioOutWPF), new PropertyMetadata(DefaultBufferTargetMs, OnBufferTargetPropertyUpdated));
+            public static DependencyProperty BufferTargetProperty = DependencyProperty.Register("BufferTarget", typeof(int), typeof(UserAudioPlayer), new PropertyMetadata(DefaultBufferTargetMs, OnBufferTargetPropertyUpdated));
             int bufferTarget = DefaultBufferTargetMs;
             public int BufferTarget
             {
@@ -290,7 +290,7 @@ namespace FeenPhone.WPFApp.Controls
                     target.bufferTarget = (int)e.NewValue;
             }
 
-            public static DependencyProperty SilenceAggressionProperty = DependencyProperty.Register("SilenceAggression", typeof(ushort), typeof(AudioOutWPF), new PropertyMetadata(DefaultSilenceAggression, OnSilenceAggressionUpdated));
+            public static DependencyProperty SilenceAggressionProperty = DependencyProperty.Register("SilenceAggression", typeof(ushort), typeof(UserAudioPlayer), new PropertyMetadata(DefaultSilenceAggression, OnSilenceAggressionUpdated));
             ushort silenceAggression = DefaultSilenceAggression;
             public ushort SilenceAggression
             {
