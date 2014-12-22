@@ -50,7 +50,7 @@ namespace FeenPhone.Server
                     client = clients.First();
                 }
                 else
-                    client = clients.Skip(lastClientIndex).First();
+                    client = clients.Skip(lastClientIndex++).First();
                 Packet.WritePingReq(client.Writer);
             }
         }
