@@ -126,7 +126,8 @@ namespace FeenPhone.WPFApp.Controls
 
         void EventSource_OnPingReq(object sender, PingEventArgs e)
         {
-            Client.SendPingResp(e.Value);
+            if(Client is RemoteClient)
+                Client.SendPingResp(e.Value);
         }
 
         public static DependencyProperty IsServerProperty = DependencyProperty.Register("IsServer", typeof(bool?), typeof(NetworkWPF), new PropertyMetadata(false, OnIsServerChanged));
