@@ -30,12 +30,16 @@ namespace FeenPhone.WPFApp.Controls
     {
         static ObservableCollection<OutputDeviceModel> OutputList = new ObservableCollection<OutputDeviceModel>();
 
+        static ObservableCollection<UserAudioPlayer> AudioPlayers = new ObservableCollection<UserAudioPlayer>();
+
         [ImportMany(typeof(Audio.Codecs.INetworkChatCodec))]
         public IEnumerable<Audio.Codecs.INetworkChatCodec> Codecs { get; set; }
 
         public static DependencyProperty OutputListProperty = DependencyProperty.Register("OutputList", typeof(ObservableCollection<OutputDeviceModel>), typeof(AudioOutWPF), new PropertyMetadata(OutputList));
         public static DependencyProperty SelectedOutputProperty = DependencyProperty.Register("SelectedOutput", typeof(OutputDeviceModel), typeof(AudioOutWPF), new PropertyMetadata(null, OnOutputDeviceChanged));
         public static DependencyProperty SelectedOutputIndexProperty = DependencyProperty.Register("SelectedOutputIndex", typeof(int?), typeof(AudioOutWPF), new PropertyMetadata(-1));
+
+        public static DependencyProperty AudioPlayersProperty = DependencyProperty.Register("AudioPlayers", typeof(ObservableCollection<UserAudioPlayer>), typeof(AudioOutWPF), new PropertyMetadata(AudioPlayers));
 
         public OutputDeviceModel SelectedOutput
         {
@@ -53,131 +57,14 @@ namespace FeenPhone.WPFApp.Controls
         {
             var target = d as AudioOutWPF;
             if (d != null)
-                target.Stop();
+                target.StopAll();
         }
 
-        public static DependencyProperty OutputFormatProperty = DependencyProperty.Register("OutputFormat", typeof(string), typeof(AudioOutWPF), new PropertyMetadata(null));
-        public string OutputFormat
+        private void StopAll()
         {
-            get { return (string)this.GetValue(OutputFormatProperty); }
-            set { SetValue(OutputFormatProperty, value); }
+            foreach (var player in AudioPlayers)
+                player.Stop();
         }
-
-        public static DependencyProperty CodecNameProperty = DependencyProperty.Register("CodecName", typeof(string), typeof(AudioOutWPF), new PropertyMetadata(null));
-        public string CodecName
-        {
-            get { return (string)this.GetValue(CodecNameProperty); }
-            set { SetValue(CodecNameProperty, value); }
-        }
-
-        public static DependencyProperty BufferedDurationStringProperty = DependencyProperty.Register("BufferedDurationString", typeof(string), typeof(AudioOutWPF), new PropertyMetadata(null));
-        public static DependencyProperty BufferedDurationProperty = DependencyProperty.Register("BufferedDuration", typeof(int), typeof(AudioOutWPF), new PropertyMetadata(0));
-        TimeSpan _BufferedDuration = TimeSpan.Zero;
-        public TimeSpan BufferedDuration
-        {
-            get { return _BufferedDuration; }
-            set
-            {
-                _BufferedDuration = value;
-                SetValue(BufferedDurationProperty, (int)value.TotalMilliseconds);
-                SetValue(BufferedDurationStringProperty, string.Format("{0}ms", value.TotalMilliseconds));
-            }
-        }
-
-
-        static int DefaultMaxBufferedDurationMs = 1500;
-        static ushort DefaultSilenceAggression = 0;
-
-        static int DefaultBufferTargetMs = 50;
-        static int BufferTargetMarginMs = 50;
-
-        static int BufferWarningDurationMs = 250;
-        static int BufferCriticalDurationMs = 1000;
-
-        public static DependencyProperty MaxBufferedDurationDurationProperty = DependencyProperty.Register("MaxBufferedDuration", typeof(int), typeof(AudioOutWPF), new PropertyMetadata(DefaultMaxBufferedDurationMs));
-        TimeSpan _MaxBufferedDuration = TimeSpan.FromMilliseconds(DefaultMaxBufferedDurationMs);
-        public TimeSpan MaxBufferedDuration
-        {
-            get { return _MaxBufferedDuration; }
-            set
-            {
-                _MaxBufferedDuration = value;
-                SetValue(MaxBufferedDurationDurationProperty, (int)value.TotalMilliseconds);
-            }
-        }
-
-        public static DependencyProperty DroppedPacketsProperty = DependencyProperty.Register("DroppedPackets", typeof(int), typeof(AudioOutWPF), new PropertyMetadata(0));
-        public int DroppedPackets
-        {
-            get { return (int)this.GetValue(DroppedPacketsProperty); }
-            set { SetValue(DroppedPacketsProperty, value); }
-        }
-
-        public static DependencyProperty DroppedSilenceProperty = DependencyProperty.Register("DroppedSilence", typeof(int), typeof(AudioOutWPF), new PropertyMetadata(0));
-        public int DroppedSilence
-        {
-            get { return (int)this.GetValue(DroppedSilenceProperty); }
-            set { SetValue(DroppedSilenceProperty, value); }
-        }
-
-        public static DependencyProperty AddedSilenceProperty = DependencyProperty.Register("AddedSilence", typeof(int), typeof(AudioOutWPF), new PropertyMetadata(0));
-        public int AddedSilence
-        {
-            get { return (int)this.GetValue(AddedSilenceProperty); }
-            set { SetValue(AddedSilenceProperty, value); }
-        }
-
-        public static DependencyProperty BufferTargetProperty = DependencyProperty.Register("BufferTarget", typeof(int), typeof(AudioOutWPF), new PropertyMetadata(DefaultBufferTargetMs, OnBufferTargetPropertyUpdated));
-        int bufferTarget = DefaultBufferTargetMs;
-        public int BufferTarget
-        {
-            get { return bufferTarget; }
-            set { bufferTarget = value; SetValue(BufferTargetProperty, value); }
-        }
-        private static void OnBufferTargetPropertyUpdated(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var target = d as AudioOutWPF;
-            if (d != null)
-                target.bufferTarget = (int)e.NewValue;
-        }
-
-        public static DependencyProperty SilenceAggressionProperty = DependencyProperty.Register("SilenceAggression", typeof(ushort), typeof(AudioOutWPF), new PropertyMetadata(DefaultSilenceAggression, OnSilenceAggressionUpdated));
-        ushort silenceAggression = DefaultSilenceAggression;
-        public ushort SilenceAggression
-        {
-            get { return silenceAggression; }
-            set { silenceAggression = value; SetValue(SilenceAggressionProperty, value); }
-        }
-        private static void OnSilenceAggressionUpdated(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var target = d as AudioOutWPF;
-            if (d != null)
-                target.silenceAggression = (ushort)e.NewValue;
-        }
-
-        public static DependencyProperty UnderRunsProperty = DependencyProperty.Register("UnderRuns", typeof(int), typeof(AudioOutWPF), new PropertyMetadata(0));
-        public int UnderRuns
-        {
-            get { return (int)this.GetValue(UnderRunsProperty); }
-            set { SetValue(UnderRunsProperty, value); }
-        }
-
-        public static DependencyProperty MinProperty = DependencyProperty.Register("Min", typeof(int), typeof(AudioOutWPF));
-        float _Min;
-        public float Min
-        {
-            get { return _Min; }
-            set { _Min = value; SetValue(MinProperty, (int)(value * 100)); }
-        }
-
-        public static DependencyProperty MaxProperty = DependencyProperty.Register("Max", typeof(int), typeof(AudioOutWPF));
-        float _Max;
-        public float Max
-        {
-            get { return _Max; }
-            set { _Max = value; SetValue(MaxProperty, (int)(value * 100)); }
-        }
-
 
         System.Timers.Timer UIUpdateTimer;
         public AudioOutWPF()
@@ -197,14 +84,6 @@ namespace FeenPhone.WPFApp.Controls
 
             UIUpdateTimer = new System.Timers.Timer(500);
             UIUpdateTimer.Start();
-            UIUpdateTimer.Elapsed += UIUpdateTimer_Elapsed;
-
-            aggregator = new FeenPhone.Audio.SampleAggregator();
-            aggregator.NotificationCount = 882;
-            aggregator.PerformFFT = true;
-
-            MaximumCalculated += new EventHandler<MaxSampleEventArgs>(audioGraph_MaximumCalculated);
-            FftCalculated += new EventHandler<FftEventArgs>(audioGraph_FftCalculated);
         }
 
         private void InitializeOutputDevices()
@@ -222,52 +101,6 @@ namespace FeenPhone.WPFApp.Controls
                 OutputList.Add(new OutputDeviceModel(n, capabilities));
             }
 
-        }
-
-        private readonly FeenPhone.Audio.SampleAggregator aggregator;
-        public event EventHandler<FeenPhone.Audio.FftEventArgs> FftCalculated
-        {
-            add { aggregator.FftCalculated += value; }
-            remove { aggregator.FftCalculated -= value; }
-        }
-
-        public event EventHandler<FeenPhone.Audio.MaxSampleEventArgs> MaximumCalculated
-        {
-            add { aggregator.MaximumCalculated += value; }
-            remove { aggregator.MaximumCalculated -= value; }
-        }
-
-        void audioGraph_FftCalculated(object sender, FftEventArgs e)
-        {
-            Dispatcher.BeginInvoke(new Action<object, FftEventArgs>((s, args) =>
-            {
-                //if (this.selectedVisualization != null)
-                //{
-                //    this.selectedVisualization.OnFftCalculated(e.Result);
-                //}
-                //spectrumAnalyser.Update(e.Result);
-            }), sender, e);
-        }
-
-        void audioGraph_MaximumCalculated(object sender, MaxSampleEventArgs e)
-        {
-            Dispatcher.BeginInvoke(new Action<object, MaxSampleEventArgs>((s, args) =>
-            {
-                Min = args.MinSample;
-                Max = args.MaxSample;
-
-                //if (this.selectedVisualization != null)
-                //{
-                //    this.selectedVisualization.OnMaxCalculated(e.MinSample, e.MaxSample);
-                //}
-            }), sender, e);
-        }
-
-
-        private bool shouldUpdateDuration = false;
-        void UIUpdateTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-        {
-            shouldUpdateDuration = true;
         }
 
         private void LoadSettings()
@@ -298,150 +131,368 @@ namespace FeenPhone.WPFApp.Controls
             Dispatcher.BeginInvoke(new Action<Guid, Audio.Codecs.CodecID, byte[]>(HandleAudio), e.UserID, e.Codec, e.Data);
         }
 
-        private IWavePlayer waveOut;
-        private BufferedWaveProvider waveProvider;
-        Audio.Codecs.CodecID? LastCodec = null;
-        SampleChannel sampleChannel;
-        NotifyingSampleProvider sampleStream;
-
-        int droppedPackets = 0;
-        int droppedSilence = 0;
-        int addedSilence = 0;
-        int underruns = 0;
-
-        private byte addSilenceThreshold { get { return (byte)(silenceAggression * 10); } }
-
-        public bool ShouldDropSilence { get { return silenceAggression > 0 && BufferedDuration.TotalMilliseconds > (bufferTarget + BufferTargetMarginMs); } }
-        public bool ShouldAddSilence { get { return silenceAggression > 0 && BufferedDuration.TotalMilliseconds < (bufferTarget); } }
-        public ushort silenceThreshhold
-        {
-            get
-            {
-                int duration = (int)BufferedDuration.TotalMilliseconds;
-                if (duration > BufferCriticalDurationMs)
-                    return (ushort)(12 * silenceAggression);
-                if (duration > BufferWarningDurationMs)
-                    return (ushort)(6 * silenceAggression);
-                return (ushort)(3 * silenceAggression);
-            }
-
-        }
-
         private void HandleAudio(Guid userID, Audio.Codecs.CodecID codecid, byte[] encoded)
         {
             if (isDisposed) return;
 
-            Audio.Codecs.INetworkChatCodec remoteCodec = Codecs.SingleOrDefault(m => m.CodecID == codecid);
-            if (remoteCodec == null)
+            var player = GetOrCreateUserPlayer(userID);
+            player.HandleAudio(codecid, encoded);
+        }
+
+        private UserAudioPlayer GetOrCreateUserPlayer(Guid userID)
+        {
+            UserAudioPlayer toReturn;
+
+            if (!AudioPlayers.Any(m => m.UserID == userID))
             {
-                Console.WriteLine("Bad Audio Packet: Codec ID {0}", codecid);
-                return;
-            }
-            if (codecid != LastCodec)
-            {
-                LastCodec = codecid;
-                CodecName = remoteCodec.Name();
-            }
-
-            if (waveOut != null && waveProvider.WaveFormat != remoteCodec.RecordFormat)
-                Stop();
-
-            if (waveOut == null)
-                Start(remoteCodec);
-
-            TimeSpan buffered = waveProvider.BufferedDuration;
-
-            if (buffered == TimeSpan.Zero) UnderRuns = underruns++;
-
-            if (buffered <= MaxBufferedDuration)
-            {
-                byte[] decoded = remoteCodec.Decode(encoded, encoded.Length);
-                int length = decoded.Length;
-
-                if (ShouldDropSilence)
-                {
-                    int dropped = DropSilence(silenceThreshhold, ref decoded, ref length);
-                    DroppedSilence = droppedSilence += dropped;
-                }
-                else if (ShouldAddSilence && length > 5)
-                {
-                    bool silent = true;
-                    for (int i = 0; i < 5; i += 2)
-                    {
-                        if (decoded[i + 1] != 0 || decoded[i] > addSilenceThreshold)
-                        {
-                            //  if (i > 5)
-                            //Console.WriteLine("sil:{0} {1} {2}", i, decoded[i + 1], decoded[i]);
-                            silent = false;
-                            break;
-                        }
-                    }
-                    if (silent)
-                    {
-                        var silence = new byte[length];
-                        byte silenceLevel = (byte)(addSilenceThreshold / 2);
-                        for (int i = 0; i < length; i += 2)
-                        {
-                            silence[i + 1] = 0;
-                            silence[i] = silenceLevel;
-                        }
-                        waveProvider.AddSamples(silence, 0, length);
-                        AddedSilence = addedSilence += length;
-                    }
-                }
-
-                waveProvider.AddSamples(decoded, 0, length);
+                toReturn = new UserAudioPlayer(userID, this);
+                UIUpdateTimer.Elapsed += toReturn.UIUpdateTimer_Elapsed;
+                AudioPlayers.Add(toReturn);
             }
             else
-                DroppedPackets = ++droppedPackets;
-
-            if (shouldUpdateDuration)
-            {
-                BufferedDuration = buffered;
-                shouldUpdateDuration = false;
-            }
+                toReturn = AudioPlayers.Single(m => m.UserID == userID);
+            return toReturn;
         }
 
-        private void Start(Audio.Codecs.INetworkChatCodec codec)
+        public class UserAudioPlayer : DependencyObject, IDisposable
         {
-            waveOut = GetWavePlayer();
+            AudioOutWPF Parent;
+            public Guid UserID { get; private set; }
 
-            waveProvider = new BufferedWaveProvider(codec.RecordFormat);
+            Audio.Codecs.CodecID? LastCodec = null;
+            SampleChannel sampleChannel;
+            NotifyingSampleProvider sampleStream;
 
-            sampleChannel = new SampleChannel(waveProvider, false);
-            sampleStream = new NotifyingSampleProvider(sampleChannel);
-            sampleStream.Sample += (s, e) => aggregator.Add(e.Left);
-            waveOut.Init(sampleStream);
-            waveOut.Play();
+            private IWavePlayer waveOut;
+            private BufferedWaveProvider waveProvider;
 
-            OutputFormat = codec.RecordFormat.ToString();
-        }
-
-        private void Stop()
-        {
-            if (waveOut != null)
+            public UserAudioPlayer(Guid userID, AudioOutWPF parent)
             {
-                waveOut.Stop();
-                waveOut.Dispose();
-                waveOut = null;
+                Parent = parent;
+                this.UserID = userID;
+
+                aggregator = new FeenPhone.Audio.SampleAggregator();
+                aggregator.NotificationCount = 882;
+                aggregator.PerformFFT = true;
+
+                MaximumCalculated += new EventHandler<MaxSampleEventArgs>(audioGraph_MaximumCalculated);
+                FftCalculated += new EventHandler<FftEventArgs>(audioGraph_FftCalculated);
             }
-            waveProvider = null;
-            sampleChannel = null;
-            sampleStream = null;
-        }
 
-        int desiredLatency = 150;
-        private IWavePlayer GetWavePlayer()
-        {
-
-            switch (SelectedOutput.Provider)
+            public static DependencyProperty CodecNameProperty = DependencyProperty.Register("CodecName", typeof(string), typeof(AudioOutWPF), new PropertyMetadata(null));
+            public string CodecName
             {
-                case OutputDeviceModel.OutputDeviceProvider.Wave:
-                    return new WaveOut() { DeviceNumber = SelectedOutput.WavDeviceNumber, DesiredLatency = desiredLatency };
-                case OutputDeviceModel.OutputDeviceProvider.DirectSound:
-                    return new DirectSoundOut(SelectedOutput.DirectSoundDeviceInfo.Guid, desiredLatency);
+                get { return (string)this.GetValue(CodecNameProperty); }
+                set { SetValue(CodecNameProperty, value); }
             }
-            return new DirectSoundOut(DirectSoundOut.DSDEVID_DefaultVoicePlayback, desiredLatency);
+
+            public static DependencyProperty OutputFormatProperty = DependencyProperty.Register("OutputFormat", typeof(string), typeof(AudioOutWPF), new PropertyMetadata(null));
+            public string OutputFormat
+            {
+                get { return (string)this.GetValue(OutputFormatProperty); }
+                set { SetValue(OutputFormatProperty, value); }
+            }
+
+            public static DependencyProperty UnderRunsProperty = DependencyProperty.Register("UnderRuns", typeof(int), typeof(AudioOutWPF), new PropertyMetadata(0));
+            public int UnderRuns
+            {
+                get { return (int)this.GetValue(UnderRunsProperty); }
+                set { SetValue(UnderRunsProperty, value); }
+            }
+
+            int droppedPackets = 0;
+            int droppedSilence = 0;
+            int addedSilence = 0;
+            int underruns = 0;
+
+            public static DependencyProperty MinProperty = DependencyProperty.Register("Min", typeof(int), typeof(AudioOutWPF));
+            float _Min;
+            public float Min
+            {
+                get { return _Min; }
+                set { _Min = value; SetValue(MinProperty, (int)(value * 100)); }
+            }
+
+            public static DependencyProperty MaxProperty = DependencyProperty.Register("Max", typeof(int), typeof(AudioOutWPF));
+            float _Max;
+            public float Max
+            {
+                get { return _Max; }
+                set { _Max = value; SetValue(MaxProperty, (int)(value * 100)); }
+            }
+            public static DependencyProperty BufferedDurationStringProperty = DependencyProperty.Register("BufferedDurationString", typeof(string), typeof(AudioOutWPF), new PropertyMetadata(null));
+            public static DependencyProperty BufferedDurationProperty = DependencyProperty.Register("BufferedDuration", typeof(int), typeof(AudioOutWPF), new PropertyMetadata(0));
+            TimeSpan _BufferedDuration = TimeSpan.Zero;
+            public TimeSpan BufferedDuration
+            {
+                get { return _BufferedDuration; }
+                set
+                {
+                    _BufferedDuration = value;
+                    SetValue(BufferedDurationProperty, (int)value.TotalMilliseconds);
+                    SetValue(BufferedDurationStringProperty, string.Format("{0}ms", value.TotalMilliseconds));
+                }
+            }
+
+            static int DefaultMaxBufferedDurationMs = 1500;
+            static ushort DefaultSilenceAggression = 0;
+
+            static int DefaultBufferTargetMs = 50;
+            static int BufferTargetMarginMs = 50;
+
+            static int BufferWarningDurationMs = 250;
+            static int BufferCriticalDurationMs = 1000;
+
+            public static DependencyProperty MaxBufferedDurationDurationProperty = DependencyProperty.Register("MaxBufferedDuration", typeof(int), typeof(AudioOutWPF), new PropertyMetadata(DefaultMaxBufferedDurationMs));
+            TimeSpan _MaxBufferedDuration = TimeSpan.FromMilliseconds(DefaultMaxBufferedDurationMs);
+            public TimeSpan MaxBufferedDuration
+            {
+                get { return _MaxBufferedDuration; }
+                set
+                {
+                    _MaxBufferedDuration = value;
+                    SetValue(MaxBufferedDurationDurationProperty, (int)value.TotalMilliseconds);
+                }
+            }
+
+            public static DependencyProperty DroppedPacketsProperty = DependencyProperty.Register("DroppedPackets", typeof(int), typeof(AudioOutWPF), new PropertyMetadata(0));
+            public int DroppedPackets
+            {
+                get { return (int)this.GetValue(DroppedPacketsProperty); }
+                set { SetValue(DroppedPacketsProperty, value); }
+            }
+
+            public static DependencyProperty DroppedSilenceProperty = DependencyProperty.Register("DroppedSilence", typeof(int), typeof(AudioOutWPF), new PropertyMetadata(0));
+            public int DroppedSilence
+            {
+                get { return (int)this.GetValue(DroppedSilenceProperty); }
+                set { SetValue(DroppedSilenceProperty, value); }
+            }
+
+            public static DependencyProperty AddedSilenceProperty = DependencyProperty.Register("AddedSilence", typeof(int), typeof(AudioOutWPF), new PropertyMetadata(0));
+            public int AddedSilence
+            {
+                get { return (int)this.GetValue(AddedSilenceProperty); }
+                set { SetValue(AddedSilenceProperty, value); }
+            }
+
+            public static DependencyProperty BufferTargetProperty = DependencyProperty.Register("BufferTarget", typeof(int), typeof(AudioOutWPF), new PropertyMetadata(DefaultBufferTargetMs, OnBufferTargetPropertyUpdated));
+            int bufferTarget = DefaultBufferTargetMs;
+            public int BufferTarget
+            {
+                get { return bufferTarget; }
+                set { bufferTarget = value; SetValue(BufferTargetProperty, value); }
+            }
+            private static void OnBufferTargetPropertyUpdated(DependencyObject d, DependencyPropertyChangedEventArgs e)
+            {
+                var target = d as UserAudioPlayer;
+                if (d != null)
+                    target.bufferTarget = (int)e.NewValue;
+            }
+
+            public static DependencyProperty SilenceAggressionProperty = DependencyProperty.Register("SilenceAggression", typeof(ushort), typeof(AudioOutWPF), new PropertyMetadata(DefaultSilenceAggression, OnSilenceAggressionUpdated));
+            ushort silenceAggression = DefaultSilenceAggression;
+            public ushort SilenceAggression
+            {
+                get { return silenceAggression; }
+                set { silenceAggression = value; SetValue(SilenceAggressionProperty, value); }
+            }
+            private static void OnSilenceAggressionUpdated(DependencyObject d, DependencyPropertyChangedEventArgs e)
+            {
+                var target = d as UserAudioPlayer;
+                if (d != null)
+                    target.silenceAggression = (ushort)e.NewValue;
+            }
+
+            private bool shouldUpdateDuration = false;
+            internal void UIUpdateTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+            {
+                shouldUpdateDuration = true;
+            }
+
+            public void HandleAudio(Audio.Codecs.CodecID codecid, byte[] encoded)
+            {
+                if (isDisposed) return;
+
+                Audio.Codecs.INetworkChatCodec remoteCodec = Parent.Codecs.SingleOrDefault(m => m.CodecID == codecid);
+                if (remoteCodec == null)
+                {
+                    Console.WriteLine("Bad Audio Packet: Codec ID {0}", codecid);
+                    return;
+                }
+                if (codecid != LastCodec)
+                {
+                    LastCodec = codecid;
+                    CodecName = remoteCodec.Name();
+                }
+
+                if (waveOut != null && waveProvider.WaveFormat != remoteCodec.RecordFormat)
+                    Stop();
+
+                if (waveOut == null)
+                    Start(remoteCodec);
+
+                TimeSpan buffered = waveProvider.BufferedDuration;
+
+                if (buffered == TimeSpan.Zero) UnderRuns = underruns++;
+
+                if (buffered <= MaxBufferedDuration)
+                {
+                    byte[] decoded = remoteCodec.Decode(encoded, encoded.Length);
+                    int length = decoded.Length;
+
+                    if (ShouldDropSilence)
+                    {
+                        int dropped = DropSilence(silenceThreshhold, ref decoded, ref length);
+                        DroppedSilence = droppedSilence += dropped;
+                    }
+                    else if (ShouldAddSilence && length > 5)
+                    {
+                        bool silent = true;
+                        for (int i = 0; i < 5; i += 2)
+                        {
+                            if (decoded[i + 1] != 0 || decoded[i] > addSilenceThreshold)
+                            {
+                                //  if (i > 5)
+                                //Console.WriteLine("sil:{0} {1} {2}", i, decoded[i + 1], decoded[i]);
+                                silent = false;
+                                break;
+                            }
+                        }
+                        if (silent)
+                        {
+                            var silence = new byte[length];
+                            byte silenceLevel = (byte)(addSilenceThreshold / 2);
+                            for (int i = 0; i < length; i += 2)
+                            {
+                                silence[i + 1] = 0;
+                                silence[i] = silenceLevel;
+                            }
+                            waveProvider.AddSamples(silence, 0, length);
+                            AddedSilence = addedSilence += length;
+                        }
+                    }
+
+                    waveProvider.AddSamples(decoded, 0, length);
+                }
+                else
+                    DroppedPackets = ++droppedPackets;
+
+                if (shouldUpdateDuration)
+                {
+                    BufferedDuration = buffered;
+                    shouldUpdateDuration = false;
+                }
+            }
+
+            private byte addSilenceThreshold { get { return (byte)(silenceAggression * 10); } }
+
+            public bool ShouldDropSilence { get { return silenceAggression > 0 && BufferedDuration.TotalMilliseconds > (bufferTarget + BufferTargetMarginMs); } }
+            public bool ShouldAddSilence { get { return silenceAggression > 0 && BufferedDuration.TotalMilliseconds < (bufferTarget); } }
+            public ushort silenceThreshhold
+            {
+                get
+                {
+                    int duration = (int)BufferedDuration.TotalMilliseconds;
+                    if (duration > BufferCriticalDurationMs)
+                        return (ushort)(12 * silenceAggression);
+                    if (duration > BufferWarningDurationMs)
+                        return (ushort)(6 * silenceAggression);
+                    return (ushort)(3 * silenceAggression);
+                }
+            }
+
+
+            private void Start(Audio.Codecs.INetworkChatCodec codec)
+            {
+                waveOut = GetWavePlayer();
+
+                waveProvider = new BufferedWaveProvider(codec.RecordFormat);
+
+                sampleChannel = new SampleChannel(waveProvider, false);
+                sampleStream = new NotifyingSampleProvider(sampleChannel);
+                sampleStream.Sample += (s, e) => aggregator.Add(e.Left);
+                waveOut.Init(sampleStream);
+                waveOut.Play();
+
+                OutputFormat = codec.RecordFormat.ToString();
+            }
+
+            int desiredLatency = 150;
+            private IWavePlayer GetWavePlayer()
+            {
+
+                var SelectedOutput = Parent.SelectedOutput;
+                switch (SelectedOutput.Provider)
+                {
+                    case OutputDeviceModel.OutputDeviceProvider.Wave:
+                        return new WaveOut() { DeviceNumber = SelectedOutput.WavDeviceNumber, DesiredLatency = desiredLatency };
+                    case OutputDeviceModel.OutputDeviceProvider.DirectSound:
+                        return new DirectSoundOut(SelectedOutput.DirectSoundDeviceInfo.Guid, desiredLatency);
+                }
+                return new DirectSoundOut(DirectSoundOut.DSDEVID_DefaultVoicePlayback, desiredLatency);
+            }
+
+            internal void Stop()
+            {
+                if (waveOut != null)
+                {
+                    waveOut.Stop();
+                    waveOut.Dispose();
+                    waveOut = null;
+                }
+                waveProvider = null;
+                sampleChannel = null;
+                sampleStream = null;
+            }
+
+
+            private readonly FeenPhone.Audio.SampleAggregator aggregator;
+            public event EventHandler<FeenPhone.Audio.FftEventArgs> FftCalculated
+            {
+                add { aggregator.FftCalculated += value; }
+                remove { aggregator.FftCalculated -= value; }
+            }
+
+            public event EventHandler<FeenPhone.Audio.MaxSampleEventArgs> MaximumCalculated
+            {
+                add { aggregator.MaximumCalculated += value; }
+                remove { aggregator.MaximumCalculated -= value; }
+            }
+
+            void audioGraph_FftCalculated(object sender, FftEventArgs e)
+            {
+                Dispatcher.BeginInvoke(new Action<object, FftEventArgs>((s, args) =>
+                {
+                    //if (this.selectedVisualization != null)
+                    //{
+                    //    this.selectedVisualization.OnFftCalculated(e.Result);
+                    //}
+                    //spectrumAnalyser.Update(e.Result);
+                }), sender, e);
+            }
+
+            void audioGraph_MaximumCalculated(object sender, MaxSampleEventArgs e)
+            {
+                Dispatcher.BeginInvoke(new Action<object, MaxSampleEventArgs>((s, args) =>
+                {
+                    Min = args.MinSample;
+                    Max = args.MaxSample;
+
+                    //if (this.selectedVisualization != null)
+                    //{
+                    //    this.selectedVisualization.OnMaxCalculated(e.MinSample, e.MaxSample);
+                    //}
+                }), sender, e);
+            }
+
+
+            bool isDisposed = false;
+            public void Dispose()
+            {
+                Stop();
+                isDisposed = true;
+            }
         }
 
         private static int DropSilence(ushort silenceThreshhold, ref byte[] decoded, ref int length)
@@ -474,13 +525,16 @@ namespace FeenPhone.WPFApp.Controls
 
         private void Buffer_Clear_Click(object sender, RoutedEventArgs e)
         {
-            Stop();
+            foreach (var player in AudioPlayers)
+                player.Stop();
         }
 
         bool isDisposed = false;
         public void Dispose()
         {
-            Stop();
+            foreach (var player in AudioPlayers)
+                player.Dispose();
+            AudioPlayers.Clear();
             isDisposed = true;
         }
     }

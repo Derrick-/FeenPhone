@@ -63,7 +63,7 @@ namespace FeenPhoneTest
             writer.SetStream(ms);
 
             byte[] audioData = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
-            Packet.WriteAudioData(writer, FeenPhone.Audio.Codecs.CodecID.Gsm610ChatCodec, audioData, 10);
+            Packet.WriteAudioData(writer, Guid.Empty, FeenPhone.Audio.Codecs.CodecID.Gsm610ChatCodec, audioData, 10);
 
             ClientPacketHandler handler = new ClientPacketHandler();
 
