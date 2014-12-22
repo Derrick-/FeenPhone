@@ -33,6 +33,8 @@ namespace FeenPhone.WPFApp.Controls
     {
         static ObservableCollection<InputDeviceModel> InputList = new ObservableCollection<InputDeviceModel>();
 
+        int InputBufferSize = 50;
+
         [ImportMany(typeof(Audio.Codecs.INetworkChatCodec))]
         public IEnumerable<Audio.Codecs.INetworkChatCodec> Codecs { get; set; }
 
@@ -259,7 +261,8 @@ namespace FeenPhone.WPFApp.Controls
                     }
                     catch { }
 
-                    var w = new WasapiCapture(mmdevice, mmdevice.MinBufferDurationMs);
+                    InputBufferSize = Math.Max(InputBufferSize, mmdevice.MinBufferDurationMs);
+                    var w = new WasapiCapture(mmdevice, InputBufferSize);
 
                     waveIn = w;
                     waveIn.WaveFormat = deviceFormat;
@@ -268,7 +271,7 @@ namespace FeenPhone.WPFApp.Controls
                 else
                 {
                     var w = new WaveIn();
-                    w.BufferMilliseconds = 50;
+                    w.BufferMilliseconds = InputBufferSize;
                     w.DeviceNumber = SelectedInputSource.WavDeviceNumber;
                     waveIn = w;
 

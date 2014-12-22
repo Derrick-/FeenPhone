@@ -74,6 +74,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Audio\AudioEvents.cs" />
     <Compile Include="Audio\AudioExtensions.cs" />
     <Compile Include="Audio\Codecs\AcmChatCodec.cs" />
     <Compile Include="Audio\Codecs\ALawChatCodec.cs" />

@@ -72,7 +72,7 @@ namespace NAudio.CoreAudioApi
             {
                 uint bufferSize;
                 Marshal.ThrowExceptionForHR(audioClientInterface.GetBufferSize(out bufferSize));
-                return (int) bufferSize;
+                return (int)bufferSize;
             }
         }
 
@@ -153,7 +153,7 @@ namespace NAudio.CoreAudioApi
                 return audioClockClient;
             }
         }
-        
+
         /// <summary>
         /// Gets the AudioRenderClient service
         /// </summary>
@@ -237,7 +237,15 @@ namespace NAudio.CoreAudioApi
         /// </summary>
         public void Start()
         {
-            audioClientInterface.Start();
+            try
+            {
+                audioClientInterface.Start();
+            }
+            catch (COMException ex)
+            {
+                FeenPhone.Audio.AudioEvents.InvokeOnAudioDeviceException(this, ex);
+                throw;
+            }
         }
 
         /// <summary>
@@ -245,8 +253,16 @@ namespace NAudio.CoreAudioApi
         /// </summary>
         public void Stop()
         {
-            audioClientInterface.Stop();
+            try
+            {
+                audioClientInterface.Stop();
+            }
+            catch (COMException ex)
+            {
+                FeenPhone.Audio.AudioEvents.DeviceProbablyWentAway(this, ex);
+            }
         }
+
 
         /// <summary>
         /// Set the Event Handle for buffer synchro.
