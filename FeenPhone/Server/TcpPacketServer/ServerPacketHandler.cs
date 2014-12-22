@@ -31,7 +31,7 @@ namespace FeenPhone.Server.TcpPacketServer
         protected override void OnChat(IUser user, string text)
         {
             if (state.User == null)
-                state.LoginFailed();
+                state.Notifier.LoginFailed();
             else
                 EventSink.OnChat(state, text);
         }
@@ -39,7 +39,7 @@ namespace FeenPhone.Server.TcpPacketServer
         protected override void OnAudio(Guid IGNOREDBYSERVER, Audio.Codecs.CodecID Codec, byte[] data, int dataLen)
         {
             if (state.User == null)
-                state.LoginFailed();
+                state.Notifier.LoginFailed();
             else
                 EventSink.OnAudio(state, state.User.ID, Codec, data, dataLen);
         }
@@ -52,9 +52,9 @@ namespace FeenPhone.Server.TcpPacketServer
         protected override void LoginInfo(string username, string password)
         {
             if (state.Login(username, password))
-                state.LoginSuccess();
+                state.Notifier.LoginSuccess();
             else
-                state.LoginFailed();
+                state.Notifier.LoginFailed();
         }
 
         protected override void OnPingReq(ushort timestamp)

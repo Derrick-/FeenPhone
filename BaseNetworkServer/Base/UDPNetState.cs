@@ -12,8 +12,8 @@ namespace Alienseed.BaseNetworkServer
         where TReader : BaseUDPReader, new()
         where TWriter : BaseUDPWriter, new()
     {
-        public TReader Reader { get; private set; }
-        public TWriter Writer { get; private set; }
+        public readonly TReader Reader;
+        public readonly TWriter Writer;
 
         protected override string ClientIdentifier { get { return string.Format("UDP {0} {1}", Address.ToString(), User != null ? User.Username : "UDP NULL"); } }
 

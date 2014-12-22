@@ -11,6 +11,8 @@ namespace FeenPhone.Server.TcpPacketServer
 {
     class UdpPacketNetState : BaseUdpPacketNetState, IFeenPhonePacketNetState
     {
+        public IFeenPhoneClientNotifier Notifier { get; private set; }
+
         public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
         private ushort _LastPing;
         public ushort LastPing
@@ -19,8 +21,7 @@ namespace FeenPhone.Server.TcpPacketServer
             set
             {
                 _LastPing = value;
-                if (PropertyChanged != null)
-                    PropertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs("LastPing"));
+                InvokePropertyChanged("LastPing");
             }
         }
 
@@ -29,6 +30,7 @@ namespace FeenPhone.Server.TcpPacketServer
             : base(ep, readBufferSize)
         {
             Handler = new ServerPacketHandler(this);
+            Notifier = new PacketClientNotificationHandler(this);
             Reader.OnReadData += OnRead;
         }
 
@@ -51,53 +53,6 @@ namespace FeenPhone.Server.TcpPacketServer
                 Handler.Handle(InStream);
             }
 
-        }
-
-        public void OnUserConnected(Alienseed.BaseNetworkServer.INetState user)
-        {
-            // Send Connected Packet
-        }
-
-        public void OnUserDisconnected(Alienseed.BaseNetworkServer.INetState user)
-        {
-            // Send Disconnected Packet
-        }
-
-        public void OnUserLogin(Alienseed.BaseNetworkServer.Accounting.IUserClient client)
-        {
-            Packet.WriteUserLogin(Writer, client);
-        }
-
-        public void OnUserLogout(Alienseed.BaseNetworkServer.Accounting.IUserClient client)
-        {
-            Packet.WriteUserLogout(Writer, client);
-        }
-
-        public void OnChat(Alienseed.BaseNetworkServer.INetState user, string text)
-        {
-            Packet.WriteChat(Writer, user.User, text);
-        }
-
-        public void OnAudio(Guid userID, Audio.Codecs.CodecID Codec, byte[] data, int dataLen)
-        {
-            Packet.WriteAudioData(Writer, userID, Codec, data, dataLen);
-        }
-
-        public void LoginFailed()
-        {
-            Packet.WriteLoginStatus(Writer, false);
-        }
-
-        public void LoginSuccess()
-        {
-            Packet.WriteLoginStatus(Writer, true);
-
-            var users = BaseServer.Users.Where(m => m != null);
-            if (ServerHost.LocalClient != null)
-            {
-                users = users.Concat(new Alienseed.BaseNetworkServer.Accounting.IUser[] { ServerHost.LocalClient.LocalUser });
-            }
-            Packet.WriteUserList(Writer, users.Where(m => m.ID != this.User.ID));
         }
 
         public bool Login(string Username, string password)

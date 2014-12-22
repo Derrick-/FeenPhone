@@ -44,12 +44,12 @@ namespace FeenPhone.Server.Telnet.Prompts
         {
             if (!cancel && client.Login(Username, password.Trim()))
             {
-                client.LoginSuccess();
+                client.Notifier.LoginSuccess();
                 return new MainMenu(client.User.IsAdmin);
             }
             else
             {
-                client.LoginFailed();
+                client.Notifier.LoginFailed();
                 return new LoginPrompt();
             }
         }

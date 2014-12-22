@@ -11,8 +11,8 @@ namespace Alienseed.BaseNetworkServer
         where TReader : BaseStreamReader, new()
         where TWriter : BaseStreamWriter, new()
     {
-        public TReader Reader { get; private set; }
-        public TWriter Writer { get; private set; }
+        public readonly TReader Reader;
+        public readonly TWriter Writer;
 
         protected override string ClientIdentifier { get { return string.Format("TCP {0} {1}", Address.ToString(), User != null ? User.Username : "TCP NULL"); } }
 

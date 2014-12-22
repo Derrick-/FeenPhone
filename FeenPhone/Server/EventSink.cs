@@ -9,64 +9,64 @@ namespace FeenPhone.Server
 {
     static class EventSink
     {
-        static IEnumerable<IFeenPhoneClient> AllFeens
+        static IEnumerable<IFeenPhoneClientNotifier> AllFeens
         {
-            get { return BaseServer.Clients.Where(m => m is IFeenPhoneClient).Cast<IFeenPhoneClient>().ToList(); }
+            get { return BaseServer.Clients.Where(m => m is IFeenPhoneNetstate).Cast<IFeenPhoneNetstate>().Select(m => m.Notifier).ToList(); }
         }
 
-        internal static void OnChat(INetState client, string text)
+        internal static void OnChat(IFeenPhoneNetstate state, string text)
         {
             foreach (var feen in AllFeens)
-                if (feen != client)
-                    if (client.User != null)
-                        feen.OnChat(client, text);
+                if (feen != state.Notifier)
+                    if (state.User != null)
+                        feen.OnChat(state, text);
             if (ServerHost.LocalClient != null)
-                ServerHost.LocalClient.OnChat(client, text);
+                ServerHost.LocalClient.Notifier.OnChat(state, text);
         }
 
-        internal static void OnAudio(INetState client, Guid userID, Audio.Codecs.CodecID Codec, byte[] data, int dataLen)
+        internal static void OnAudio(IFeenPhoneNetstate state, Guid userID, Audio.Codecs.CodecID Codec, byte[] data, int dataLen)
         {
             foreach (var feen in AllFeens)
-                if (feen != client)
+                if (feen != state.Notifier)
                     feen.OnAudio(userID, Codec, data, dataLen);
-            if (ServerHost.LocalClient != null && ServerHost.LocalClient != client)
-                ServerHost.LocalClient.OnAudio(userID, Codec, data, dataLen);
+            if (ServerHost.LocalClient != null && ServerHost.LocalClient != state)
+                ServerHost.LocalClient.Notifier.OnAudio(userID, Codec, data, dataLen);
         }
 
-        internal static void OnConnect(INetState client)
+        internal static void OnConnect(IFeenPhoneNetstate state)
         {
             foreach (var feen in AllFeens)
-                if (feen != client)
-                    feen.OnUserConnected(client);
+                if (feen != state.Notifier)
+                    feen.OnUserConnected(state);
             if (ServerHost.LocalClient != null)
-                ServerHost.LocalClient.OnUserConnected(client);
+                ServerHost.LocalClient.Notifier.OnUserConnected(state);
         }
 
-        internal static void OnDisconnect(INetState state)
+        internal static void OnDisconnect(IFeenPhoneNetstate state)
         {
             foreach (var feen in AllFeens.ToList())
-                if (feen != state)
+                if (feen != state.Notifier)
                     feen.OnUserDisconnected(state);
             if (ServerHost.LocalClient != null)
-                ServerHost.LocalClient.OnUserDisconnected(state);
+                ServerHost.LocalClient.Notifier.OnUserDisconnected(state);
         }
 
-        internal static void OnLogin(INetState state)
+        internal static void OnLogin(IFeenPhoneNetstate state)
         {
             foreach (var feen in AllFeens)
-                if (feen != state)
+                if (feen != state.Notifier)
                     feen.OnUserLogin(state.User);
             if (ServerHost.LocalClient != null)
-                ServerHost.LocalClient.OnUserLogin(state.User);
+                ServerHost.LocalClient.Notifier.OnUserLogin(state.User);
         }
 
-        internal static void OnLogout(INetState state)
+        internal static void OnLogout(IFeenPhoneNetstate state)
         {
             foreach (var feen in AllFeens)
-                if (feen != state)
+                if (feen != state.Notifier)
                     feen.OnUserLogout(state.User);
             if (ServerHost.LocalClient != null)
-                ServerHost.LocalClient.OnUserLogout(state.User);
+                ServerHost.LocalClient.Notifier.OnUserLogout(state.User);
         }
     }
 }

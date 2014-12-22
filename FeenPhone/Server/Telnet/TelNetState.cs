@@ -8,11 +8,16 @@ using System.Net;
 
 namespace FeenPhone.Server.Telnet
 {
-    class TelNetState : BaseTelNetState, IFeenPhoneNetState
+    class TelNetState : BaseTelNetState, IFeenPhoneNetstate
     {
+        public IFeenPhoneClientNotifier Notifier { get; private set; }
+        
         public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
 
-        public TelNetState(System.Net.Sockets.NetworkStream stream, IPEndPoint ep) : base(stream, ep) { }
+        public TelNetState(System.Net.Sockets.NetworkStream stream, IPEndPoint ep) : base(stream, ep)
+        {
+            Notifier = new TelnetClientNotificationHandler(this);
+        }
 
         protected override void Reader_OnBufferOverflow(object sender, BufferOverflowArgs e)
         {
@@ -49,35 +54,54 @@ namespace FeenPhone.Server.Telnet
             base.Dispose();
         }
 
-        public void OnUserConnected(INetState user)
+        public class TelnetClientNotificationHandler : IFeenPhoneClientNotifier
         {
-            SendInfoLine("  {0} connected.", NicknameOrIP(user));
-        }
+            private TelNetState telNetState;
 
-        public void OnUserDisconnected(INetState user)
-        {
-            SendInfoLine("  {0} disconnected.", NicknameOrIP(user));
-        }
+            public TelnetClientNotificationHandler(TelNetState telNetState)
+            {
+                this.telNetState = telNetState;
+            }
+            public void OnUserConnected(INetState user)
+            {
+                telNetState.SendInfoLine("  {0} connected.", NicknameOrIP(user));
+            }
 
-        public void OnChat(INetState user, string text)
-        {
-            string line = string.Format("  {0} says: {1}", NicknameOrIP(user), text);
-            SendInfoLine(line);
-        }
+            public void OnUserDisconnected(INetState user)
+            {
+                telNetState.SendInfoLine("  {0} disconnected.", NicknameOrIP(user));
+            }
 
-        public void OnUserLogin(IUserClient client)
-        {
-            SendInfoLine("  {0} login.", client.Nickname);
-        }
+            public void OnChat(INetState user, string text)
+            {
+                string line = string.Format("  {0} says: {1}", NicknameOrIP(user), text);
+                telNetState.SendInfoLine(line);
+            }
 
-        public void OnUserLogout(IUserClient client)
-        {
-            SendInfoLine("  {0} logout.", client.Nickname);
-        }
+            public void OnUserLogin(IUserClient client)
+            {
+                telNetState.SendInfoLine("  {0} login.", client.Nickname);
+            }
 
-        public void OnAudio(Guid userID, Audio.Codecs.CodecID Codec, byte[] data, int dataLen)
-        {
-            // nothing for telnet
+            public void OnUserLogout(IUserClient client)
+            {
+                telNetState.SendInfoLine("  {0} logout.", client.Nickname);
+            }
+
+            public void OnAudio(Guid userID, Audio.Codecs.CodecID Codec, byte[] data, int dataLen)
+            {
+                // nothing for telnet
+            }
+
+            public void LoginSuccess()
+            {
+                telNetState.WriteLine("  Welcome.");
+            }
+
+            public void LoginFailed()
+            {
+                telNetState.WriteLine("  Login failed.");
+            }
         }
 
         private static string NicknameOrIP(INetState user)
@@ -99,16 +123,6 @@ namespace FeenPhone.Server.Telnet
             {
                 throw new NotImplementedException();
             }
-        }
-
-        public void LoginSuccess()
-        {
-            WriteLine("  Welcome.");
-        }
-
-        public void LoginFailed()
-        {
-            WriteLine("  Login failed.");
         }
     }
 }

@@ -13,7 +13,7 @@ namespace FeenPhone.WPFApp.Models
     public class UserStatusModel : DependencyObject, IUser
     {
         private readonly IUser User;
-        private readonly IFeenPhoneNetState State;
+        private readonly IFeenPhoneNetstate State;
 
         public UserStatusModel(IUser user)
         {
@@ -21,7 +21,7 @@ namespace FeenPhone.WPFApp.Models
 
             if (User is IUserClient)
             {
-                var client = ((IUserClient)User).Client as IFeenPhoneNetState;
+                var client = ((IUserClient)User).Client as IFeenPhoneNetstate;
                 if (client != null)
                 {
                     client.PropertyChanged += client_PropertyChanged;

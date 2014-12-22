@@ -6,44 +6,66 @@ using System.Text;
 
 namespace FeenPhone.Client
 {
-    class LocalClient : BaseClient, FeenPhone.Server.IFeenPhoneClient, Alienseed.BaseNetworkServer.INetState
+    class LocalClient : BaseClient, FeenPhone.Server.IFeenPhoneNetstate
     {
-        public LocalClient(IUserClient localUser) : base(localUser) { }
+        public Server.IFeenPhoneClientNotifier Notifier { get; private set; }
+
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+
+        public ushort LastPing { get { return 0; } set { throw new NotImplementedException(); } }
+
+        public LocalClient(IUserClient localUser) : base(localUser)
+        {
+            Notifier = new LocalNotifier();
+        }
 
         public override bool IsConnected
         {
             get { return true; }
         }
 
-        public void OnChat(Alienseed.BaseNetworkServer.INetState client, string text)
+        public class LocalNotifier : Server.IFeenPhoneClientNotifier
         {
-            EventSource.InvokeOnChat(this, client.User, text);
-        }
+            public void OnChat(Alienseed.BaseNetworkServer.INetState client, string text)
+            {
+                EventSource.InvokeOnChat(this, client.User, text);
+            }
 
-        public void OnAudio(Guid userID, Audio.Codecs.CodecID Codec, byte[] data, int dataLen)
-        {
-            EventSource.InvokeOnAudio(this, userID, Codec, data, dataLen);
-        }
+            public void OnAudio(Guid userID, Audio.Codecs.CodecID Codec, byte[] data, int dataLen)
+            {
+                EventSource.InvokeOnAudio(this, userID, Codec, data, dataLen);
+            }
 
-        public void OnUserLogin(Alienseed.BaseNetworkServer.Accounting.IUserClient client)
-        {
-            EventSource.InvokeOnUserConnected(this, client);
-        }
+            public void OnUserLogin(Alienseed.BaseNetworkServer.Accounting.IUserClient client)
+            {
+                EventSource.InvokeOnUserConnected(this, client);
+            }
 
-        public void OnUserLogout(Alienseed.BaseNetworkServer.Accounting.IUserClient client)
-        {
-            EventSource.InvokeOnUserDisconnected(this, client);
-        }
+            public void OnUserLogout(Alienseed.BaseNetworkServer.Accounting.IUserClient client)
+            {
+                EventSource.InvokeOnUserDisconnected(this, client);
+            }
 
-        public void OnUserConnected(Alienseed.BaseNetworkServer.INetState client)
-        {
-            //throw new NotImplementedException();
-        }
+            public void OnUserConnected(Alienseed.BaseNetworkServer.INetState client)
+            {
+                //throw new NotImplementedException();
+            }
 
-        public void OnUserDisconnected(Alienseed.BaseNetworkServer.INetState client)
-        {
-            if (client.User != null)
-                EventSource.InvokeOnUserDisconnected(this, client.User);
+            public void OnUserDisconnected(Alienseed.BaseNetworkServer.INetState client)
+            {
+                if (client.User != null)
+                    EventSource.InvokeOnUserDisconnected(this, client.User);
+            }
+
+            void Server.IFeenPhoneClientNotifier.LoginSuccess()
+            {
+                throw new NotImplementedException();
+            }
+
+            void Server.IFeenPhoneClientNotifier.LoginFailed()
+            {
+                throw new NotImplementedException();
+            }
         }
 
         public override void Dispose()
@@ -85,5 +107,11 @@ namespace FeenPhone.Client
         {
             get { return this.IsConnected; }
         }
+
+        public bool Login(string username, string password)
+        {
+            return true;
+        }
+
     }
 }
