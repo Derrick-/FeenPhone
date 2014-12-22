@@ -58,9 +58,9 @@ namespace FeenPhone.Audio.Codecs
                 throw new ArgumentException("G722 does not yet support non-zero offsets");
             }
             WaveBuffer wb = new WaveBuffer(data);
-            int encodedLength = length / 4;
+            int encodedLength = length / 4 + (length & 0x01);
             byte[] outputBuffer = new byte[encodedLength];
-            int encoded = this.codec.Encode(this.encoderState, outputBuffer, wb.ShortBuffer, length / 2);
+            int encoded = this.codec.Encode(this.encoderState, outputBuffer, wb.ShortBuffer, encodedLength << 1);
             Debug.Assert(encodedLength == encoded);
             return outputBuffer;
         }

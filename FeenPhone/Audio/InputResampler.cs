@@ -50,6 +50,8 @@ namespace FeenPhone.Audio
                 if (sourceFormat.Channels != destFormat.Channels)
                 {
                     WaveFormat destChanFormat = new WaveFormat(sourceFormat.SampleRate, sourceFormat.BitsPerSample, destFormat.Channels);
+                    if (resampleChannelStream != null)
+                        resampleChannelStream.Dispose();
                     resampleChannelStream = new AcmStream(sourceFormat, destChanFormat);
                 }
                 lastResampleSourceFormat = sourceFormat;
@@ -69,6 +71,10 @@ namespace FeenPhone.Audio
                 {
                     Buffer.BlockCopy(toResample, 0, resampleChannelStream.SourceBuffer, 0, sourceLength);
                     sourceLength = resampleChannelStream.Convert(sourceLength, out bytesConverted);
+                    if (bytesConverted >> 1 != sourceLength)
+                    {
+                        Console.WriteLine("WARNING: All input bytes were not converted.");
+                    }
                     toResample = resampleChannelStream.DestBuffer;
                 }
             }
