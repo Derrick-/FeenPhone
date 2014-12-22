@@ -7,7 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 
-namespace FeenPhone.Server.TcpPacketServer
+namespace FeenPhone.Server.PacketServer
 {
     class UdpPacketNetState : BaseUdpPacketNetState, IFeenPhonePacketNetState
     {

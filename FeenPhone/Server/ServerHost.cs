@@ -61,8 +61,8 @@ namespace FeenPhone.Server
             Servers.Clear();
 
             Servers.Add(new Telnet.TelnetServer());
-            Servers.Add(new TcpPacketServer.TcpPacketServer(ServerPort, noDelay: true));
-            Servers.Add(new TcpPacketServer.UdpPacketServer(ServerPort));
+            Servers.Add(new PacketServer.TcpPacketServer(ServerPort, noDelay: true));
+            Servers.Add(new PacketServer.UdpPacketServer(ServerPort));
         }
 
         void StartServers()

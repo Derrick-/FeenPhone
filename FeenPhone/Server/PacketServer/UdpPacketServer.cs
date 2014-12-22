@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Alienseed.BaseNetworkServer.PacketServer;
-using FeenPhone.Server.TcpPacketServer;
+using FeenPhone.Server.PacketServer;
 using System.Net;
 
-namespace FeenPhone.Server.TcpPacketServer
+namespace FeenPhone.Server.PacketServer
 {
     class UdpPacketServer : BaseUDPPacketServer<UdpPacketNetState>
     {
