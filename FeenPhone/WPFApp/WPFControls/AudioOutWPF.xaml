@@ -43,7 +43,7 @@
                                     <Label>Codec</Label>
                                     <TextBlock Text="{Binding Path=CodecName}" d:DataContext="{d:DesignData Source=SampleData/MiscData.xaml}" ></TextBlock>
                                 </WrapPanel>
-                                <DockPanel ToolTip="Audio data in miliseconds of lag that has been recieved and is buffered for play.  When duration exceeds max buffer size, incoming data will be dropped">
+                                <DockPanel ToolTip="Audio data in milliseconds of lag that has been received and is buffered for play.  When duration exceeds max buffer size, incoming data will be dropped">
                                     <Grid>
                                         <Label>Buffer</Label>
                                         <Button HorizontalAlignment="Right" Click="Buffer_Clear_Click" Background="{x:Null}" BorderBrush="{x:Null}">
@@ -54,14 +54,14 @@
                                         <ProgressBar  d:DataContext="{d:DesignData Source=SampleData/MiscData.xaml}" 
                                   Height="{Binding ElementName=modelValueContainer, Path=ActualHeight}" 
                                   Width="{Binding ElementName=modelValueContainer, Path=ActualWidth}" 
-                                  Value="{Binding Path=BufferedDuration}"  
+                                  Value="{Binding Path=BufferedDurationMs}"  
                                   Maximum="{Binding Path=MaxBufferedDuration}" />
                                         <TextBlock Text="{Binding Path=BufferedDurationString}" d:DataContext="{d:DesignData Source=SampleData/MiscData.xaml}" ></TextBlock>
                                     </Grid>
                                 </DockPanel>
                                 <WrapPanel>
-                                    <Label ToolTip="Target buffer size in miliseconds">Buffer Target</Label>
-                                    <Slider Minimum="0" Maximum="{Binding Path=MaxBufferedDuration}" 
+                                    <Label ToolTip="Target buffer size in milliseconds">Buffer Target</Label>
+                                    <Slider Minimum="0" Maximum="{Binding Path=MaxBufferedDurationMs}" 
                         TickFrequency="50"
                         TickPlacement="TopLeft"
                         IsSnapToTickEnabled="True"

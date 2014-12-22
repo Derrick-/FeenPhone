@@ -57,28 +57,23 @@ namespace FeenPhone.WPFApp.Models
             set { SetValue(UnderRunsProperty, value); }
         }
 
-        int droppedPackets = 0;
-        int droppedSilence = 0;
-        int addedSilence = 0;
-        int underruns = 0;
-
         public static DependencyProperty MinProperty = DependencyProperty.Register("Min", typeof(int), typeof(UserAudioPlayer));
-        float _Min;
+        float _MinUnscaled;
         public float Min
         {
-            get { return _Min; }
-            set { _Min = value; SetValue(MinProperty, (int)(value * 100)); }
+            get { return _MinUnscaled; }
+            set { _MinUnscaled = value; SetValue(MinProperty, (int)(value * 100)); }
         }
 
         public static DependencyProperty MaxProperty = DependencyProperty.Register("Max", typeof(int), typeof(UserAudioPlayer));
-        float _Max;
+        float _MaxUnscaled;
         public float Max
         {
-            get { return _Max; }
-            set { _Max = value; SetValue(MaxProperty, (int)(value * 100)); }
+            get { return _MaxUnscaled; }
+            set { _MaxUnscaled = value; SetValue(MaxProperty, (int)(value * 100)); }
         }
         public static DependencyProperty BufferedDurationStringProperty = DependencyProperty.Register("BufferedDurationString", typeof(string), typeof(UserAudioPlayer), new PropertyMetadata(null));
-        public static DependencyProperty BufferedDurationProperty = DependencyProperty.Register("BufferedDuration", typeof(int), typeof(UserAudioPlayer), new PropertyMetadata(0));
+        public static DependencyProperty BufferedDurationProperty = DependencyProperty.Register("BufferedDurationMs", typeof(int), typeof(UserAudioPlayer), new PropertyMetadata(0));
         TimeSpan _BufferedDuration = TimeSpan.Zero;
         public TimeSpan BufferedDuration
         {
@@ -100,7 +95,7 @@ namespace FeenPhone.WPFApp.Models
         static int BufferWarningDurationMs = 250;
         static int BufferCriticalDurationMs = 1000;
 
-        public static DependencyProperty MaxBufferedDurationDurationProperty = DependencyProperty.Register("MaxBufferedDuration", typeof(int), typeof(UserAudioPlayer), new PropertyMetadata(DefaultMaxBufferedDurationMs));
+        public static DependencyProperty MaxBufferedDurationDurationProperty = DependencyProperty.Register("MaxBufferedDurationMs", typeof(int), typeof(UserAudioPlayer), new PropertyMetadata(DefaultMaxBufferedDurationMs));
         TimeSpan _MaxBufferedDuration = TimeSpan.FromMilliseconds(DefaultMaxBufferedDurationMs);
         public TimeSpan MaxBufferedDuration
         {
@@ -191,7 +186,7 @@ namespace FeenPhone.WPFApp.Models
 
             TimeSpan buffered = waveProvider.BufferedDuration;
 
-            if (buffered == TimeSpan.Zero) UnderRuns = underruns++;
+            if (buffered == TimeSpan.Zero) UnderRuns++;
 
             if (buffered <= MaxBufferedDuration)
             {
@@ -201,7 +196,7 @@ namespace FeenPhone.WPFApp.Models
                 if (ShouldDropSilence)
                 {
                     int dropped = DropSilence(silenceThreshhold, ref decoded, ref length);
-                    DroppedSilence = droppedSilence += dropped;
+                    DroppedSilence += dropped;
                 }
                 else if (ShouldAddSilence && length > 5)
                 {
@@ -226,14 +221,14 @@ namespace FeenPhone.WPFApp.Models
                             silence[i] = silenceLevel;
                         }
                         waveProvider.AddSamples(silence, 0, length);
-                        AddedSilence = addedSilence += length;
+                        AddedSilence += length;
                     }
                 }
 
                 waveProvider.AddSamples(decoded, 0, length);
             }
             else
-                DroppedPackets = ++droppedPackets;
+                DroppedPackets++;
 
             if (shouldUpdateDuration)
             {
