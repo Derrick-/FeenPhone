@@ -114,16 +114,12 @@ namespace FeenPhone.Server.Telnet
             return "Unknown";
         }
 
-        public ushort LastPing
+        public ushort LastPing { get { return 0; } set { InvokePropertyChanged("LastPing"); } }
+
+        private void InvokePropertyChanged(string propName)
         {
-            get
-            {
-                return 0;
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
+            if (PropertyChanged != null)
+                PropertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propName));
         }
     }
 }

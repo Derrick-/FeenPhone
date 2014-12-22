@@ -4,6 +4,7 @@ using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -35,6 +36,15 @@ namespace FeenPhone.WPFApp.Models
             MaximumCalculated += new EventHandler<MaxSampleEventArgs>(audioGraph_MaximumCalculated);
             FftCalculated += new EventHandler<FftEventArgs>(audioGraph_FftCalculated);
         }
+
+        static int DefaultMaxBufferedDurationMs = 1500;
+        static ushort DefaultSilenceAggression = 0;
+
+        static int DefaultBufferTargetMs = 50;
+        static int BufferTargetMarginMs = 50;
+
+        static int BufferWarningDurationMs = 250;
+        static int BufferCriticalDurationMs = 1000;
 
         public static DependencyProperty CodecNameProperty = DependencyProperty.Register("CodecName", typeof(string), typeof(UserAudioPlayer), new PropertyMetadata(null));
         public string CodecName
@@ -85,15 +95,6 @@ namespace FeenPhone.WPFApp.Models
                 SetValue(BufferedDurationStringProperty, string.Format("{0}ms", value.TotalMilliseconds));
             }
         }
-
-        static int DefaultMaxBufferedDurationMs = 1500;
-        static ushort DefaultSilenceAggression = 0;
-
-        static int DefaultBufferTargetMs = 50;
-        static int BufferTargetMarginMs = 50;
-
-        static int BufferWarningDurationMs = 250;
-        static int BufferCriticalDurationMs = 1000;
 
         public static DependencyProperty MaxBufferedDurationDurationProperty = DependencyProperty.Register("MaxBufferedDurationMs", typeof(int), typeof(UserAudioPlayer), new PropertyMetadata(DefaultMaxBufferedDurationMs));
         TimeSpan _MaxBufferedDuration = TimeSpan.FromMilliseconds(DefaultMaxBufferedDurationMs);
@@ -155,7 +156,7 @@ namespace FeenPhone.WPFApp.Models
             if (d != null)
                 target.silenceAggression = (ushort)e.NewValue;
         }
-
+        
         private bool shouldUpdateDuration = false;
         internal void UIUpdateTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {

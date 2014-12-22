@@ -12,8 +12,6 @@ namespace FeenPhone.Client
 
         public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
 
-        public ushort LastPing { get { return 0; } set { throw new NotImplementedException(); } }
-
         public LocalClient(IUserClient localUser) : base(localUser)
         {
             Notifier = new LocalNotifier();
@@ -137,6 +135,14 @@ namespace FeenPhone.Client
         public void LogLine(string text)
         {
             Console.Write("{Local}: [{LocalClient}] {0}", text);
+        }
+
+        public ushort LastPing { get { return 0; } set { InvokePropertyChanged("LastPing"); } }
+
+        private void InvokePropertyChanged(string propName)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propName));
         }
     }
 }

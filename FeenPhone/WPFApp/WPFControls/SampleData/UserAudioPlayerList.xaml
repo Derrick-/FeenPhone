@@ -1,0 +1,3 @@
+﻿<sysCol:ArrayList xmlns:sysCol="clr-namespace:System.Collections;assembly=mscorlib">
+    <m:UserAudioPlayerWPF xmlns:m="clr-namespace:FeenPhone.WPFApp.Controls" />
+</sysCol:ArrayList>

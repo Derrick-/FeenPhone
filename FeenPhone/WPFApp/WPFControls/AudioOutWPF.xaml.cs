@@ -30,7 +30,7 @@ namespace FeenPhone.WPFApp.Controls
     {
         static ObservableCollection<OutputDeviceModel> OutputList = new ObservableCollection<OutputDeviceModel>();
 
-        static ObservableCollection<UserAudioPlayer> AudioPlayers = new ObservableCollection<UserAudioPlayer>();
+        static ObservableCollection<UserAudioPlayerWPF> AudioPlayers = new ObservableCollection<UserAudioPlayerWPF>();
 
         [ImportMany(typeof(Audio.Codecs.INetworkChatCodec))]
         public IEnumerable<Audio.Codecs.INetworkChatCodec> Codecs { get; set; }
@@ -39,7 +39,7 @@ namespace FeenPhone.WPFApp.Controls
         public static DependencyProperty SelectedOutputProperty = DependencyProperty.Register("SelectedOutput", typeof(OutputDeviceModel), typeof(AudioOutWPF), new PropertyMetadata(null, OnOutputDeviceChanged));
         public static DependencyProperty SelectedOutputIndexProperty = DependencyProperty.Register("SelectedOutputIndex", typeof(int?), typeof(AudioOutWPF), new PropertyMetadata(-1));
 
-        public static DependencyProperty AudioPlayersProperty = DependencyProperty.Register("AudioPlayers", typeof(ObservableCollection<UserAudioPlayer>), typeof(AudioOutWPF), new PropertyMetadata(AudioPlayers));
+        public static DependencyProperty AudioPlayersProperty = DependencyProperty.Register("AudioPlayers", typeof(ObservableCollection<UserAudioPlayerWPF>), typeof(AudioOutWPF), new PropertyMetadata(AudioPlayers));
 
         public OutputDeviceModel SelectedOutput
         {
@@ -136,28 +136,22 @@ namespace FeenPhone.WPFApp.Controls
             if (isDisposed) return;
 
             var player = GetOrCreateUserPlayer(userID);
-            player.HandleAudio(codecid, encoded);
+            player.Player.HandleAudio(codecid, encoded);
         }
 
-        private UserAudioPlayer GetOrCreateUserPlayer(Guid userID)
+        private UserAudioPlayerWPF GetOrCreateUserPlayer(Guid userID)
         {
-            UserAudioPlayer toReturn;
+            UserAudioPlayerWPF toReturn;
 
             if (!AudioPlayers.Any(m => m.UserID == userID))
             {
-                toReturn = new UserAudioPlayer(userID, this);
+                toReturn = new UserAudioPlayerWPF(userID, this);
                 UIUpdateTimer.Elapsed += toReturn.UIUpdateTimer_Elapsed;
                 AudioPlayers.Add(toReturn);
             }
             else
                 toReturn = AudioPlayers.Single(m => m.UserID == userID);
             return toReturn;
-        }
-
-        private void Buffer_Clear_Click(object sender, RoutedEventArgs e)
-        {
-            foreach (var player in AudioPlayers)
-                player.Stop();
         }
 
         bool isDisposed = false;

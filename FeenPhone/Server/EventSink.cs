@@ -11,7 +11,7 @@ namespace FeenPhone.Server
     {
         static IEnumerable<IFeenPhoneClientNotifier> AllFeens
         {
-            get { return BaseServer.Clients.Where(m => m is IFeenPhoneNetstate).Cast<IFeenPhoneNetstate>().Select(m => m.Notifier).ToList(); }
+            get { return BaseServer.Clients.Where(m => m is IFeenPhoneNetstate).Cast<IFeenPhoneNetstate>().Select(m => m.Notifier).ToList().Where(m => m != null); }
         }
 
         internal static void OnChat(IFeenPhoneNetstate state, string text)

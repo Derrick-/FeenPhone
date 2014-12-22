@@ -551,6 +551,9 @@
       <DependentUpon>NetworkWPF.xaml</DependentUpon>
     </Compile>
     <Compile Include="WPFApp\WPFControls\SampleData\MiscData.cs" />
+    <Compile Include="WPFApp\WPFControls\UserAudioPlayerWPF.xaml.cs">
+      <DependentUpon>UserAudioPlayerWPF.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WPFApp\WPFControls\UserListWPF.xaml.cs">
       <DependentUpon>UserListWPF.xaml</DependentUpon>
     </Compile>
@@ -590,7 +593,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="WPFApp\WPFControls\SampleData\UserAudioPlayerList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="WPFApp\WPFControls\SampleData\UserListSampleData.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WPFApp\WPFControls\UserAudioPlayerWPF.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
