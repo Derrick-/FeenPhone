@@ -1,8 +1,12 @@
 ﻿<Application x:Class="FeenPhone.WPFApp.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             StartupUri="WPFApp\MainWindow.xaml">
+             StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <SolidColorBrush x:Key="clrBackgroundPrimary" Color="AliceBlue" />
+        <SolidColorBrush x:Key="clrBackgroundSecondary" Color="GhostWhite" />
+        <SolidColorBrush x:Key="clrBackgroundHeaders" Color="Wheat" />
+        <SolidColorBrush x:Key="clrPrimaryText" Color="#5381ac" />
     </Application.Resources>
+    
 </Application>

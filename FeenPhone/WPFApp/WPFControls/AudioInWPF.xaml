@@ -6,6 +6,7 @@
              xmlns:scm= "clr-namespace:System.ComponentModel;assembly=WindowsBase" 
              xmlns:dat="clr-namespace:System.Windows.Data;assembly=PresentationFramework"
              mc:Ignorable="d" 
+             Background="{StaticResource clrBackgroundPrimary}"
              d:DesignHeight="100" d:DesignWidth="300">
     <UserControl.Resources>
         <CollectionViewSource x:Key="InputsView" Source="{Binding Path=InputSourceList}"  IsLiveFilteringRequested="True" >
@@ -15,7 +16,7 @@
         </CollectionViewSource>
     </UserControl.Resources>
     <DockPanel>
-        <TextBlock Background="Wheat" DockPanel.Dock="Top" TextAlignment="Center">AUDIO IN</TextBlock>
+        <TextBlock Background="{StaticResource clrBackgroundHeaders}" DockPanel.Dock="Top" TextAlignment="Center">AUDIO IN</TextBlock>
         <StackPanel>
             <ToggleButton
                 MaxWidth="48"
@@ -50,6 +51,7 @@
             <ComboBox DockPanel.Dock="Top" Name="comboBoxCodecs" IsEnabled="{Binding ControlsEnabled}" />
             <DockPanel>
                 <ComboBox Name="comboInputGroups" 
+                    DockPanel.Dock="left"
                     ItemsSource="{Binding Source={StaticResource InputsView}, Path=Groups}"
                     DisplayMemberPath="Name"
                     IsEnabled="{Binding ControlsEnabled}"/>

@@ -4,9 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="150">
-    <DockPanel Background="Wheat">
-        <TextBlock DockPanel.Dock="Top" TextAlignment="Center">USERS</TextBlock>
+            Background="{StaticResource clrBackgroundPrimary}"
+            d:DesignHeight="300" d:DesignWidth="150">
+    <DockPanel>
+        <TextBlock Background="{StaticResource clrBackgroundHeaders}" DockPanel.Dock="Top" TextAlignment="Center">USERS</TextBlock>
         <ListBox Name="UsersList" d:DataContext="{d:DesignData Source=SampleData/UserListSampleData.xaml}" ItemsSource="{Binding}">
             <ListBox.ItemTemplate>
                 <DataTemplate>

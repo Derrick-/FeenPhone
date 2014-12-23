@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
+             Background="{StaticResource clrBackgroundPrimary}"
              d:DesignHeight="300" d:DesignWidth="300">
     <DockPanel>
         <ProgressBar DockPanel.Dock="Left" Height="{Binding ElementName=stack, Path=ActualHeight}" Width="20" Value="{Binding Path=Max}" Maximum="100" Orientation="Vertical" />
