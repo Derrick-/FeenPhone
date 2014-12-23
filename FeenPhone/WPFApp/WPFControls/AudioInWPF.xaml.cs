@@ -56,11 +56,86 @@ namespace FeenPhone.WPFApp.Controls
         private void AudioEvents_OnAudioDeviceAdded(object sender, AudioEvents.MMDeviceAddedRemovedArgs e)
         {
             Console.WriteLine("Added audio device: " + e.deviceId);
+            var guid = MMDevices.ParseWasapiGuid(e.deviceId);
+            if (guid != Guid.Empty)
+            {
+                Dispatcher.Invoke(new Action<Guid>(AddInput), guid);
+            }
         }
 
         private void AudioEvents_OnAudioDeviceRemoved(object sender, AudioEvents.MMDeviceAddedRemovedArgs e)
         {
             Console.WriteLine("Removed audio device: " + e.deviceId);
+            var guid = MMDevices.ParseWasapiGuid(e.deviceId);
+            if (guid != Guid.Empty)
+            {
+                Dispatcher.Invoke(new Action<Guid>(RemoveInput), guid);
+            }
+        }
+
+        private void AddInput(Guid guid)
+        {
+            var devices = MMDevices.deviceEnum.EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active).ToList();
+            MMDevice found = null;
+            foreach (var device in devices)
+            {
+                if (MMDevices.GetWasapiGuid(device) == guid)
+                {
+                    found = device;
+                    break;
+                }
+            }
+            
+            var existing = InputList.ToList();
+            if (!existing.Any(m => m.Guid == guid))
+            {
+                if (IsRecording != true)
+                {
+                    Guid selected = SelectedInputSource == null ? Guid.Empty : SelectedInputSource.Guid;
+                    InitializeInputDevices();
+                    if (selected == null || selected==Guid.Empty)
+                    {
+                        selected = guid;
+                    }
+
+                    SelectedInputSource = InputList.Where(m => m.Guid == guid).FirstOrDefault();
+                }
+                else
+                {
+                    if (found != null)
+                    {
+                        var added = new InputDeviceModel(found);
+                        InputList.Add(added);
+                        if (SelectedInputSource == null)
+                            SelectedInputSource = added;
+                    }
+                }
+
+                SelectActiveInputGroup();
+            }
+        }
+
+        private void RemoveInput(Guid guid)
+        {
+            if (SelectedInputSource != null && SelectedInputSource.Guid == guid)
+            {
+                StopRecording();
+            }
+            if (IsRecording != true)
+            {
+                foreach (var existing in InputList.ToList())
+                {
+                    if (existing.Guid == guid)
+                        InputList.Remove(existing);
+                }
+            }
+            else
+            {
+                var selected = SelectedInputSource;
+                InitializeInputDevices();
+                SelectedInputSource = selected;
+            }
+
         }
 
         private void LoadSettings()
@@ -451,6 +526,11 @@ namespace FeenPhone.WPFApp.Controls
         }
 
         private void comboInputs_Loaded(object sender, RoutedEventArgs e)
+        {
+            SelectActiveInputGroup();
+        }
+
+        private void SelectActiveInputGroup()
         {
             if (comboInputGroups.Items != null)
             {

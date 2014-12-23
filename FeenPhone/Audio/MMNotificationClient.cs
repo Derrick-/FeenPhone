@@ -40,10 +40,15 @@ namespace FeenPhone.Audio
                 deviceEnum.UnregisterEndpointNotificationCallback(mmDevicecallback);
         }
 
-        static Regex regexWasapiIdentifier = new Regex(@"^({(\d\.?)+}\.)?({[0-9a-f\-]+})$");
         public static System.Guid GetWasapiGuid(MMDevice device)
         {
-            var matches = regexWasapiIdentifier.Matches(device.ID);
+            return ParseWasapiGuid(device.ID);
+        }
+
+        static Regex regexWasapiIdentifier = new Regex(@"^({(\d\.?)+}\.)?({[0-9a-f\-]+})$");
+        public static Guid ParseWasapiGuid(string deviceID)
+        {
+            var matches = regexWasapiIdentifier.Matches(deviceID);
             if (matches.Count > 0)
             {
                 Guid toReturn;

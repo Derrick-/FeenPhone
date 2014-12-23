@@ -19,6 +19,8 @@ namespace FeenPhone.Audio
         public class MMDeviceAddedRemovedArgs
         {
             public string deviceId { get; set; }
+            Guid? _ID = null;
+            public Guid ID { get { return _ID.HasValue ? _ID.Value : (_ID = MMDevices.ParseWasapiGuid(deviceId)).Value; } }
             public MMDeviceAddedRemovedArgs() { }
             public MMDeviceAddedRemovedArgs(string pwstrDeviceId) { this.deviceId = pwstrDeviceId; }
         }
