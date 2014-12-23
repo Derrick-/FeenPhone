@@ -60,6 +60,21 @@ namespace FeenPhone.Audio
             return Guid.Empty;
         }
 
+        public static MMDevice FindDeviceByGuid(Guid guid)
+        {
+            var devices = MMDevices.deviceEnum.EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active).ToList();
+            MMDevice found = null;
+            foreach (var device in devices)
+            {
+                if (MMDevices.GetWasapiGuid(device) == guid)
+                {
+                    found = device;
+                    break;
+                }
+            }
+            return found;
+        }
+
 
     }
 

@@ -75,33 +75,15 @@ namespace FeenPhone.WPFApp.Controls
 
         private void AddInput(Guid guid)
         {
-            var devices = MMDevices.deviceEnum.EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active).ToList();
-            MMDevice found = null;
-            foreach (var device in devices)
-            {
-                if (MMDevices.GetWasapiGuid(device) == guid)
-                {
-                    found = device;
-                    break;
-                }
-            }
-            
             var existing = InputList.ToList();
             if (!existing.Any(m => m.Guid == guid))
             {
                 if (IsRecording != true)
-                {
-                    Guid selected = SelectedInputSource == null ? Guid.Empty : SelectedInputSource.Guid;
-                    InitializeInputDevices();
-                    if (selected == null || selected==Guid.Empty)
-                    {
-                        selected = guid;
-                    }
-
-                    SelectedInputSource = InputList.Where(m => m.Guid == guid).FirstOrDefault();
-                }
+                    RefreshInputDevices(guid);
                 else
                 {
+                    MMDevice found = MMDevices.FindDeviceByGuid(guid);
+
                     if (found != null)
                     {
                         var added = new InputDeviceModel(found);
@@ -118,10 +100,11 @@ namespace FeenPhone.WPFApp.Controls
         private void RemoveInput(Guid guid)
         {
             if (SelectedInputSource != null && SelectedInputSource.Guid == guid)
-            {
                 StopRecording();
-            }
+
             if (IsRecording != true)
+                RefreshInputDevices(guid);
+            else
             {
                 foreach (var existing in InputList.ToList())
                 {
@@ -129,13 +112,20 @@ namespace FeenPhone.WPFApp.Controls
                         InputList.Remove(existing);
                 }
             }
-            else
+
+            SelectActiveInputGroup();
+        }
+
+        private void RefreshInputDevices(Guid guid)
+        {
+            Guid selected = SelectedInputSource == null ? Guid.Empty : SelectedInputSource.Guid;
+            InitializeInputDevices();
+            if (selected == null || selected == Guid.Empty)
             {
-                var selected = SelectedInputSource;
-                InitializeInputDevices();
-                SelectedInputSource = selected;
+                selected = guid;
             }
 
+            SelectedInputSource = InputList.Where(m => m.Guid == guid).FirstOrDefault();
         }
 
         private void LoadSettings()
@@ -416,7 +406,7 @@ namespace FeenPhone.WPFApp.Controls
 
                     BufferTargetMs = Math.Max(BufferTargetMs, mmdevice.MinBufferDurationMs);
                     var w = new WasapiCapture(mmdevice, BufferTargetMs);
-
+                    w.RecordingStopped += wasapi_RecordingStopped;
                     waveIn = w;
                     waveIn.WaveFormat = deviceFormat;
                     w.ShareMode = shareMode;
@@ -462,13 +452,26 @@ namespace FeenPhone.WPFApp.Controls
                 IsRecording = false;
         }
 
+        void wasapi_RecordingStopped(object sender, StoppedEventArgs e)
+        {
+            if (sender == waveIn)
+                IsRecording = false;
+        }
+
         private void StopRecording()
         {
             if (waveIn != null)
             {
+                if (waveIn is WasapiCapture)
+                    ((WasapiCapture)waveIn).RecordingStopped -= wasapi_RecordingStopped;
+
                 waveIn.DataAvailable -= waveIn_DataAvailable;
                 waveIn.StopRecording();
-                waveIn.Dispose();
+                try
+                {
+                    new System.Threading.Tasks.Task(waveIn.Dispose).Wait(10);
+                }
+                catch { }
                 waveIn = null;
             }
             ControlsEnabled = true;
