@@ -25,7 +25,7 @@
                 <Label>Output Device</Label>
                 <ComboBox ItemsSource="{Binding Path=OutputList, Mode=TwoWay}" SelectedIndex="{Binding Path=SelectedOutputIndex, Mode=TwoWay}" SelectedItem="{Binding Path=SelectedOutput, Mode=TwoWay}" IsEnabled="{Binding ControlsEnabled}"/>
             </DockPanel>
-            <ListView  MinHeight="85" ItemsSource="{Binding Path=AudioPlayers}" d:DataContext="{d:DesignData Source=SampleData/UserAudioPlayerList.xaml}" />
+            <ListView ItemsSource="{Binding Path=AudioPlayers}" d:DataContext="{d:DesignData Source=SampleData/UserAudioPlayerList.xaml}" />
         </StackPanel>
     </DockPanel>
 </UserControl>

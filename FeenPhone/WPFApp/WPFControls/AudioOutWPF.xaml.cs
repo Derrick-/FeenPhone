@@ -82,8 +82,42 @@ namespace FeenPhone.WPFApp.Controls
 
             FeenPhone.Client.EventSource.OnAudioData += EventSource_OnAudioData;
 
-            UIUpdateTimer = new System.Timers.Timer(500);
+            UIUpdateTimer = new System.Timers.Timer(2000);
             UIUpdateTimer.Start();
+            UIUpdateTimer.Elapsed += UIUpdateTimer_Elapsed;
+
+        }
+
+        static TimeSpan PlayerHideTimeout = TimeSpan.FromMinutes(0.25);
+        static TimeSpan PlayerRemoveTimeout = TimeSpan.FromMinutes(1.0);
+        void UIUpdateTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                var now = DateTime.UtcNow;
+                var toRemove = new List<UserAudioPlayerWPF>();
+                foreach (var player in AudioPlayers.ToList())
+                {
+                    if (player.Player == null || player.Player.LastReceived < (now - PlayerRemoveTimeout))
+                    {
+                        RemovePlayer(player);
+                    }
+                    else if (player.Player.LastReceived < (now - PlayerHideTimeout))
+                    {
+                        player.Visibility = System.Windows.Visibility.Collapsed;
+                    }
+                    else
+                    {
+                        player.Visibility = System.Windows.Visibility.Visible;
+                    }
+                }
+            }));
+        }
+
+        private static void RemovePlayer(UserAudioPlayerWPF player)
+        {
+            AudioPlayers.Remove(player);
+            player.Dispose();
         }
 
         private void InitializeOutputDevices()

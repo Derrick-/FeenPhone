@@ -14,6 +14,8 @@ namespace FeenPhone.WPFApp.Models
 {
     public class UserAudioPlayer : DependencyObject, IDisposable
     {
+        public DateTime LastReceived { get; set; }
+
         AudioOutWPF Parent;
         public Guid UserID { get; private set; }
 
@@ -35,6 +37,13 @@ namespace FeenPhone.WPFApp.Models
 
             MaximumCalculated += new EventHandler<MaxSampleEventArgs>(audioGraph_MaximumCalculated);
             FftCalculated += new EventHandler<FftEventArgs>(audioGraph_FftCalculated);
+
+            LastReceived = DateTime.UtcNow;
+        }
+
+        public void UpdateLastReceived(DateTime now)
+        {
+            LastReceived = now;
         }
 
         static int DefaultMaxBufferedDurationMs = 1500;
@@ -156,7 +165,7 @@ namespace FeenPhone.WPFApp.Models
             if (d != null)
                 target.silenceAggression = (ushort)e.NewValue;
         }
-        
+
         private bool shouldUpdateDuration = false;
         internal void UIUpdateTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
@@ -236,6 +245,7 @@ namespace FeenPhone.WPFApp.Models
                 BufferedDuration = buffered;
                 shouldUpdateDuration = false;
             }
+            LastReceived = DateTime.UtcNow;
         }
 
         private byte addSilenceThreshold { get { return (byte)(silenceAggression * 10); } }
@@ -318,7 +328,11 @@ namespace FeenPhone.WPFApp.Models
             if (waveOut != null)
             {
                 waveOut.Stop();
-                waveOut.Dispose();
+                try
+                {
+                    waveOut.Dispose();
+                }
+                catch { }
                 waveOut = null;
             }
             waveProvider = null;

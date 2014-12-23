@@ -21,7 +21,6 @@ namespace FeenPhone.WPFApp.Controls
     /// </summary>
     public partial class UserAudioPlayerWPF : UserControl, IDisposable
     {
-
         public readonly UserAudioPlayer Player;
 
         public UserAudioPlayerWPF() { }
