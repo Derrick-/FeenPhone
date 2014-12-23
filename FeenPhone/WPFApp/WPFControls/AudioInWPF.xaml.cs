@@ -155,20 +155,24 @@ namespace FeenPhone.WPFApp.Controls
 
         private void UpdateMinBufferDurationForDevice(InputDeviceModel model)
         {
+            int min = 50;
             if (model != null)
             {
-                if (model.Provider == DeviceModel.DeviceProvider.Wasapi)
+                switch (model.Provider)
                 {
-                    var mmdevice = model.MMDevice;
-                    var min = mmdevice.MinBufferDurationMs;
-                    BufferMinMs = min;
+                    case DeviceModel.DeviceProvider.Wasapi:
+                        {
+                            var mmdevice = model.MMDevice;
+                            min = mmdevice.MinBufferDurationMs;
+                            break;
+                        }
                 }
+                BufferTargetMs = Math.Max(model.LastLatency.HasValue ? model.LastLatency.Value : 0, min);
             }
             else
-                BufferMinMs = 50;
-       
-            if (BufferMinMs > BufferTargetMs)
-                BufferTargetMs = BufferMinMs;
+                BufferTargetMs = min;
+
+            BufferMinMs = min;
         }
 
         class CodecComboItem
@@ -241,8 +245,14 @@ namespace FeenPhone.WPFApp.Controls
             AudioInWPF target = d as AudioInWPF;
             if (target != null)
             {
-                var model = e.NewValue as InputDeviceModel;
-                target.UpdateMinBufferDurationForDevice(model);
+                var oldModel = e.OldValue as InputDeviceModel;
+                if (oldModel != null)
+                {
+                    oldModel.LastLatency = target.BufferTargetMs;
+                }
+
+                var newModel = e.NewValue as InputDeviceModel;
+                target.UpdateMinBufferDurationForDevice(newModel);
             }
         }
 

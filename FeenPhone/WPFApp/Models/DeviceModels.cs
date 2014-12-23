@@ -12,6 +12,8 @@ namespace FeenPhone.WPFApp.Models
         public InputDeviceModel(int n, WaveInCapabilities capabilities) : base(n, capabilities) { }
 
         public InputDeviceModel(NAudio.CoreAudioApi.MMDevice device) : base(device) { }
+
+        public int? LastLatency { get; set; }
     }
 
     public class OutputDeviceModel : DeviceModel
