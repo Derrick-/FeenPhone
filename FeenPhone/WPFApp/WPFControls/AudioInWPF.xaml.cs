@@ -50,6 +50,19 @@ namespace FeenPhone.WPFApp.Controls
 
             LoadSettings();
             Settings.AppClosing += Settings_SaveSettings;
+
+            AudioEvents.OnAudioDeviceAdded += AudioEvents_OnAudioDeviceAdded;
+            AudioEvents.OnAudioDeviceRemoved += AudioEvents_OnAudioDeviceRemoved;
+        }
+
+        private void AudioEvents_OnAudioDeviceAdded(object sender, AudioEvents.MMDeviceAddedRemovedArgs e)
+        {
+            Console.WriteLine("Added audio device: " + e.deviceId);
+        }
+
+        private void AudioEvents_OnAudioDeviceRemoved(object sender, AudioEvents.MMDeviceAddedRemovedArgs e)
+        {
+            Console.WriteLine("Removed audio device: " + e.deviceId);
         }
 
         private void LoadSettings()

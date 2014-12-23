@@ -92,6 +92,8 @@
     <Compile Include="Audio\Codecs\TrueSpeechChatCodec.cs" />
     <Compile Include="Audio\Codecs\UncompressedPcmChatCodec.cs" />
     <Compile Include="Audio\InputResampler.cs" />
+    <Compile Include="Audio\MMDeviceAddedRemovedArgs.cs" />
+    <Compile Include="Audio\MMNotificationClient.cs" />
     <Compile Include="Audio\SampleAggregator.cs" />
     <Compile Include="Client\BaseClient.cs" />
     <Compile Include="Client\EventSource.cs" />
