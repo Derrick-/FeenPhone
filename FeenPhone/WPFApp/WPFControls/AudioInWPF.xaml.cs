@@ -122,14 +122,11 @@ namespace FeenPhone.WPFApp.Controls
                 InputList.Add(new InputDeviceModel(n, capabilities));
             }
 
-            var deviceEnum = new MMDeviceEnumerator();
-            var devices = deviceEnum.EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active).ToList();
-
+            var devices = MMDevices.deviceEnum.EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active).ToList();
 
             foreach (var device in devices)
             {
                 InputList.Add(new InputDeviceModel(device));
-
             }
 
         }
@@ -226,7 +223,7 @@ namespace FeenPhone.WPFApp.Controls
 
                 bool canUseExclusive = false;
 
-                if (SelectedInputSource.Provider == InputDeviceModel.InputDeviceProvider.Wasapi)
+                if (SelectedInputSource.Provider == DeviceModel.DeviceProvider.Wasapi)
                 {
                     var mmdevice = SelectedInputSource.MMDevice;
 

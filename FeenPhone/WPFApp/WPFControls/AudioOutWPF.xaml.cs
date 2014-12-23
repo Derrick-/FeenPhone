@@ -1,5 +1,6 @@
 ﻿using FeenPhone.Audio;
 using FeenPhone.WPFApp.Models;
+using NAudio.CoreAudioApi;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using System;
@@ -86,7 +87,20 @@ namespace FeenPhone.WPFApp.Controls
             UIUpdateTimer.Start();
             UIUpdateTimer.Elapsed += UIUpdateTimer_Elapsed;
 
+            AudioEvents.OnAudioDeviceAdded += AudioEvents_OnAudioDeviceAdded;
+            AudioEvents.OnAudioDeviceRemoved += AudioEvents_OnAudioDeviceRemoved;
         }
+
+        private void AudioEvents_OnAudioDeviceAdded(object sender, AudioEvents.MMDeviceAddedRemovedArgs e)
+        {
+            Console.WriteLine("Added audio device: " + e.deviceId);
+        }
+
+        private void AudioEvents_OnAudioDeviceRemoved(object sender, AudioEvents.MMDeviceAddedRemovedArgs e)
+        {
+            Console.WriteLine("Removed audio device: " + e.deviceId);
+        }
+
 
         static TimeSpan PlayerHideTimeout = TimeSpan.FromMinutes(0.25);
         static TimeSpan PlayerRemoveTimeout = TimeSpan.FromMinutes(1.0);
@@ -134,6 +148,12 @@ namespace FeenPhone.WPFApp.Controls
                 var capabilities = WaveOut.GetCapabilities(n);
                 OutputList.Add(new OutputDeviceModel(n, capabilities));
             }
+
+            //foreach(var device in MMDevices.deviceEnum.EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active).ToList())
+            //{
+            //    var model = new OutputDeviceModel(device);
+            //    OutputList.Add(model);
+            //}
 
         }
 

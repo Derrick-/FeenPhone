@@ -1,5 +1,4 @@
-﻿using NAudio.CoreAudioApi;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,32 +8,6 @@ namespace FeenPhone.Audio
 {
     static class AudioEvents
     {
-
-        static AudioEvents()
-        {
-            RegisterMMNotificationClient();
-
-            Settings.AppClosing += Settings_AppClosing;
-        }
-
-        static void Settings_AppClosing(object sender, EventArgs e)
-        {
-            UnRegisterMMNotificationClient();
-        }
-
-        private readonly static MMDeviceEnumerator deviceEnum = new MMDeviceEnumerator();
-        private readonly static NAudio.CoreAudioApi.Interfaces.IMMNotificationClient mmDevicecallback = new MMNotificationClient();
-
-        private static void RegisterMMNotificationClient()
-        {
-            deviceEnum.RegisterEndpointNotificationCallback(mmDevicecallback);
-        }
-
-        private static void UnRegisterMMNotificationClient()
-        {
-            if (deviceEnum != null)
-                deviceEnum.UnregisterEndpointNotificationCallback(mmDevicecallback);
-        }
 
         public class ExceptionEventArgs
         {
@@ -47,7 +20,7 @@ namespace FeenPhone.Audio
         {
             public string deviceId { get; set; }
             public MMDeviceAddedRemovedArgs() { }
-            public MMDeviceAddedRemovedArgs(string pwstrDeviceId) { this.deviceId = deviceId; }
+            public MMDeviceAddedRemovedArgs(string pwstrDeviceId) { this.deviceId = pwstrDeviceId; }
         }
 
         public static EventHandler<ExceptionEventArgs> OnAudioDeviceException;
