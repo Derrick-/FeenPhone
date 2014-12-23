@@ -1,5 +1,6 @@
 ﻿using FeenPhone.Audio;
 using FeenPhone.WPFApp.Controls;
+using NAudio.CoreAudioApi;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using System;
@@ -309,6 +310,10 @@ namespace FeenPhone.WPFApp.Models
         }
 
         int desiredLatency = 150;
+
+        private bool useEventSync = true;
+        public AudioClientShareMode shareMode = AudioClientShareMode.Shared;
+
         private IWavePlayer GetWavePlayer()
         {
 
@@ -319,6 +324,8 @@ namespace FeenPhone.WPFApp.Models
                     return new WaveOut() { DeviceNumber = SelectedOutput.WavDeviceNumber, DesiredLatency = desiredLatency };
                 case DeviceModel.DeviceProvider.DirectSound:
                     return new DirectSoundOut(SelectedOutput.DirectSoundDeviceInfo.Guid, desiredLatency);
+                case DeviceModel.DeviceProvider.Wasapi:
+                    return new WasapiOut(SelectedOutput.MMDevice, shareMode, useEventSync, desiredLatency);
             }
             return new DirectSoundOut(DirectSoundOut.DSDEVID_DefaultVoicePlayback, desiredLatency);
         }

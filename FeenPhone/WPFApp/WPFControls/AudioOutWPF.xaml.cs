@@ -149,11 +149,11 @@ namespace FeenPhone.WPFApp.Controls
                 OutputList.Add(new OutputDeviceModel(n, capabilities));
             }
 
-            //foreach(var device in MMDevices.deviceEnum.EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active).ToList())
-            //{
-            //    var model = new OutputDeviceModel(device);
-            //    OutputList.Add(model);
-            //}
+            foreach(var device in MMDevices.deviceEnum.EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active).ToList())
+            {
+                var model = new OutputDeviceModel(device);
+                OutputList.Add(model);
+            }
 
         }
 
