@@ -37,6 +37,11 @@ namespace FeenPhone.WPFApp.Models
             this.MMDevice = device;
         }
 
+        public string Name
+        {
+            get { return this.ToString(); }
+        }
+
         public override string ToString()
         {
             switch (Provider)

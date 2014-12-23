@@ -75,6 +75,12 @@ namespace FeenPhone.WPFApp.Controls
                 if (selectInputDevice != null)
                     SelectedInputSource = selectInputDevice;
             }
+            else
+            {
+                SelectedInputSource = InputList.FirstOrDefault();
+                if (comboInputGroups.Items.Count > 0)
+                    comboInputGroups.SelectedIndex = 0;
+            }
         }
 
         private void Settings_SaveSettings(object sender, EventArgs e)
@@ -372,6 +378,21 @@ namespace FeenPhone.WPFApp.Controls
             foreach (var codec in Codecs)
                 codec.Dispose();
             isDisposed = true;
+        }
+
+        private void comboInputs_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (comboInputGroups.Items != null)
+            {
+                foreach (CollectionViewGroup item in comboInputGroups.Items)
+                {
+                    if (item.Items.Cast<InputDeviceModel>().Any(m => m == SelectedInputSource))
+                    {
+                        comboInputGroups.SelectedItem = item;
+                        break;
+                    }
+                }
+            }
         }
     }
 }

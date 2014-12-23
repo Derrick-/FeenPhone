@@ -3,8 +3,17 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:scm= "clr-namespace:System.ComponentModel;assembly=WindowsBase" 
+             xmlns:dat="clr-namespace:System.Windows.Data;assembly=PresentationFramework"
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="300">
+    <UserControl.Resources>
+        <CollectionViewSource x:Key="InputsView" Source="{Binding Path=InputSourceList}"  IsLiveFilteringRequested="True" >
+            <CollectionViewSource.GroupDescriptions>
+                <dat:PropertyGroupDescription PropertyName="Provider" />
+            </CollectionViewSource.GroupDescriptions>
+        </CollectionViewSource>
+    </UserControl.Resources>
     <DockPanel>
         <TextBlock Background="Wheat" DockPanel.Dock="Top" TextAlignment="Center">AUDIO IN</TextBlock>
         <StackPanel>
@@ -39,7 +48,22 @@
         </StackPanel>
         <StackPanel Name="modelValueContainer" DockPanel.Dock="Right">
             <ComboBox DockPanel.Dock="Top" Name="comboBoxCodecs" IsEnabled="{Binding ControlsEnabled}" />
-            <ComboBox ItemsSource="{Binding Path=InputSourceList, Mode=TwoWay}" SelectedIndex="{Binding Path=SelectedInputSourceIndex, Mode=TwoWay}" SelectedItem="{Binding Path=SelectedInputSource, Mode=TwoWay}" IsEnabled="{Binding ControlsEnabled}"/>
+            <DockPanel>
+                <ComboBox Name="comboInputGroups" 
+                    ItemsSource="{Binding Source={StaticResource InputsView}, Path=Groups}"
+                    DisplayMemberPath="Name"
+                    IsEnabled="{Binding ControlsEnabled}"/>
+                <ComboBox 
+                    Loaded="comboInputs_Loaded"
+                    ItemsSource="{Binding ElementName=comboInputGroups, Path=SelectedItem.Items}"
+                    SelectedIndex="{Binding Path=SelectedInputSourceIndex, Mode=TwoWay}"
+                    SelectedItem="{Binding Path=SelectedInputSource, Mode=TwoWay}"
+                    IsEnabled="{Binding ControlsEnabled}">
+                    <ComboBox.GroupStyle>
+                        <x:Static Member="GroupStyle.Default"/>
+                    </ComboBox.GroupStyle>
+                </ComboBox>
+            </DockPanel>
         </StackPanel>
     </DockPanel>
 </UserControl>
