@@ -33,8 +33,6 @@ namespace FeenPhone.WPFApp.Controls
     {
         static ObservableCollection<InputDeviceModel> InputList = new ObservableCollection<InputDeviceModel>();
 
-        int InputBufferSize = 50;
-
         [ImportMany(typeof(Audio.Codecs.INetworkChatCodec))]
         public IEnumerable<Audio.Codecs.INetworkChatCodec> Codecs { get; set; }
 
@@ -94,6 +92,8 @@ namespace FeenPhone.WPFApp.Controls
                 if (comboInputGroups.Items.Count > 0)
                     comboInputGroups.SelectedIndex = 0;
             }
+
+            BufferTargetMs = settings.InputLatency;
         }
 
         private void Settings_SaveSettings(object sender, EventArgs e)
@@ -111,6 +111,8 @@ namespace FeenPhone.WPFApp.Controls
                 settings.InputDevice = selectedMic.ToString();
             else
                 settings.InputDevice = null;
+
+            settings.InputLatency = BufferTargetMs;
         }
 
         private void InitializeInputDevices()
@@ -150,6 +152,25 @@ namespace FeenPhone.WPFApp.Controls
             this.comboBoxCodecs.SelectedIndex = 0;
         }
 
+
+        private void UpdateMinBufferDurationForDevice(InputDeviceModel model)
+        {
+            if (model != null)
+            {
+                if (model.Provider == DeviceModel.DeviceProvider.Wasapi)
+                {
+                    var mmdevice = model.MMDevice;
+                    var min = mmdevice.MinBufferDurationMs;
+                    BufferMinMs = min;
+                }
+            }
+            else
+                BufferMinMs = 50;
+       
+            if (BufferMinMs > BufferTargetMs)
+                BufferTargetMs = BufferMinMs;
+        }
+
         class CodecComboItem
         {
             public string Text { get; set; }
@@ -162,9 +183,30 @@ namespace FeenPhone.WPFApp.Controls
 
         public static DependencyProperty IsRecordingProperty = DependencyProperty.Register("IsRecording", typeof(bool?), typeof(AudioInWPF), new PropertyMetadata(false, OnIsRecordingChanged));
         public static DependencyProperty InputSourceListProperty = DependencyProperty.Register("InputSourceList", typeof(ObservableCollection<InputDeviceModel>), typeof(AudioInWPF), new PropertyMetadata(InputList));
-        public static DependencyProperty SelectedInputSourceProperty = DependencyProperty.Register("SelectedInputSource", typeof(InputDeviceModel), typeof(AudioInWPF), new PropertyMetadata(null));
+        public static DependencyProperty SelectedInputSourceProperty = DependencyProperty.Register("SelectedInputSource", typeof(InputDeviceModel), typeof(AudioInWPF), new PropertyMetadata(null, OnSelectedInputSourceChanged));
         public static DependencyProperty SelectedInputSourceIndexProperty = DependencyProperty.Register("SelectedInputSourceIndex", typeof(int?), typeof(AudioInWPF), new PropertyMetadata(null));
         public static DependencyProperty ControlsEnabledProperty = DependencyProperty.Register("ControlsEnabled", typeof(bool), typeof(AudioInWPF), new PropertyMetadata(true));
+
+        public static DependencyProperty BufferTargetMsProperty = DependencyProperty.Register("BufferTargetMs", typeof(int), typeof(AudioInWPF), new PropertyMetadata(50));
+        public static DependencyProperty BufferMinMsProperty = DependencyProperty.Register("BufferMinMs", typeof(int), typeof(AudioInWPF), new PropertyMetadata(50));
+        public static DependencyProperty BufferMaxMsProperty = DependencyProperty.Register("BufferMaxMs", typeof(int), typeof(AudioInWPF), new PropertyMetadata(100));
+
+        public int BufferTargetMs
+        {
+            get { return (int)this.GetValue(BufferTargetMsProperty); }
+            set { this.SetValue(BufferTargetMsProperty, value); }
+        }
+        public int BufferMinMs
+        {
+            get { return (int)this.GetValue(BufferMinMsProperty); }
+            set { this.SetValue(BufferMinMsProperty, value); }
+        }
+
+        public int BufferMaxMs
+        {
+            get { return (int)this.GetValue(BufferMaxMsProperty); }
+            set { this.SetValue(BufferMaxMsProperty, value); }
+        }
 
         public bool ControlsEnabled
         {
@@ -194,6 +236,16 @@ namespace FeenPhone.WPFApp.Controls
             set { this.SetValue(SelectedInputSourceIndexProperty, value); }
         }
 
+        private static void OnSelectedInputSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            AudioInWPF target = d as AudioInWPF;
+            if (target != null)
+            {
+                var model = e.NewValue as InputDeviceModel;
+                target.UpdateMinBufferDurationForDevice(model);
+            }
+        }
+
         private static void OnIsRecordingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             AudioInWPF target = d as AudioInWPF;
@@ -217,7 +269,7 @@ namespace FeenPhone.WPFApp.Controls
         public Audio.Codecs.INetworkChatCodec Codec { get { return codec; } }
         private void StartRecording(bool shouldTryUseExclusive = true)
         {
-            if (SelectedInputSourceIndex.HasValue)
+            if (SelectedInputSource != null && SelectedInputSourceIndex.HasValue && SelectedInputSourceIndex.Value >= 0)
             {
                 this.codec = ((CodecComboItem)comboBoxCodecs.SelectedItem).Codec;
 
@@ -277,8 +329,8 @@ namespace FeenPhone.WPFApp.Controls
                     }
                     catch { }
 
-                    InputBufferSize = Math.Max(InputBufferSize, mmdevice.MinBufferDurationMs);
-                    var w = new WasapiCapture(mmdevice, InputBufferSize);
+                    BufferTargetMs = Math.Max(BufferTargetMs, mmdevice.MinBufferDurationMs);
+                    var w = new WasapiCapture(mmdevice, BufferTargetMs);
 
                     waveIn = w;
                     waveIn.WaveFormat = deviceFormat;
@@ -287,7 +339,7 @@ namespace FeenPhone.WPFApp.Controls
                 else
                 {
                     var w = new WaveIn();
-                    w.BufferMilliseconds = InputBufferSize;
+                    w.BufferMilliseconds = BufferTargetMs;
                     w.DeviceNumber = SelectedInputSource.WavDeviceNumber;
                     waveIn = w;
 
@@ -329,8 +381,6 @@ namespace FeenPhone.WPFApp.Controls
         {
             if (waveIn != null)
             {
-                //if (SelectedInputSource.Provider == InputDeviceModel.InputDeviceProvider.Wasapi)
-                //    SelectedInputSource.MMDevice.AudioClient.Reset();
                 waveIn.DataAvailable -= waveIn_DataAvailable;
                 waveIn.StopRecording();
                 waveIn.Dispose();

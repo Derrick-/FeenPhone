@@ -66,6 +66,14 @@
                     </ComboBox.GroupStyle>
                 </ComboBox>
             </DockPanel>
+            <DockPanel>
+                <Label DockPanel.Dock="Left">Input Buffer</Label>
+                <WrapPanel Height="20">
+                    <TextBlock DockPanel.Dock="Left" Text="{Binding BufferTargetMs}" IsEnabled="{Binding ControlsEnabled}"/>
+                    <TextBlock>ms</TextBlock>
+                </WrapPanel>
+                <Slider Height="20" TickFrequency="10" TickPlacement="TopLeft" Minimum="{Binding BufferMinMs}" Maximum="{Binding BufferMaxMs}" Value="{Binding BufferTargetMs}" IsEnabled="{Binding ControlsEnabled}"/>
+            </DockPanel>
         </StackPanel>
     </DockPanel>
 </UserControl>
