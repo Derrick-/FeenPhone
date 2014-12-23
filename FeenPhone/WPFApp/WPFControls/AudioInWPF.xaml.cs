@@ -454,6 +454,8 @@ namespace FeenPhone.WPFApp.Controls
 
         void wasapi_RecordingStopped(object sender, StoppedEventArgs e)
         {
+            Trace.WriteLine("Wasapi exception thrown: " + e.Exception);
+
             if (sender == waveIn)
                 IsRecording = false;
         }
@@ -469,7 +471,9 @@ namespace FeenPhone.WPFApp.Controls
                 waveIn.StopRecording();
                 try
                 {
-                    new System.Threading.Tasks.Task(waveIn.Dispose).Wait(10);
+                    Trace.WriteLine("Disposing waveIn");
+                    Dispatcher.Invoke(new Action(waveIn.Dispose), TimeSpan.FromMilliseconds(1000));
+                    Trace.WriteLine("waveIn disposed");
                 }
                 catch { }
                 waveIn = null;
