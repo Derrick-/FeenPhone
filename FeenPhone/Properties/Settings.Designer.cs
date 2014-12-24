@@ -106,5 +106,29 @@ namespace FeenPhone.Properties {
                 this["InputLatency"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string OutputDeviceProvider {
+            get {
+                return ((string)(this["OutputDeviceProvider"]));
+            }
+            set {
+                this["OutputDeviceProvider"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string InputDeviceProvider {
+            get {
+                return ((string)(this["InputDeviceProvider"]));
+            }
+            set {
+                this["InputDeviceProvider"] = value;
+            }
+        }
     }
 }

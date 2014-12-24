@@ -147,7 +147,8 @@ namespace FeenPhone.WPFApp.Controls
 
             if (!string.IsNullOrWhiteSpace(strInputDevice))
             {
-                var selectInputDevice = InputList.Where(m => m.ToString() == strInputDevice).FirstOrDefault();
+                string strInputDeviceProvider = settings.OutputDeviceProvider;
+                var selectInputDevice = InputList.Where(m => m.ToString() == strInputDevice).OrderByDescending(m => m.Provider.ToString() == strInputDeviceProvider).FirstOrDefault();
                 if (selectInputDevice != null)
                     SelectedInputSource = selectInputDevice;
             }
@@ -173,7 +174,10 @@ namespace FeenPhone.WPFApp.Controls
 
             var selectedMic = SelectedInputSource;
             if (selectedMic != null)
+            {
                 settings.InputDevice = selectedMic.ToString();
+                settings.InputDeviceProvider = selectedMic.Provider.ToString();
+            }
             else
                 settings.InputDevice = null;
 

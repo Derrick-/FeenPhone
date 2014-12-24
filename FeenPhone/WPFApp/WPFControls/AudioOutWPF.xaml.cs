@@ -149,7 +149,7 @@ namespace FeenPhone.WPFApp.Controls
                 OutputList.Add(new OutputDeviceModel(n, capabilities));
             }
 
-            foreach(var device in MMDevices.deviceEnum.EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active).ToList())
+            foreach (var device in MMDevices.deviceEnum.EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active).ToList())
             {
                 var model = new OutputDeviceModel(device);
                 OutputList.Add(model);
@@ -162,7 +162,8 @@ namespace FeenPhone.WPFApp.Controls
             var settings = Settings.Container;
 
             string strOutputDeviceGuid = settings.OutputDeviceGuid;
-            var selectInputDevice = OutputList.Where(m => m.Guid.ToString() == strOutputDeviceGuid).FirstOrDefault();
+            string strOutputDeviceProvider = settings.OutputDeviceProvider;
+            var selectInputDevice = OutputList.Where(m => m.Guid.ToString() == strOutputDeviceGuid).OrderByDescending(m => m.Provider.ToString() == strOutputDeviceProvider).FirstOrDefault();
             if (selectInputDevice != null)
                 SelectedOutput = selectInputDevice;
             else
@@ -175,7 +176,10 @@ namespace FeenPhone.WPFApp.Controls
 
             var selectedOut = SelectedOutput;
             if (selectedOut != null)
+            {
                 settings.OutputDeviceGuid = selectedOut.Guid.ToString();
+                settings.OutputDeviceProvider = selectedOut.Provider.ToString();
+            }
             else
                 settings.OutputDeviceGuid = null;
         }
