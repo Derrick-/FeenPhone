@@ -45,7 +45,7 @@
     <StartupObject>FeenPhone.WPFApp.App</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>feen3_64_2.ico</ApplicationIcon>
+    <ApplicationIcon>WPFApp\Resources\logos\FeenPhone.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="NSpeex">
@@ -667,6 +667,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="WPFApp\Resources\logos\BirdCircle.png" />
+    <Resource Include="WPFApp\Resources\logos\FeenPhone.ico" />
     <Resource Include="WPFApp\Resources\logos\feen3_32_2.png" />
     <Resource Include="WPFApp\Resources\logos\feen3_64.png" />
     <Resource Include="WPFApp\Resources\logos\feen3_64_2.png" />

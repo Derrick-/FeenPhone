@@ -1,7 +1,7 @@
 ﻿<Window xmlns:WPFControls="clr-namespace:FeenPhone.WPFApp.Controls"  x:Class="FeenPhone.WPFApp.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="FeenPhone" Height="580" Width="682.5">
+        Title="FeenPhone" Height="580" Width="682.5" Icon="Resources/logos/FeenPhone.ico">
     <DockPanel>
         <WPFControls:UserListWPF DockPanel.Dock="Right" MinWidth="150" />
         <WPFControls:NetworkWPF DockPanel.Dock="Top"/>
