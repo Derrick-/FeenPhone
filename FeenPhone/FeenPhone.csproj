@@ -44,6 +44,9 @@
   <PropertyGroup>
     <StartupObject>FeenPhone.WPFApp.App</StartupObject>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>feen3_64_2.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="NSpeex">
       <HintPath>..\Libs\NSpeex\NSpeex.dll</HintPath>
@@ -664,7 +667,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="WPFApp\Resources\logos\feen3_32_2.png" />
+    <Resource Include="WPFApp\Resources\logos\feen3_64.png" />
+    <Resource Include="WPFApp\Resources\logos\feen3_64_2.png" />
+    <Resource Include="WPFApp\Resources\logos\FeenPhone3Button.jpg" />
     <Resource Include="Audio\NAudio\Changes.xml" />
+    <Resource Include="feen3_64_2.ico" />
     <Content Include="opus.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
