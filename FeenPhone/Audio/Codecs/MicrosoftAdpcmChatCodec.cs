@@ -11,6 +11,7 @@ namespace FeenPhone.Audio.Codecs
     class MicrosoftAdpcmChatCodec : AcmChatCodec
     {
         public override CodecID CodecID { get { return CodecID.MicrosoftAdpcmChatCodec; } }
+        public override bool IsAvailable { get { return false; } }
 
         public MicrosoftAdpcmChatCodec()
             : base(new WaveFormat(8000, 16, 1), new AdpcmWaveFormat(8000,1))

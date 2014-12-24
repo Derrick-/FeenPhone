@@ -6,7 +6,10 @@ using NAudio.Wave.SampleProviders;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -15,6 +18,9 @@ namespace FeenPhone.WPFApp.Models
 {
     public class UserAudioPlayer : DependencyObject, IDisposable
     {
+        [ImportMany(typeof(Audio.Codecs.INetworkChatCodec))]
+        public IEnumerable<Audio.Codecs.INetworkChatCodec> Codecs { get; set; }
+
         public DateTime LastReceived { get; set; }
 
         AudioOutWPF Parent;
@@ -29,6 +35,9 @@ namespace FeenPhone.WPFApp.Models
 
         public UserAudioPlayer(Guid userID, AudioOutWPF parent)
         {
+            if (!DesignerProperties.GetIsInDesignMode(this))
+                new CompositionContainer(new AssemblyCatalog(Assembly.GetExecutingAssembly())).ComposeParts(this);
+            
             Parent = parent;
             this.UserID = userID;
 
@@ -177,7 +186,7 @@ namespace FeenPhone.WPFApp.Models
         {
             if (isDisposed) return;
 
-            Audio.Codecs.INetworkChatCodec remoteCodec = Parent.Codecs.SingleOrDefault(m => m.CodecID == codecid);
+            Audio.Codecs.INetworkChatCodec remoteCodec = Codecs.SingleOrDefault(m => m.CodecID == codecid);
             if (remoteCodec == null)
             {
                 Console.WriteLine("Bad Audio Packet: Codec ID {0}", codecid);

@@ -11,7 +11,8 @@ namespace FeenPhone.Audio.Codecs
     class AcmMuLawChatCodec : AcmChatCodec
     {
         public override CodecID CodecID { get { return CodecID.AcmMuLawChatCodec; } }
-        
+        public override bool IsAvailable { get { return false; } }
+
         public AcmMuLawChatCodec()
             : base (new WaveFormat(8000,16,1), WaveFormat.CreateMuLawFormat(8000,1))
         {
@@ -28,7 +29,8 @@ namespace FeenPhone.Audio.Codecs
     class MuLawChatCodec : INetworkChatCodec
     {
         public CodecID CodecID { get { return CodecID.MuLawChatCodec; } }
-        
+        public bool IsAvailable { get { return false; } }
+
         public string Name
         {
             get { return "G.711 mu-law"; }
@@ -82,8 +84,6 @@ namespace FeenPhone.Audio.Codecs
         {
             // nothing to do
         }
-
-        public bool IsAvailable { get { return false; } }
 
     }
 }

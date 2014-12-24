@@ -35,6 +35,15 @@ namespace FeenPhone.WPFApp.Controls
 
         [ImportMany(typeof(Audio.Codecs.INetworkChatCodec))]
         public IEnumerable<Audio.Codecs.INetworkChatCodec> Codecs { get; set; }
+        private IOrderedEnumerable<Audio.Codecs.INetworkChatCodec> CodecsAvailableSorted()
+        {
+            var sorted = from codec in Codecs
+                         where codec.IsAvailable
+                         orderby codec.Name ascending
+                         orderby codec.BitsPerSecond ascending
+                         select codec;
+            return sorted;
+        }
 
         public AudioInWPF()
         {
@@ -44,7 +53,7 @@ namespace FeenPhone.WPFApp.Controls
             InitializeComponent();
             DataContext = this;
             InitializeInputDevices();
-            PopulateCodecsCombo(Codecs);
+            PopulateCodecsCombo();
 
             LoadSettings();
             Settings.AppClosing += Settings_SaveSettings;
@@ -198,14 +207,11 @@ namespace FeenPhone.WPFApp.Controls
 
         }
 
-        private void PopulateCodecsCombo(IEnumerable<Audio.Codecs.INetworkChatCodec> codecs)
+        private void PopulateCodecsCombo()
         {
-            if (codecs != null)
+            if (Codecs != null)
             {
-                var sorted = from codec in codecs
-                             where codec.IsAvailable
-                             orderby codec.BitsPerSecond ascending
-                             select codec;
+                var sorted = CodecsAvailableSorted();
 
                 foreach (var codec in sorted)
                 {

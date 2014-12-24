@@ -16,6 +16,7 @@ namespace FeenPhone.Audio.Codecs
     class TrueSpeechChatCodec : AcmChatCodec
     {
         public override CodecID CodecID { get { return CodecID.TrueSpeechChatCodec; } }
+        public override bool IsAvailable { get { return base.IsAvailable; } }
 
         public TrueSpeechChatCodec()
             : base(new WaveFormat(8000, 16, 1), new TrueSpeechWaveFormat())

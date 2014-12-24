@@ -11,8 +11,7 @@ namespace FeenPhone.Audio.Codecs
     class UncompressedMonoPcmChatCodec : BaseUncompressedPcmChatCodec
     {
         public override CodecID CodecID { get { return CodecID.Uncompressed44KhzMonoPcmChatCodec; } }
-
-        public override bool IsAvailable { get { return true; } }
+        public override bool IsAvailable { get { return false; } }
         public UncompressedMonoPcmChatCodec() : base(1, 44100) { }
     }
 
@@ -20,8 +19,7 @@ namespace FeenPhone.Audio.Codecs
     class UncompressedStereoPcmChatCodec : BaseUncompressedPcmChatCodec
     {
         public override CodecID CodecID { get { return CodecID.Uncompressed44KHzStereoPcmChatCodec; } }
-
-        public override bool IsAvailable { get { return true; } }
+        public override bool IsAvailable { get { return false; } }
         public UncompressedStereoPcmChatCodec() : base(2, 44100) { }
     }
 
@@ -29,8 +27,7 @@ namespace FeenPhone.Audio.Codecs
     class Uncompressed8KHzMonoPcmChatCodec : BaseUncompressedPcmChatCodec
     {
         public override CodecID CodecID { get { return CodecID.Uncompressed8KHzMonoPcmChatCodec; } }
-
-        public override bool IsAvailable { get { return true; } }
+        public override bool IsAvailable { get { return base.IsAvailable; } }
         public Uncompressed8KHzMonoPcmChatCodec() : base(1, 8000) { }
     }
 
@@ -38,14 +35,13 @@ namespace FeenPhone.Audio.Codecs
     class Uncompressed8KHzStereoPcmChatCodec : BaseUncompressedPcmChatCodec
     {
         public override CodecID CodecID { get { return CodecID.Uncompressed8KHzStereoPcmChatCodec; } }
-
-        public override bool IsAvailable { get { return true; } }
+        public override bool IsAvailable { get { return false; } }
         public Uncompressed8KHzStereoPcmChatCodec() : base(2, 8000) { }
     }
 
     abstract class BaseUncompressedPcmChatCodec : INetworkChatCodec
     {
-        abstract public bool IsAvailable { get; }
+        public virtual bool IsAvailable { get { return true; } }
 
         int Channels;
         int Freq;

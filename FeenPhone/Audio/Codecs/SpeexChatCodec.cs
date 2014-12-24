@@ -13,6 +13,7 @@ namespace FeenPhone.Audio.Codecs
     class NarrowBandSpeexCodec : SpeexChatCodec
     {
         public override CodecID CodecID { get { return CodecID.NarrowBandSpeexCodec; } }
+        public override bool IsAvailable { get { return false; } }
 
         public NarrowBandSpeexCodec() : 
             base(BandMode.Narrow, 8000, "Speex Narrow Band")
@@ -25,6 +26,7 @@ namespace FeenPhone.Audio.Codecs
     class WideBandSpeexCodec : SpeexChatCodec
     {
         public override CodecID CodecID { get { return CodecID.WideBandSpeexCodec; } }
+        public override bool IsAvailable { get { return false; } }
 
         public WideBandSpeexCodec() : 
             base(BandMode.Wide, 16000, "Speex Wide Band (16kHz)")
@@ -48,6 +50,7 @@ namespace FeenPhone.Audio.Codecs
     abstract class SpeexChatCodec : INetworkChatCodec
     {
         public abstract CodecID CodecID { get; }
+        public virtual bool IsAvailable { get { return true; } }
 
         private WaveFormat recordingFormat;
         private SpeexDecoder decoder;
@@ -143,7 +146,5 @@ namespace FeenPhone.Audio.Codecs
         {
             // nothing to do
         }
-
-        public bool IsAvailable { get { return false; } }
     }
 }

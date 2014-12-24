@@ -7,10 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.ComponentModel.Composition;
-using System.ComponentModel.Composition.Hosting;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -32,9 +29,6 @@ namespace FeenPhone.WPFApp.Controls
         static ObservableCollection<OutputDeviceModel> OutputList = new ObservableCollection<OutputDeviceModel>();
 
         static ObservableCollection<UserAudioPlayerWPF> AudioPlayers = new ObservableCollection<UserAudioPlayerWPF>();
-
-        [ImportMany(typeof(Audio.Codecs.INetworkChatCodec))]
-        public IEnumerable<Audio.Codecs.INetworkChatCodec> Codecs { get; set; }
 
         public static DependencyProperty OutputListProperty = DependencyProperty.Register("OutputList", typeof(ObservableCollection<OutputDeviceModel>), typeof(AudioOutWPF), new PropertyMetadata(OutputList));
         public static DependencyProperty SelectedOutputProperty = DependencyProperty.Register("SelectedOutput", typeof(OutputDeviceModel), typeof(AudioOutWPF), new PropertyMetadata(null, OnOutputDeviceChanged));
@@ -70,9 +64,6 @@ namespace FeenPhone.WPFApp.Controls
         System.Timers.Timer UIUpdateTimer;
         public AudioOutWPF()
         {
-            if (!DesignerProperties.GetIsInDesignMode(this))
-                new CompositionContainer(new AssemblyCatalog(Assembly.GetExecutingAssembly())).ComposeParts(this);
-
             InitializeComponent();
             DataContext = this;
 
