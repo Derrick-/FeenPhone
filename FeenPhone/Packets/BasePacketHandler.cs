@@ -181,7 +181,7 @@ namespace FeenPhone
             if (payload.Count() < 1)
                 throw new ArgumentException("Invalid AudioData length");
 
-            bool hasGuid = payload.First() == 1;
+            bool hasGuid = payload.First() != 0;
             int guidLen = hasGuid ? 17 : 1;
 
             if (payload.Count() < guidLen + 1)

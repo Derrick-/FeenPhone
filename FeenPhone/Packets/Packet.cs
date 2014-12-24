@@ -120,10 +120,10 @@ namespace FeenPhone
                 buffer.Write(PacketID.Audio);
                 buffer.WriteLength(AudioDataLen + (userID == Guid.Empty ? 1 : 17) + 1);
                 if (userID == Guid.Empty)
-                    buffer.Write(true);
+                    buffer.Write(false);
                 else
                 {
-                    buffer.Write(false);
+                    buffer.Write(true);
                     buffer.Write(userID.ToByteArray());
                 }
                 buffer.WriteLength(Codec);
