@@ -147,8 +147,7 @@ namespace FeenPhone.WPFApp.Controls
 
             if (!string.IsNullOrWhiteSpace(strInputDevice))
             {
-                string strInputDeviceProvider = settings.OutputDeviceProvider;
-                var selectInputDevice = InputList.Where(m => m.ToString() == strInputDevice).OrderByDescending(m => m.Provider.ToString() == strInputDeviceProvider).FirstOrDefault();
+                var selectInputDevice = InputList.Where(m => m.ToString() == strInputDevice).FirstOrDefault();
                 if (selectInputDevice != null)
                     SelectedInputSource = selectInputDevice;
             }
@@ -174,10 +173,7 @@ namespace FeenPhone.WPFApp.Controls
 
             var selectedMic = SelectedInputSource;
             if (selectedMic != null)
-            {
                 settings.InputDevice = selectedMic.ToString();
-                settings.InputDeviceProvider = selectedMic.Provider.ToString();
-            }
             else
                 settings.InputDevice = null;
 
@@ -509,7 +505,7 @@ namespace FeenPhone.WPFApp.Controls
                             {
                                 byte[] encoded = codec.Encode(toEncode, length);
 
-                                if (NetworkWPF.Client != null)
+                                if (encoded.Length > 0 && NetworkWPF.Client != null)
                                     NetworkWPF.Client.SendAudio(codec.CodecID, encoded, encoded.Length);
                             }
                         }
