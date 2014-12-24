@@ -47,14 +47,14 @@ namespace FeenPhone.WPFApp.Models
             LastReceived = now;
         }
 
-        static int DefaultMaxBufferedDurationMs = 1500;
+        static int DefaultMaxBufferedDurationMs = 500;
         static ushort DefaultSilenceAggression = 0;
 
-        static int DefaultBufferTargetMs = 50;
-        static int BufferTargetMarginMs = 50;
+        static int DefaultBufferTargetMs = 20;
+        static int BufferTargetMarginMs = 20;
 
-        static int BufferWarningDurationMs = 250;
-        static int BufferCriticalDurationMs = 1000;
+        static int BufferWarningDurationMs = 150;
+        static int BufferCriticalDurationMs = 300;
 
         public static DependencyProperty CodecNameProperty = DependencyProperty.Register("CodecName", typeof(string), typeof(UserAudioPlayer), new PropertyMetadata(null));
         public string CodecName
@@ -204,7 +204,7 @@ namespace FeenPhone.WPFApp.Models
                 byte[] decoded = remoteCodec.Decode(encoded, encoded.Length);
                 int length = decoded.Length;
 
-                if (ShouldDropSilence)
+                if (length > 0 && ShouldDropSilence)
                 {
                     int dropped = DropSilence(silenceThreshhold, ref decoded, ref length);
                     DroppedSilence += dropped;
@@ -216,22 +216,21 @@ namespace FeenPhone.WPFApp.Models
                     {
                         if (decoded[i + 1] != 0 || decoded[i] > addSilenceThreshold)
                         {
-                            //  if (i > 5)
-                            //Console.WriteLine("sil:{0} {1} {2}", i, decoded[i + 1], decoded[i]);
                             silent = false;
                             break;
                         }
                     }
                     if (silent)
                     {
-                        var silence = new byte[length];
+                        var silenceBytes = length / 4;
+                        var silence = new byte[silenceBytes];
                         byte silenceLevel = (byte)(addSilenceThreshold / 2);
-                        for (int i = 0; i < length; i += 2)
+                        for (int i = 0; i < silenceBytes - 1; i += 2)
                         {
                             silence[i + 1] = 0;
                             silence[i] = silenceLevel;
                         }
-                        waveProvider.AddSamples(silence, 0, length);
+                        waveProvider.AddSamples(silence, 0, silenceBytes);
                         AddedSilence += length;
                     }
                 }
@@ -268,6 +267,8 @@ namespace FeenPhone.WPFApp.Models
 
         private static int DropSilence(ushort silenceThreshhold, ref byte[] decoded, ref int length)
         {
+            if (length <= 5) return 0;
+
             int dropped = 0;
             var erg = new byte[length];
             int j = 0;

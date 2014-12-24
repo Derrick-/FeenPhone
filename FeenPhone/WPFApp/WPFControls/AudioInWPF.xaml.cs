@@ -217,7 +217,7 @@ namespace FeenPhone.WPFApp.Controls
             this.comboBoxCodecs.SelectedIndex = 0;
         }
 
-
+        int wasapiBufferPaddingMultiplier = 3;
         private void UpdateMinBufferDurationForDevice(InputDeviceModel model)
         {
             int min = 50;
@@ -229,10 +229,15 @@ namespace FeenPhone.WPFApp.Controls
                         {
                             var mmdevice = model.MMDevice;
                             min = mmdevice.MinBufferDurationMs;
+                            BufferTargetMs = min * wasapiBufferPaddingMultiplier;
+                            break;
+                        }
+                    default:
+                        {
+                            BufferTargetMs = Math.Max(model.LastLatency.HasValue ? model.LastLatency.Value : 0, min);
                             break;
                         }
                 }
-                BufferTargetMs = Math.Max(model.LastLatency.HasValue ? model.LastLatency.Value : 0, min);
             }
             else
                 BufferTargetMs = min;
