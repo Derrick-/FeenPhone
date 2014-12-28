@@ -76,13 +76,28 @@ namespace Alienseed.BaseNetworkServer
         {
             try
             {
-                if (Stream != null)
+                if (Stream != null && Stream.CanWrite)
                 {
-                    Stream.Write(bytes, 0, numbytes);
+                    Stream.BeginWrite(bytes, 0, numbytes, new AsyncCallback(ConpleteWrite), this);
                 }
             }
             catch (IOException)
             {
+            }
+        }
+
+        private static void ConpleteWrite(IAsyncResult ar)
+        {
+            BaseStreamWriter writer = ar.AsyncState as BaseStreamWriter;
+            if (writer != null && writer.Stream != null)
+            {
+                try
+                {
+                    writer.Stream.EndWrite(ar);
+                }
+                catch (IOException)
+                {
+                }
             }
         }
 
