@@ -15,6 +15,7 @@ namespace FeenPhone.Audio.Codecs
         OpusCodecAudio24kHz8192 = 54,
         OpusCodecAudio24kHz16384 = 65,
         OpusCodecAudio24kHz32768 = 76,
+        OpusCodecAudio48kHz65536 = 77,
         OpusCodec24kHzLowLatency8192 = 87,
         OpusCodec24kHzLowLatency16384 = 98,
         Uncompressed44KhzMonoPcmChatCodec = 100,

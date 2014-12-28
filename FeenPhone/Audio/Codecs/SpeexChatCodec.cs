@@ -39,6 +39,7 @@ namespace FeenPhone.Audio.Codecs
     class UltraWideBandSpeexCodec : SpeexChatCodec
     {
         public override CodecID CodecID { get { return CodecID.UltraWideBandSpeexCodec; } }
+        public override bool IsAvailable { get { return false; } }
 
         public UltraWideBandSpeexCodec() :
             base(BandMode.UltraWide, 32000, "Speex Ultra Wide Band (32kHz)")

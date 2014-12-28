@@ -7,7 +7,7 @@
              Background="{StaticResource clrBackgroundPrimary}"
              d:DesignHeight="300" d:DesignWidth="300">
     <DockPanel Background="GhostWhite">
-        <TextBlock Background="{StaticResource clrBackgroundHeaders}" DockPanel.Dock="Top" TextAlignment="Center">LOG</TextBlock>
+        <TextBlock Background="{StaticResource clrBackgroundHeaders}" DockPanel.Dock="Top" TextAlignment="Center" TextWrapping="Wrap">LOG</TextBlock>
         <ScrollViewer Name="LogScroller">
             <TextBlock Name="log"></TextBlock>
         </ScrollViewer>

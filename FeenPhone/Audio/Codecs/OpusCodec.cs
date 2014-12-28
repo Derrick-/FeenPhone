@@ -79,12 +79,25 @@ namespace FeenPhone.Audio.Codecs
     class OpusCodecAudio24kHz32768 : OpusCodec
     {
         public override CodecID CodecID { get { return CodecID.OpusCodecAudio24kHz32768; } }
-        public override bool IsAvailable { get { return base.IsAvailable; } }
+        public override bool IsAvailable { get { return false; } }
 
         public OpusCodecAudio24kHz32768() : base(bitRate: 32768, outputSampleRate: 24000, opusMode: FragLabs.Audio.Codecs.Opus.Application.Audio) { }
         public override string Name
         {
             get { return "Opus Audio 24kHz 32kbs"; }
+        }
+    }
+
+    [Export(typeof(INetworkChatCodec))]
+    class OpusCodecAudio48kHz32768 : OpusCodec
+    {
+        public override CodecID CodecID { get { return CodecID.OpusCodecAudio48kHz65536; } }
+        public override bool IsAvailable { get { return base.IsAvailable; } }
+
+        public OpusCodecAudio48kHz32768() : base(bitRate: 65536, outputSampleRate: 48000, opusMode: FragLabs.Audio.Codecs.Opus.Application.Audio) { }
+        public override string Name
+        {
+            get { return "Opus Audio 48kHz 64kbs"; }
         }
     }
 
@@ -118,7 +131,7 @@ namespace FeenPhone.Audio.Codecs
     class OpusCodec24kHzLowLatency32768 : OpusCodec
     {
         public OpusCodec24kHzLowLatency32768() : base(bitRate: 32768, outputSampleRate: 24000, opusMode: FragLabs.Audio.Codecs.Opus.Application.Restricted_LowLatency) { }
-        public override bool IsAvailable { get { return base.IsAvailable; } }
+        public override bool IsAvailable { get { return false; } }
 
         public override CodecID CodecID { get { return CodecID.OpusCodec24kHzLowLatency32768; } }
         public override string Name
