@@ -1,12 +1,19 @@
 ﻿<Application x:Class="FeenPhone.WPFApp.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:FeenPhone.WPFApp"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <SolidColorBrush x:Key="clrBackgroundPrimary" Color="AliceBlue" />
         <SolidColorBrush x:Key="clrBackgroundSecondary" Color="GhostWhite" />
         <SolidColorBrush x:Key="clrBackgroundHeaders" Color="Wheat" />
         <SolidColorBrush x:Key="clrPrimaryText" Color="#5381ac" />
+
+        <local:BoolToVisiblityConverter x:Key="BoolToVisConverter" />
+        <local:BoolToVisiblityConverter x:Key="InverseBoolToVisConverter" Inverse="True" />
+        <local:NullToVisiblityConverter x:Key="NullToVisConverter" />
+        <local:NullToVisiblityConverter x:Key="InverseNullToVisConverter" Inverse="True" />
+        <local:InverseBoolConverter x:Key="InverseBoolConverter" />
     </Application.Resources>
     
 </Application>

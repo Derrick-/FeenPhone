@@ -539,6 +539,7 @@
     <Compile Include="WPFApp\Models\UserAudioPlayer.cs" />
     <Compile Include="WPFApp\Models\UserStatusModel.cs" />
     <Compile Include="WPFApp\Settings.cs" />
+    <Compile Include="WPFApp\Utils\VisibilityConverters.cs" />
     <Compile Include="WPFApp\WPFControls\AudioInWPF.xaml.cs">
       <DependentUpon>AudioInWPF.xaml</DependentUpon>
     </Compile>

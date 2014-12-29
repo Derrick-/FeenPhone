@@ -130,5 +130,77 @@ namespace FeenPhone.Properties {
                 this["InputDeviceProvider"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool TCPServer {
+            get {
+                return ((bool)(this["TCPServer"]));
+            }
+            set {
+                this["TCPServer"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UDPServer {
+            get {
+                return ((bool)(this["UDPServer"]));
+            }
+            set {
+                this["UDPServer"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TelnetServer {
+            get {
+                return ((bool)(this["TelnetServer"]));
+            }
+            set {
+                this["TelnetServer"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5150")]
+        public int TCPPort {
+            get {
+                return ((int)(this["TCPPort"]));
+            }
+            set {
+                this["TCPPort"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5150")]
+        public int UDPPort {
+            get {
+                return ((int)(this["UDPPort"]));
+            }
+            set {
+                this["UDPPort"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("23")]
+        public int TelnetPort {
+            get {
+                return ((int)(this["TelnetPort"]));
+            }
+            set {
+                this["TelnetPort"] = value;
+            }
+        }
     }
 }

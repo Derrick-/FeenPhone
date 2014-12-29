@@ -48,7 +48,7 @@ namespace FeenPhone.WPFApp.Controls
             if (Client is RemoteClient)
                 Client.SendPingReq();
         }
-        
+
         void EventSource_OnPingResp(object sender, PingEventArgs e)
         {
             Console.WriteLine("Ping resp: {0}", e.Value);
@@ -66,7 +66,7 @@ namespace FeenPhone.WPFApp.Controls
             if (sender == Client)
                 Dispatcher.BeginInvoke(new Action(OnDisconnected));
         }
-        
+
         public void OnDisconnected()
         {
             ControlsEnabled = true;
@@ -88,6 +88,14 @@ namespace FeenPhone.WPFApp.Controls
 
             if (settings.Nickname != null)
                 txtNickname.Text = settings.Nickname;
+
+            TCPEnabled = settings.TCPServer;
+            UDPEnabled = settings.UDPServer;
+            TelnetEnabled = settings.TelnetServer;
+
+            TCPPort = settings.TCPPort;
+            UDPPort = settings.UDPPort;
+            TelnetPort = settings.TelnetPort;
         }
 
         private void Settings_SaveSettings(object sender, EventArgs e)
@@ -96,6 +104,14 @@ namespace FeenPhone.WPFApp.Controls
             settings.Server = txtServer.Text;
             settings.Port = txtPort.Text;
             settings.Nickname = txtNickname.Text;
+
+            settings.TCPServer = TCPEnabled;
+            settings.UDPServer = UDPEnabled;
+            settings.TelnetServer = TelnetEnabled;
+
+            settings.TCPPort = TCPPort;
+            settings.UDPPort = UDPPort;
+            settings.TelnetPort = TelnetPort;
         }
 
         int invalidLoginAttempts = 0;
@@ -126,16 +142,113 @@ namespace FeenPhone.WPFApp.Controls
 
         void EventSource_OnPingReq(object sender, PingEventArgs e)
         {
-            if(Client is RemoteClient)
+            if (Client is RemoteClient)
                 Client.SendPingResp(e.Value);
         }
 
         public static DependencyProperty IsServerProperty = DependencyProperty.Register("IsServer", typeof(bool?), typeof(NetworkWPF), new PropertyMetadata(false, OnIsServerChanged));
+        public static DependencyProperty TCPEnabledProperty = DependencyProperty.Register("TCPEnabled", typeof(bool?), typeof(NetworkWPF), new PropertyMetadata(true, OnTCPEnabledChanged));
+        public static DependencyProperty UDPEnabledProperty = DependencyProperty.Register("UDPEnabled", typeof(bool?), typeof(NetworkWPF), new PropertyMetadata(false, OnUDPEnabledChanged));
+        public static DependencyProperty TelnetEnabledProperty = DependencyProperty.Register("TelnetEnabled", typeof(bool?), typeof(NetworkWPF), new PropertyMetadata(false, OnTelnetEnabledChanged));
 
-        public bool? IsServer
+        public static DependencyProperty TCPPortProperty = DependencyProperty.Register("TCPPort", typeof(int), typeof(NetworkWPF), new PropertyMetadata(5150, OnTCPPortChanged));
+        public static DependencyProperty UDPPortProperty = DependencyProperty.Register("UDPPort", typeof(int), typeof(NetworkWPF), new PropertyMetadata(5150, OnUDPPortChanged));
+        public static DependencyProperty TelnetPortProperty = DependencyProperty.Register("TelnetPort", typeof(int), typeof(NetworkWPF), new PropertyMetadata(23, OnTelnetPortChanged));
+        public static DependencyProperty TCPPortTextProperty = DependencyProperty.Register("TCPPortText", typeof(string), typeof(NetworkWPF), new PropertyMetadata("5150", OnTCPPortTextChanged));
+        public static DependencyProperty UDPPortTextProperty = DependencyProperty.Register("UDPPortText", typeof(string), typeof(NetworkWPF), new PropertyMetadata("5150", OnUDPPortTextChanged));
+        public static DependencyProperty TelnetPortTextProperty = DependencyProperty.Register("TelnetPortText", typeof(string), typeof(NetworkWPF), new PropertyMetadata("23", OnTelnetPortTextChanged));
+
+        public bool IsServer
         {
-            get { return (bool?)this.GetValue(IsServerProperty); }
+            get { return (bool?)this.GetValue(IsServerProperty) == true; }
             set { this.SetValue(IsServerProperty, value); }
+        }
+        public bool TCPEnabled
+        {
+            get { return (bool?)this.GetValue(TCPEnabledProperty) == true; }
+            set { this.SetValue(TCPEnabledProperty, value); }
+        }
+        public bool UDPEnabled
+        {
+            get { return (bool?)this.GetValue(UDPEnabledProperty) == true; }
+            set { this.SetValue(UDPEnabledProperty, value); }
+        }
+        public bool TelnetEnabled
+        {
+            get { return (bool?)this.GetValue(TelnetEnabledProperty) == true; }
+            set { this.SetValue(TelnetEnabledProperty, value); }
+        }
+
+        public int TCPPort
+        {
+            get { return (int)this.GetValue(TCPPortProperty); }
+            set { this.SetValue(TCPPortProperty, value); }
+        }
+        public int UDPPort
+        {
+            get { return (int)this.GetValue(UDPPortProperty); }
+            set { this.SetValue(UDPPortProperty, value); }
+        }
+        public int TelnetPort
+        {
+            get { return (int)this.GetValue(TelnetPortProperty); }
+            set { this.SetValue(TelnetPortProperty, value); }
+        }
+
+        private static void OnTCPPortChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            NetworkWPF target = d as NetworkWPF;
+            if (target != null)
+            {
+                if (target.server != null) target.server.TCPServerPort = (int)e.NewValue;
+                target.SetValue(TCPPortTextProperty, e.NewValue.ToString());
+            }
+        }
+
+        private static void OnUDPPortChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            NetworkWPF target = d as NetworkWPF;
+            if (target != null)
+            {
+                if (target.server != null) target.server.UDPServerPort = (int)e.NewValue;
+                target.SetValue(UDPPortTextProperty, e.NewValue.ToString());
+            }
+        }
+
+        private static void OnTelnetPortChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            NetworkWPF target = d as NetworkWPF;
+            if (target != null)
+            {
+                if (target.server != null) target.server.TelnetServerPort = (int)e.NewValue;
+                target.SetValue(TelnetPortTextProperty, e.NewValue.ToString());
+            }
+        }
+
+        private static void OnTCPPortTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((NetworkWPF)d).TryUpdatePortFromString(TCPPortProperty, e, cannotBe: ((NetworkWPF)d).TelnetPort);
+        }
+        private static void OnUDPPortTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((NetworkWPF)d).TryUpdatePortFromString(UDPPortProperty, e);
+        }
+        private static void OnTelnetPortTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((NetworkWPF)d).TryUpdatePortFromString(TelnetPortProperty, e, cannotBe: ((NetworkWPF)d).TCPPort);
+        }
+        private void TryUpdatePortFromString(DependencyProperty p, DependencyPropertyChangedEventArgs e, int? cannotBe = null)
+        {
+            int newValue;
+            if (int.TryParse((string)(e.NewValue), out newValue) &&
+                newValue > 0 &&
+                newValue <= UInt16.MaxValue &&
+                (!cannotBe.HasValue || cannotBe.Value != newValue))
+            {
+                SetValue(p, newValue);
+            }
+            else
+                SetValue(e.Property, e.OldValue);
         }
 
         internal static BaseClient Client { get; private set; }
@@ -195,16 +308,21 @@ namespace FeenPhone.WPFApp.Controls
                 EventSource.InvokeOnUserList(null, null);
                 if ((bool?)e.NewValue == true && target.server == null)
                 {
-                    int port;
-                    if (!int.TryParse(target.txtPort.Text, out port))
+                    if (target.TCPEnabled || target.UDPEnabled || target.TelnetEnabled)
                     {
-                        port = ServerHost.DefaultServerPort;
-                        target.txtPort.Text = port.ToString();
+                        target.Disconnect();
+                        Client = ServerHost.LocalClient = new LocalClient(target.User);
+                        target.server = new FeenPhone.Server.ServerHost();
+                        target.server.TCPServerPort = target.TCPPort;
+                        target.server.UDPServerPort = target.UDPPort;
+                        target.server.TelnetServerPort = target.TelnetPort;
+                        target.server.InitServers(target.TCPEnabled, target.UDPEnabled, target.TelnetEnabled);
                     }
-
-                    target.Disconnect();
-                    Client = ServerHost.LocalClient = new LocalClient(target.User);
-                    target.server = new FeenPhone.Server.ServerHost(TcpServerPort: port);
+                    else
+                    {
+                        Console.WriteLine("No servers enabled to run.");
+                        target.SetValue(IsServerProperty, false);
+                    }
                 }
                 else
                 {
@@ -212,6 +330,43 @@ namespace FeenPhone.WPFApp.Controls
                     if (target.server != null)
                         target.server.Dispose();
                     target.server = null;
+                }
+            }
+        }
+
+
+        private static void OnTCPEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            NetworkWPF target = d as NetworkWPF;
+            if (target != null)
+            {
+                if (target.server != null)
+                {
+                    target.server.EnableTCP((bool)e.NewValue);
+                }
+            }
+        }
+
+        private static void OnUDPEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            NetworkWPF target = d as NetworkWPF;
+            if (target != null)
+            {
+                if (target.server != null)
+                {
+                    target.server.EnableUDP((bool)e.NewValue);
+                }
+            }
+        }
+
+        private static void OnTelnetEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            NetworkWPF target = d as NetworkWPF;
+            if (target != null)
+            {
+                if (target.server != null)
+                {
+                    target.server.EnableTelnet((bool)e.NewValue);
                 }
             }
         }
@@ -250,7 +405,7 @@ namespace FeenPhone.WPFApp.Controls
 
             bool OK = true;
 
-            if (IsServer == true)
+            if (IsServer)
             {
                 Console.WriteLine("Cannot connect while running a server");
                 OK = false;
@@ -309,7 +464,7 @@ namespace FeenPhone.WPFApp.Controls
                 remClient = new RemoteUDPClient(User, IP, port);
             else
                 remClient = new RemoteTCPClient(User, IP, port);
-            
+
             Client = remClient;
             invalidLoginAttempts = 0;
             EventSource.InvokeOnUserList(null, null);

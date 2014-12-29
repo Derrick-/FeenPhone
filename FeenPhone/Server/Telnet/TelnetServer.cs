@@ -10,6 +10,9 @@ namespace FeenPhone.Server.Telnet
 {
     internal class TelnetServer : BaseTelnetServer<TelNetState>
     {
+
+        public TelnetServer(int port = 23) : base(port) { }
+
         protected override TelNetState NetstateFactory(System.Net.Sockets.NetworkStream stream, System.Net.EndPoint ep)
         {
             return new TelNetState(stream, ep as IPEndPoint);
