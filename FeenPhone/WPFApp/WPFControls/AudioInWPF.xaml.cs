@@ -40,7 +40,6 @@ namespace FeenPhone.WPFApp.Controls
             var sorted = from codec in Codecs
                          where codec.IsAvailable
                          orderby codec.Name ascending
-                         orderby codec.BitsPerSecond ascending
                          select codec;
             return sorted;
         }
@@ -319,7 +318,7 @@ namespace FeenPhone.WPFApp.Controls
         private static void OnSelectedInputSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             AudioInWPF target = d as AudioInWPF;
-            if (target != null)
+            if (target != null && e.NewValue != null)
             {
                 var oldModel = e.OldValue as InputDeviceModel;
                 if (oldModel != null)
@@ -329,9 +328,42 @@ namespace FeenPhone.WPFApp.Controls
 
                 var newModel = e.NewValue as InputDeviceModel;
                 target.UpdateMinBufferDurationForDevice(newModel);
+
+                target.RestartRecording();
             }
         }
 
+        private void comboBoxCodecs_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            RestartRecording();
+        }
+
+
+        private void inBuffer_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (waveIn != null)
+            {
+                if (waveIn is WaveIn)
+                {
+                    var wave = (WaveIn)waveIn;
+                    wave.BufferMilliseconds = Math.Max(BufferMinMs, Math.Min(BufferMaxMs, (int)e.NewValue));
+                }
+                else
+                {
+                    StopRecording();
+                    StartRecording();
+                }
+            }
+        }
+
+        private void RestartRecording()
+        {
+            if (IsRecording == true)
+            {
+                StopRecording();
+                StartRecording();
+            }
+        }
         private static void OnIsRecordingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             AudioInWPF target = d as AudioInWPF;
@@ -355,6 +387,8 @@ namespace FeenPhone.WPFApp.Controls
         public Audio.Codecs.INetworkChatCodec Codec { get { return codec; } }
         private void StartRecording(bool shouldTryUseExclusive = true)
         {
+            if (waveIn != null)
+                StopRecording();
             if (SelectedInputSource != null && SelectedInputSourceIndex.HasValue && SelectedInputSourceIndex.Value >= 0)
             {
                 this.codec = ((CodecComboItem)comboBoxCodecs.SelectedItem).Codec;

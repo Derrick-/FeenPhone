@@ -48,19 +48,17 @@
             </ToggleButton>
         </StackPanel>
         <StackPanel Name="modelValueContainer" DockPanel.Dock="Right">
-            <ComboBox DockPanel.Dock="Top" Name="comboBoxCodecs" IsEnabled="{Binding ControlsEnabled}" />
+            <ComboBox DockPanel.Dock="Top" Name="comboBoxCodecs" SelectionChanged="comboBoxCodecs_SelectionChanged" />
             <DockPanel>
                 <ComboBox Name="comboInputGroups" 
                     DockPanel.Dock="left"
                     ItemsSource="{Binding Source={StaticResource InputsView}, Path=Groups}"
-                    DisplayMemberPath="Name"
-                    IsEnabled="{Binding ControlsEnabled}"/>
+                    DisplayMemberPath="Name" />
                 <ComboBox 
                     Loaded="comboInputs_Loaded"
                     ItemsSource="{Binding ElementName=comboInputGroups, Path=SelectedItem.Items}"
                     SelectedIndex="{Binding Path=SelectedInputSourceIndex, Mode=TwoWay}"
-                    SelectedItem="{Binding Path=SelectedInputSource, Mode=TwoWay}"
-                    IsEnabled="{Binding ControlsEnabled}">
+                    SelectedItem="{Binding Path=SelectedInputSource, Mode=TwoWay}" >
                     <ComboBox.GroupStyle>
                         <x:Static Member="GroupStyle.Default"/>
                     </ComboBox.GroupStyle>
@@ -72,7 +70,7 @@
                     <TextBlock DockPanel.Dock="Left" Text="{Binding BufferTargetMs}" IsEnabled="{Binding ControlsEnabled}"/>
                     <TextBlock>ms</TextBlock>
                 </WrapPanel>
-                <Slider Height="20" TickFrequency="10" TickPlacement="TopLeft" Minimum="{Binding BufferMinMs}" Maximum="{Binding BufferMaxMs}" Value="{Binding BufferTargetMs}" IsEnabled="{Binding ControlsEnabled}"/>
+                <Slider Height="20" ValueChanged="inBuffer_ValueChanged" TickFrequency="10" TickPlacement="TopLeft" Minimum="{Binding BufferMinMs}" Maximum="{Binding BufferMaxMs}" Value="{Binding BufferTargetMs}"/>
             </DockPanel>
         </StackPanel>
     </DockPanel>
