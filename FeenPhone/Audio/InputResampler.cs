@@ -25,6 +25,20 @@ namespace FeenPhone.Audio
         static WaveFormat lastResampleSourceFormat;
         static WaveFormat lastResampleDestFormat;
 
+        public static byte[] Resample(float[] ieeeSamples, int samples, WaveFormat sourceFormat, WaveFormat destFormat, out int resultLength)
+        {
+            if (EnableTraces)
+                Trace.WriteLine(string.Format("Resample {6}bytes {0} {1} {2} to {3} {4} {5}",
+                    sourceFormat.Encoding, sourceFormat.BitsPerSample, sourceFormat.SampleRate,
+                    destFormat.Encoding, destFormat.BitsPerSample, destFormat.SampleRate, samples));
+
+            int newLength;
+            byte[] toResample = IeeeTo16Bit(ieeeSamples, samples, sourceFormat, out newLength);
+            sourceFormat = new WaveFormat(sourceFormat.SampleRate, 16, sourceFormat.Channels);
+
+            return ResamplePcm(ref toResample, ref newLength, sourceFormat, destFormat, out resultLength);
+        }
+
         public static byte[] Resample(byte[] toResample, int sourceLength, WaveFormat sourceFormat, WaveFormat destFormat, out int resultLength)
         {
             if (EnableTraces)
@@ -38,6 +52,11 @@ namespace FeenPhone.Audio
                 sourceFormat = new WaveFormat(sourceFormat.SampleRate, 16, sourceFormat.Channels);
             }
 
+            return ResamplePcm(ref toResample, ref sourceLength, sourceFormat, destFormat, out resultLength);
+        }
+
+        private static byte[] ResamplePcm(ref byte[] toResample, ref int sourceLength, WaveFormat sourceFormat, WaveFormat destFormat, out int resultLength)
+        {
             if (resampleRateStream != null && (!lastResampleSourceFormat.Equals(sourceFormat) || !lastResampleDestFormat.Equals(destFormat)))
             {
                 resampleRateStream.Dispose();
@@ -121,25 +140,14 @@ namespace FeenPhone.Audio
 
         private static byte[] IeeeTo16Bit(byte[] toResample, WaveFormat sourceFormat, out int newLength)
         {
-            int bytesPerSample = (sourceFormat.BitsPerSample >> 3);
-            if (bytesPerSample != 4)
-                throw new InvalidOperationException(string.Format("{0}bit Ieee wav format not supported yet.", sourceFormat.BitsPerSample));
-            int samples = toResample.Length / bytesPerSample;
+            float[] bufferF = ReadIeeeWav(toResample, toResample.Length, sourceFormat);
+            return IeeeTo16Bit(bufferF, bufferF.Length, sourceFormat, out newLength);
+        }
 
+        private static byte[] IeeeTo16Bit(float[] bufferF, int samples, WaveFormat sourceFormat, out int newLength)
+        {
             if (EnableTraces)
                 Trace.WriteLine(string.Format("In {0} samples: {1} duration:{2}ms", sourceFormat, samples, samples / sourceFormat.Channels / (sourceFormat.SampleRate / 1000)));
-
-            float[] bufferF = new float[samples];
-
-            // TODO: Use Buffer.BlockCopy??
-            unsafe
-            {
-                fixed (byte* p = toResample)
-                {
-                    for (int i = 0; i < samples; i += 1)
-                        bufferF[i] = *(float*)(p + i * bytesPerSample);
-                }
-            }
 
             byte[] bufferB = new byte[samples * 2];
 
@@ -165,6 +173,29 @@ namespace FeenPhone.Audio
                 (newLength / (16 / 8)) / sourceFormat.Channels / (sourceFormat.SampleRate / 1000)));
 
             return bufferB;
+        }
+
+        public static float[] ReadIeeeWav(byte[] toResample, int length, WaveFormat sourceFormat)
+        {
+            int bytesPerSample = (sourceFormat.BitsPerSample >> 3);
+
+            if (bytesPerSample != 4)
+                throw new InvalidOperationException(string.Format("{0}bit Ieee wav format not supported yet.", sourceFormat.BitsPerSample));
+
+            int samples = length / bytesPerSample;
+
+            float[] bufferF = new float[samples];
+
+            // TODO: Use Buffer.BlockCopy??
+            unsafe
+            {
+                fixed (byte* p = toResample)
+                {
+                    for (int i = 0; i < samples; i += 1)
+                        bufferF[i] = *(float*)(p + i * bytesPerSample);
+                }
+            }
+            return bufferF;
         }
 
 

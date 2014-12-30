@@ -64,6 +64,13 @@ namespace FeenPhone.WPFApp.Controls
 
             EventSource.OnLoginStatus += EventSource_OnLoginStatus;
             EventSource.OnUserConnected += EventSource_InvokeOnUserConnected;
+
+            aggregator = new FeenPhone.Audio.SampleAggregator();
+            aggregator.NotificationCount = 882;
+            aggregator.PerformFFT = true;
+
+            MaximumCalculated += new EventHandler<MaxSampleEventArgs>(audioGraph_MaximumCalculated);
+            FftCalculated += new EventHandler<FftEventArgs>(audioGraph_FftCalculated);
         }
 
         private bool isFirstConnect = true;
@@ -578,7 +585,15 @@ namespace FeenPhone.WPFApp.Controls
                         {
                             if (waveIn.WaveFormat != codec.RecordFormat)
                             {
-                                toEncode = InputResampler.Resample(toEncode, args.BytesRecorded, waveIn.WaveFormat, codec.RecordFormat, out length);
+                                if(waveIn.WaveFormat.Encoding == WaveFormatEncoding.IeeeFloat)
+                                {
+                                    var floatSamples = InputResampler.ReadIeeeWav(toEncode, args.BytesRecorded, waveIn.WaveFormat);
+                                    foreach (var sample in floatSamples)
+                                        aggregator.Add(sample);
+                                    toEncode = InputResampler.Resample(floatSamples, args.BytesRecorded, waveIn.WaveFormat, codec.RecordFormat, out length);
+                                }
+                                else
+                                    toEncode = InputResampler.Resample(toEncode, args.BytesRecorded, waveIn.WaveFormat, codec.RecordFormat, out length);
                             }
                             if (toEncode == null)
                             {
@@ -595,6 +610,61 @@ namespace FeenPhone.WPFApp.Controls
                         }
                     }
                 }), waveInArgs);
+        }
+
+        public static DependencyProperty MinProperty = DependencyProperty.Register("Min", typeof(int), typeof(AudioInWPF));
+        float _MinUnscaled;
+        public float Min
+        {
+            get { return _MinUnscaled; }
+            set { _MinUnscaled = value; SetValue(MinProperty, (int)(value * 100)); }
+        }
+
+        public static DependencyProperty MaxProperty = DependencyProperty.Register("Max", typeof(int), typeof(AudioInWPF));
+        float _MaxUnscaled;
+        public float Max
+        {
+            get { return _MaxUnscaled; }
+            set { _MaxUnscaled = value; SetValue(MaxProperty, (int)(value * 100)); }
+        }
+
+        private readonly FeenPhone.Audio.SampleAggregator aggregator;
+        public event EventHandler<FeenPhone.Audio.FftEventArgs> FftCalculated
+        {
+            add { aggregator.FftCalculated += value; }
+            remove { aggregator.FftCalculated -= value; }
+        }
+
+        public event EventHandler<FeenPhone.Audio.MaxSampleEventArgs> MaximumCalculated
+        {
+            add { aggregator.MaximumCalculated += value; }
+            remove { aggregator.MaximumCalculated -= value; }
+        }
+
+        void audioGraph_FftCalculated(object sender, FftEventArgs e)
+        {
+            Dispatcher.BeginInvoke(new Action<object, FftEventArgs>((s, args) =>
+            {
+                //if (this.selectedVisualization != null)
+                //{
+                //    this.selectedVisualization.OnFftCalculated(e.Result);
+                //}
+                //spectrumAnalyser.Update(e.Result);
+            }), sender, e);
+        }
+
+        void audioGraph_MaximumCalculated(object sender, MaxSampleEventArgs e)
+        {
+            Dispatcher.BeginInvoke(new Action<object, MaxSampleEventArgs>((s, args) =>
+            {
+                Min = args.MinSample;
+                Max = args.MaxSample;
+
+                //if (this.selectedVisualization != null)
+                //{
+                //    this.selectedVisualization.OnMaxCalculated(e.MinSample, e.MaxSample);
+                //}
+            }), sender, e);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
