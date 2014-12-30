@@ -5,6 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" d:DesignWidth="400">
     <UserControl.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="Padding" Value="4 2"/>
+        </Style>
         <Style TargetType="Label">
             <Setter Property="HorizontalAlignment" Value="Right" />
             <Setter Property="Padding" Value="8 2"/>
@@ -40,6 +43,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition/>
+                        <RowDefinition/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="3*" />
@@ -58,6 +62,8 @@
                         <ComboBoxItem>UDP</ComboBoxItem>
                     </ComboBox>
                     <Button Name="btnConnect" Grid.Row="1" Grid.Column="3" Click="Connect_Click">Connect</Button>
+                    <Label Grid.Row="2" Grid.Column="2" Visibility="{Binding ControlsEnabled, Converter={StaticResource InverseBoolToVisConverter}}">Ping</Label>
+                    <TextBlock Name="txtPing" Grid.Row="2" Grid.Column="3" Visibility="{Binding ControlsEnabled, Converter={StaticResource InverseBoolToVisConverter}}"></TextBlock>
                 </Grid>
             </TabItem>
             <TabItem Header="Server">

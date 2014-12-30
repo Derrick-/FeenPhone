@@ -57,9 +57,9 @@ namespace FeenPhone.WPFApp.Models
         }
 
         static int DefaultMaxBufferedDurationMs = 500;
-        static ushort DefaultSilenceAggression = 0;
+        static ushort DefaultSilenceAggression = 1;
 
-        static int DefaultBufferTargetMs = 20;
+        static int DefaultBufferTargetMs = 50;
         static int BufferTargetMarginMs = 20;
 
         static int BufferWarningDurationMs = 150;
@@ -260,7 +260,7 @@ namespace FeenPhone.WPFApp.Models
         private byte addSilenceThreshold { get { return (byte)(silenceAggression * 10); } }
 
         public bool ShouldDropSilence { get { return silenceAggression > 0 && BufferedDuration.TotalMilliseconds > (bufferTarget + BufferTargetMarginMs); } }
-        public bool ShouldAddSilence { get { return silenceAggression > 0 && BufferedDuration.TotalMilliseconds < (bufferTarget); } }
+        public bool ShouldAddSilence { get { return false /*silenceAggression > 0 && BufferedDuration.TotalMilliseconds < (bufferTarget)*/; } }
         public ushort silenceThreshhold
         {
             get

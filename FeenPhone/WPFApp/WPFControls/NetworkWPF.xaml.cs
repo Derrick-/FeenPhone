@@ -51,7 +51,10 @@ namespace FeenPhone.WPFApp.Controls
 
         void EventSource_OnPingResp(object sender, PingEventArgs e)
         {
-            Console.WriteLine("Ping resp: {0}", e.Value);
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                txtPing.Text = string.Format("{0}ms", e.Value);
+            }));
         }
 
         public static DependencyProperty ControlsEnabledProperty = DependencyProperty.Register("ControlsEnabled", typeof(bool), typeof(NetworkWPF), new PropertyMetadata(true));
