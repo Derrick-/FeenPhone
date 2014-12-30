@@ -17,15 +17,16 @@
     </UserControl.Resources>
     <DockPanel>
         <TextBlock Background="{StaticResource clrBackgroundHeaders}" DockPanel.Dock="Top" TextAlignment="Center">AUDIO IN</TextBlock>
-        <Border IsEnabled="{Binding LevelManager, Converter={StaticResource NullToBoolConverter}}">
+        <DockPanel IsEnabled="{Binding LevelManager, Converter={StaticResource NullToBoolConverter}}">
+            <TextBlock DockPanel.Dock="Bottom" Text="{Binding Path=LevelManager.LevelPercent, StringFormat={}{0:#}%}"/>
             <Slider 
-            Orientation="Vertical" 
-            Minimum="{Binding LevelManager.Min}" 
-            Maximum="{Binding LevelManager.Max}" 
-            Value="{Binding LevelManager.Level, Mode=TwoWay}" 
+            Orientation="Vertical"
+            Minimum="0" 
+            Maximum="100" 
+            Value="{Binding LevelManager.LevelPercent, Mode=TwoWay}" 
             IsEnabled="{Binding LevelManager.IsAttached}" 
         />
-        </Border>
+        </DockPanel>
         <StackPanel>
             <ToggleButton
                 MaxWidth="48"

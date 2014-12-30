@@ -22,9 +22,10 @@ namespace FeenPhone.WPFApp.Models
 
         public static DependencyProperty IsAttachedProperty = DependencyProperty.Register("IsAttached", typeof(bool), typeof(InputLevelManager), new PropertyMetadata(false));
 
-        public static DependencyProperty MinProperty = DependencyProperty.Register("Min", typeof(uint), typeof(InputLevelManager), new PropertyMetadata((uint)0));
-        public static DependencyProperty MaxProperty = DependencyProperty.Register("Max", typeof(uint), typeof(InputLevelManager), new PropertyMetadata((uint)100));
+        public static DependencyProperty MinProperty = DependencyProperty.Register("Min", typeof(uint), typeof(InputLevelManager), new PropertyMetadata((uint)0, OnLevelChanged));
+        public static DependencyProperty MaxProperty = DependencyProperty.Register("Max", typeof(uint), typeof(InputLevelManager), new PropertyMetadata((uint)100, OnLevelChanged));
         public static DependencyProperty LevelProperty = DependencyProperty.Register("Level", typeof(uint), typeof(InputLevelManager), new PropertyMetadata((uint)50, OnLevelChanged));
+        public static DependencyProperty LevelPercentProperty = DependencyProperty.Register("LevelPercent", typeof(double), typeof(InputLevelManager), new PropertyMetadata(50.0, OnLevelPercentChanged));
 
         public InputLevelManager()
         {
@@ -59,12 +60,38 @@ namespace FeenPhone.WPFApp.Models
             set { SetValue(LevelProperty, value); }
         }
 
+        double _LevelPercent;
+        public double LevelPercent
+        {
+            get { return _LevelPercent; }
+            set
+            {
+                _LevelPercent = value;
+                SetValue(LevelPercentProperty, value * 100.0);
+            }
+        }
+
         private static void OnLevelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var target = d as InputLevelManager;
             if (target != null)
             {
                 target.HandleLevelChange((uint)(e.NewValue));
+            }
+        }
+
+        private static void OnLevelPercentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var target = d as InputLevelManager;
+            if (target != null)
+            {
+                target.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    double newValue = ((double)e.NewValue) / 100.0;
+                    double delta = target.Max - target.Min;
+                    double offset = (delta * newValue);
+                    target.Level = target.Min + (uint)offset;
+                }));
             }
         }
 
@@ -81,7 +108,15 @@ namespace FeenPhone.WPFApp.Models
                             break;
                         }
                 }
+                UpdatePercent();
             }));
+        }
+
+        private void UpdatePercent()
+        {
+            double delta = Max - Min;
+            double offset = Level - Min;
+            LevelPercent = offset / delta;
         }
 
         public InputLevelManager(WaveIn waveDevice)
