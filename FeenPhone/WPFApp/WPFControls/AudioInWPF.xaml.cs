@@ -262,7 +262,7 @@ namespace FeenPhone.WPFApp.Controls
             {
                 switch (model.Provider)
                 {
-                    case DeviceModel.DeviceProvider.Wasapi:
+                    case DeviceProvider.Wasapi:
                         {
                             var mmdevice = model.MMDevice;
                             min = mmdevice.MinBufferDurationMs;
@@ -295,7 +295,6 @@ namespace FeenPhone.WPFApp.Controls
         public static DependencyProperty IsRecordingProperty = DependencyProperty.Register("IsRecording", typeof(bool?), typeof(AudioInWPF), new PropertyMetadata(false, OnIsRecordingChanged));
         public static DependencyProperty InputSourceListProperty = DependencyProperty.Register("InputSourceList", typeof(ObservableCollection<InputDeviceModel>), typeof(AudioInWPF), new PropertyMetadata(InputList));
         public static DependencyProperty SelectedInputSourceProperty = DependencyProperty.Register("SelectedInputSource", typeof(InputDeviceModel), typeof(AudioInWPF), new PropertyMetadata(null, OnSelectedInputSourceChanged));
-        public static DependencyProperty SelectedInputSourceIndexProperty = DependencyProperty.Register("SelectedInputSourceIndex", typeof(int?), typeof(AudioInWPF), new PropertyMetadata(null));
         public static DependencyProperty ControlsEnabledProperty = DependencyProperty.Register("ControlsEnabled", typeof(bool), typeof(AudioInWPF), new PropertyMetadata(true));
 
         public static DependencyProperty BufferTargetMsProperty = DependencyProperty.Register("BufferTargetMs", typeof(int), typeof(AudioInWPF), new PropertyMetadata(50));
@@ -339,12 +338,6 @@ namespace FeenPhone.WPFApp.Controls
         {
             get { return (InputDeviceModel)this.GetValue(SelectedInputSourceProperty); }
             set { this.SetValue(SelectedInputSourceProperty, value); }
-        }
-
-        public int? SelectedInputSourceIndex
-        {
-            get { return (int?)this.GetValue(SelectedInputSourceIndexProperty); }
-            set { this.SetValue(SelectedInputSourceIndexProperty, value); }
         }
 
         private static void OnSelectedInputSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -414,6 +407,12 @@ namespace FeenPhone.WPFApp.Controls
         }
 
         private IWaveIn waveIn;
+        public static DependencyProperty LevelManagerProperty = DependencyProperty.Register("LevelManager", typeof(InputLevelManager), typeof(AudioInWPF), new PropertyMetadata(null));
+        private InputLevelManager LevelManager
+        {
+            get { return (InputLevelManager)this.GetValue(LevelManagerProperty); }
+            set { this.SetValue(LevelManagerProperty, value); }
+        }
 
         private Audio.Codecs.INetworkChatCodec codec;
         public Audio.Codecs.INetworkChatCodec Codec { get { return codec; } }
@@ -421,13 +420,13 @@ namespace FeenPhone.WPFApp.Controls
         {
             if (waveIn != null)
                 StopRecording();
-            if (SelectedInputSource != null && SelectedInputSourceIndex.HasValue && SelectedInputSourceIndex.Value >= 0)
+            if (SelectedInputSource != null)
             {
                 this.codec = ((CodecComboItem)comboBoxCodecs.SelectedItem).Codec;
 
                 bool canUseExclusive = false;
 
-                if (SelectedInputSource.Provider == DeviceModel.DeviceProvider.Wasapi)
+                if (SelectedInputSource.Provider == DeviceProvider.Wasapi)
                 {
                     var mmdevice = SelectedInputSource.MMDevice;
 
@@ -487,6 +486,8 @@ namespace FeenPhone.WPFApp.Controls
                     waveIn = w;
                     waveIn.WaveFormat = deviceFormat;
                     w.ShareMode = shareMode;
+
+                    LevelManager = new InputLevelManager(w);
                 }
                 else
                 {
@@ -498,6 +499,7 @@ namespace FeenPhone.WPFApp.Controls
                     waveIn.WaveFormat = codec.RecordFormat;
                     canUseExclusive = false;
 
+                    LevelManager = new InputLevelManager(w);
                 }
 
                 waveIn.DataAvailable += waveIn_DataAvailable;
@@ -554,6 +556,11 @@ namespace FeenPhone.WPFApp.Controls
                 }
                 catch { }
                 waveIn = null;
+            }
+            if (LevelManager != null)
+            {
+                LevelManager.Dispose();
+                LevelManager = null;
             }
             ControlsEnabled = true;
         }

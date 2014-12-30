@@ -15,6 +15,8 @@
         <local:NullToVisiblityConverter x:Key="NullToVisConverter" />
         <local:NullToVisiblityConverter x:Key="InverseNullToVisConverter" Inverse="True" />
         <local:InverseBoolConverter x:Key="InverseBoolConverter" />
+        <local:NullToBoolConverter x:Key="NullToBoolConverter" />
+        <local:NullToBoolConverter x:Key="InverseNullToBoolConverter" Inverse="True" />
     </Application.Resources>
     
 </Application>

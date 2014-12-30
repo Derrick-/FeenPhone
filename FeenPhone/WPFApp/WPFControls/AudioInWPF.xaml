@@ -17,6 +17,15 @@
     </UserControl.Resources>
     <DockPanel>
         <TextBlock Background="{StaticResource clrBackgroundHeaders}" DockPanel.Dock="Top" TextAlignment="Center">AUDIO IN</TextBlock>
+        <Border IsEnabled="{Binding LevelManager, Converter={StaticResource NullToBoolConverter}}">
+            <Slider 
+            Orientation="Vertical" 
+            Minimum="{Binding LevelManager.Min}" 
+            Maximum="{Binding LevelManager.Max}" 
+            Value="{Binding LevelManager.Level, Mode=TwoWay}" 
+            IsEnabled="{Binding LevelManager.IsAttached}" 
+        />
+        </Border>
         <StackPanel>
             <ToggleButton
                 MaxWidth="48"
@@ -57,7 +66,6 @@
                 <ComboBox 
                     Loaded="comboInputs_Loaded"
                     ItemsSource="{Binding ElementName=comboInputGroups, Path=SelectedItem.Items}"
-                    SelectedIndex="{Binding Path=SelectedInputSourceIndex, Mode=TwoWay}"
                     SelectedItem="{Binding Path=SelectedInputSource, Mode=TwoWay}" >
                     <ComboBox.GroupStyle>
                         <x:Static Member="GroupStyle.Default"/>

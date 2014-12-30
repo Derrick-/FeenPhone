@@ -6,6 +6,13 @@ using System.Linq;
 
 namespace FeenPhone.WPFApp.Models
 {
+    public enum DeviceProvider
+    {
+        Unknown = 0,
+        Wave = 1,
+        DirectSound = 2,
+        Wasapi = 3,
+    }
 
     public class InputDeviceModel : DeviceModel
     {
@@ -25,25 +32,17 @@ namespace FeenPhone.WPFApp.Models
         public OutputDeviceModel(NAudio.CoreAudioApi.MMDevice device) : base(device) { }
     }
 
-    public class DeviceModel 
+    public class DeviceModel
     {
-        public enum DeviceProvider
-        {
-            Unknown = 0,
-            Wave = 1,
-            DirectSound = 2,
-            Wasapi = 3,
-        }
-
         public DeviceProvider Provider { get; private set; }
 
         public MMDevice MMDevice { get; private set; }
 
         public DirectSoundDeviceInfo DirectSoundDeviceInfo { get; private set; }
 
-        protected readonly WaveInCapabilities? WaveInCapabilities=null;
-        protected readonly WaveOutCapabilities? WaveOutCapabilities=null;
-        
+        protected readonly WaveInCapabilities? WaveInCapabilities = null;
+        protected readonly WaveOutCapabilities? WaveOutCapabilities = null;
+
         public int WavDeviceNumber { get; private set; }
 
         public DeviceModel(int wavDeviceNum, WaveInCapabilities waveincapabilities)

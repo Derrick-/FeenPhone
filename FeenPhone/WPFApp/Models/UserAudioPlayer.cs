@@ -330,11 +330,11 @@ namespace FeenPhone.WPFApp.Models
             var SelectedOutput = Parent.SelectedOutput;
             switch (SelectedOutput.Provider)
             {
-                case DeviceModel.DeviceProvider.Wave:
+                case DeviceProvider.Wave:
                     return new WaveOut() { DeviceNumber = SelectedOutput.WavDeviceNumber, DesiredLatency = desiredLatency };
-                case DeviceModel.DeviceProvider.DirectSound:
+                case DeviceProvider.DirectSound:
                     return new DirectSoundOut(SelectedOutput.DirectSoundDeviceInfo.Guid, desiredLatency);
-                case DeviceModel.DeviceProvider.Wasapi:
+                case DeviceProvider.Wasapi:
                     return new WasapiOut(SelectedOutput.MMDevice, shareMode, useEventSync, desiredLatency);
             }
             return new DirectSoundOut(DirectSoundOut.DSDEVID_DefaultVoicePlayback, desiredLatency);

@@ -74,6 +74,24 @@ namespace FeenPhone.WPFApp
         }
     }
 
+    public class NullToBoolConverter : IValueConverter
+    {
+        public bool Inverse { get; set; }
+
+        public NullToBoolConverter() { }
+
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            bool bValue = value != null;
+            return bValue != Inverse;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotSupportedException("Conversion from bool to object is not supported");
+        }
+    }
+
     public class InverseBoolConverter : IValueConverter
     {
         public InverseBoolConverter() { }

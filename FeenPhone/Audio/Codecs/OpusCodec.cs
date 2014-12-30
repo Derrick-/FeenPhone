@@ -234,7 +234,7 @@ namespace FeenPhone.Audio.Codecs
 
                 frames.Add(new OpusFrame(buff, (byte)len));
 
-                Debug.WriteLine(String.Format("Opus: In {0} bytes, encoded {1} bytes [enc frame size = {2}]", segment.Length, len, _bytesPerSegment));
+                //Debug.WriteLine(String.Format("Opus: In {0} bytes, encoded {1} bytes [enc frame size = {2}]", segment.Length, len, _bytesPerSegment));
             }
 
 

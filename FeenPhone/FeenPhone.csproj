@@ -532,6 +532,7 @@
     <Compile Include="Server\Telnet\TelNetState.cs" />
     <Compile Include="Utils\Timekeeper.cs" />
     <Compile Include="WPFApp\Models\DeviceModels.cs" />
+    <Compile Include="WPFApp\Models\InputLevelManager.cs" />
     <Compile Include="WPFApp\Models\UserAudioPlayer.cs" />
     <Compile Include="WPFApp\Models\UserStatusModel.cs" />
     <Compile Include="WPFApp\Settings.cs" />

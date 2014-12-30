@@ -47,5 +47,8 @@
     <Setting Name="TelnetPort" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">23</Value>
     </Setting>
+    <Setting Name="DefaultInputLevel" Type="System.UInt32" Scope="User">
+      <Value Profile="(Default)">50</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

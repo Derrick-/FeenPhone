@@ -202,5 +202,17 @@ namespace FeenPhone.Properties {
                 this["TelnetPort"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("50")]
+        public uint DefaultInputLevel {
+            get {
+                return ((uint)(this["DefaultInputLevel"]));
+            }
+            set {
+                this["DefaultInputLevel"] = value;
+            }
+        }
     }
 }
