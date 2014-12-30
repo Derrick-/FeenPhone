@@ -48,9 +48,6 @@
     <ApplicationIcon>WPFApp\Resources\logos\FeenPhone.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NSpeex">
-      <HintPath>..\Libs\NSpeex\NSpeex.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition">
       <HintPath>..\Libs\MEF\System.ComponentModel.Composition.dll</HintPath>
@@ -91,7 +88,6 @@
     <Compile Include="Audio\Codecs\Opus\API.cs" />
     <Compile Include="Audio\Codecs\Opus\OpusDecoder.cs" />
     <Compile Include="Audio\Codecs\Opus\OpusEncoder.cs" />
-    <Compile Include="Audio\Codecs\SpeexChatCodec.cs" />
     <Compile Include="Audio\Codecs\TrueSpeechChatCodec.cs" />
     <Compile Include="Audio\Codecs\UncompressedPcmChatCodec.cs" />
     <Compile Include="Audio\InputResampler.cs" />

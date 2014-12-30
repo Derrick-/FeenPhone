@@ -39,7 +39,8 @@ namespace FeenPhone.WPFApp.Controls
         {
             var sorted = from codec in Codecs
                          where codec.IsAvailable
-                         orderby codec.Name ascending
+                         orderby codec.BitsPerSecond ascending
+                         orderby codec.SortOrder ascending
                          select codec;
             return sorted;
         }

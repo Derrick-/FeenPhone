@@ -7,6 +7,7 @@
         <SolidColorBrush x:Key="clrBackgroundPrimary" Color="AliceBlue" />
         <SolidColorBrush x:Key="clrBackgroundSecondary" Color="GhostWhite" />
         <SolidColorBrush x:Key="clrBackgroundHeaders" Color="Wheat" />
+        <SolidColorBrush x:Key="clrSectionDivider" Color="Tan" />
         <SolidColorBrush x:Key="clrPrimaryText" Color="#5381ac" />
 
         <local:BoolToVisiblityConverter x:Key="BoolToVisConverter" />

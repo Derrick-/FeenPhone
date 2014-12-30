@@ -17,6 +17,7 @@ namespace FeenPhone.Audio.Codecs
         static bool disableAll = false;
 
         public abstract CodecID CodecID { get; }
+        public virtual int SortOrder { get { return int.MaxValue; } }
 
         private WaveFormat encodeFormat;
         private AcmStream encodeStream;

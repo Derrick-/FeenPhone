@@ -42,6 +42,7 @@ namespace FeenPhone.Audio.Codecs
     abstract class BaseUncompressedPcmChatCodec : INetworkChatCodec
     {
         public virtual bool IsAvailable { get { return true; } }
+        public virtual int SortOrder { get { return 100; } }
 
         int Channels;
         int Freq;
@@ -56,7 +57,7 @@ namespace FeenPhone.Audio.Codecs
 
         public abstract CodecID CodecID { get; }
 
-        public string Name { get { return "PCM " + Freq / 1000 + "kHz 16 bit " + Channels + "ch uncompressed"; } }
+        public string Name { get { return "PCM " + Freq / 1000 + "kHz 16 bit " + Channels + "ch"; } }
 
         public WaveFormat RecordFormat { get; private set; }
 

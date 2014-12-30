@@ -22,7 +22,7 @@
             <GridSplitter Grid.Row="1"
                 HorizontalAlignment="Stretch" 
                 VerticalAlignment="Center"
-                Background="Tan" 
+                Background="{StaticResource clrSectionDivider}" 
                 ShowsPreview="true"
                 ResizeDirection="Rows"
                 Height="5">

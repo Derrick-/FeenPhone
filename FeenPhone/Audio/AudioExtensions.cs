@@ -9,7 +9,7 @@ namespace FeenPhone
     {
         public static string Name(this Audio.Codecs.INetworkChatCodec codec)
         {
-            string bitRate = codec.BitsPerSecond == -1 ? "VBR" : String.Format("{0:0.#}kbps", codec.BitsPerSecond / 1000.0);
+            string bitRate = codec.BitsPerSecond == -1 ? "VBR" : String.Format("{0:0.#}kbps", codec.BitsPerSecond / 1024.0);
             string text = String.Format("{0} ({1})", codec.Name, bitRate);
             return text;
         }

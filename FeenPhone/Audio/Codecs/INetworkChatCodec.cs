@@ -64,5 +64,7 @@ namespace FeenPhone.Audio.Codecs
         /// Decodes a block of audio
         /// </summary>
         byte[] Decode(byte[] data, int length);
+
+        int SortOrder { get; }
     }
 }

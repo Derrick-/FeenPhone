@@ -30,6 +30,7 @@ namespace FeenPhone.Audio.Codecs
     {
         public CodecID CodecID { get { return CodecID.MuLawChatCodec; } }
         public bool IsAvailable { get { return false; } }
+        public virtual int SortOrder { get { return int.MaxValue; } }
 
         public string Name
         {

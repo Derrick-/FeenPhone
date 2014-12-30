@@ -17,10 +17,6 @@ namespace FeenPhone.Audio.Codecs
         public override bool IsAvailable { get { return false; } }
 
         public OpusCodec24kHzVoip8192() : base(bitRate: 8192, outputSampleRate: 24000, opusMode: FragLabs.Audio.Codecs.Opus.Application.Voip) { }
-        public override string Name
-        {
-            get { return "Opus Voip 24kHz 8.2kbs"; }
-        }
     }
 
     [Export(typeof(INetworkChatCodec))]
@@ -30,10 +26,6 @@ namespace FeenPhone.Audio.Codecs
         public override bool IsAvailable { get { return false; } }
 
         public OpusCodec24kHzVoip16384() : base(bitRate: 16384, outputSampleRate: 24000, opusMode: FragLabs.Audio.Codecs.Opus.Application.Voip) { }
-        public override string Name
-        {
-            get { return "Opus Voip 24kHz 16kbs"; }
-        }
     }
 
     [Export(typeof(INetworkChatCodec))]
@@ -43,10 +35,6 @@ namespace FeenPhone.Audio.Codecs
         public override bool IsAvailable { get { return base.IsAvailable; } }
 
         public OpusCodec24kHzVoip32768() : base(bitRate: 32768, outputSampleRate: 24000, opusMode: FragLabs.Audio.Codecs.Opus.Application.Voip) { }
-        public override string Name
-        {
-            get { return "Opus Voip 24kHz 32kbs"; }
-        }
     }
 
     [Export(typeof(INetworkChatCodec))]
@@ -56,10 +44,6 @@ namespace FeenPhone.Audio.Codecs
         public override bool IsAvailable { get { return false; } }
 
         public OpusCodecAudio24kHz8192() : base(bitRate: 8192, outputSampleRate: 24000, opusMode: FragLabs.Audio.Codecs.Opus.Application.Audio) { }
-        public override string Name
-        {
-            get { return "Opus Audio 24kHz 8.2kbs"; }
-        }
     }
 
     [Export(typeof(INetworkChatCodec))]
@@ -69,10 +53,6 @@ namespace FeenPhone.Audio.Codecs
         public override bool IsAvailable { get { return false; } }
 
         public OpusCodecAudio24kHz16384() : base(bitRate: 16384, outputSampleRate: 24000, opusMode: FragLabs.Audio.Codecs.Opus.Application.Audio) { }
-        public override string Name
-        {
-            get { return "Opus Audio 24kHz 16kbs"; }
-        }
     }
 
     [Export(typeof(INetworkChatCodec))]
@@ -82,10 +62,6 @@ namespace FeenPhone.Audio.Codecs
         public override bool IsAvailable { get { return false; } }
 
         public OpusCodecAudio24kHz32768() : base(bitRate: 32768, outputSampleRate: 24000, opusMode: FragLabs.Audio.Codecs.Opus.Application.Audio) { }
-        public override string Name
-        {
-            get { return "Opus Audio 24kHz 32kbs"; }
-        }
     }
 
     [Export(typeof(INetworkChatCodec))]
@@ -95,10 +71,6 @@ namespace FeenPhone.Audio.Codecs
         public override bool IsAvailable { get { return base.IsAvailable; } }
 
         public OpusCodecAudio48kHz32768() : base(bitRate: 65536, outputSampleRate: 48000, opusMode: FragLabs.Audio.Codecs.Opus.Application.Audio) { }
-        public override string Name
-        {
-            get { return "Opus Audio 48kHz 64kbs"; }
-        }
     }
 
     [Export(typeof(INetworkChatCodec))]
@@ -108,10 +80,6 @@ namespace FeenPhone.Audio.Codecs
         public override bool IsAvailable { get { return false; } }
  
         public OpusCodec24kHzLowLatency8192() : base(bitRate: 8192, outputSampleRate: 24000, opusMode: FragLabs.Audio.Codecs.Opus.Application.Restricted_LowLatency) { }
-        public override string Name
-        {
-            get { return "Opus LowLatency 24kHz 8.2kbs"; }
-        }
     }
 
     [Export(typeof(INetworkChatCodec))]
@@ -121,10 +89,6 @@ namespace FeenPhone.Audio.Codecs
         public override bool IsAvailable { get { return false; } }
 
         public OpusCodec24kHzLowLatency16384() : base(bitRate: 16384, outputSampleRate: 24000, opusMode: FragLabs.Audio.Codecs.Opus.Application.Restricted_LowLatency) { }
-        public override string Name
-        {
-            get { return "Opus LowLatency 24kHz 16kbs"; }
-        }
     }
 
     [Export(typeof(INetworkChatCodec))]
@@ -134,10 +98,6 @@ namespace FeenPhone.Audio.Codecs
         public override bool IsAvailable { get { return false; } }
 
         public override CodecID CodecID { get { return CodecID.OpusCodec24kHzLowLatency32768; } }
-        public override string Name
-        {
-            get { return "Opus LowLatency 24kHz 32kbs"; }
-        }
     }
 
     abstract class OpusCodec : INetworkChatCodec
@@ -206,9 +166,26 @@ namespace FeenPhone.Audio.Codecs
         int _segmentFrames;
         int _bytesPerSegment;
 
-        abstract public string Name { get; }
+        public virtual string Name
+        {
+            get
+            {
+                string mode="Unknown";
+                switch(opusMode)
+                {
+                    case FragLabs.Audio.Codecs.Opus.Application.Audio:
+                        mode="Music"; break;
+                    case FragLabs.Audio.Codecs.Opus.Application.Restricted_LowLatency:
+                        mode="LowLatency"; break;
+                    case FragLabs.Audio.Codecs.Opus.Application.Voip:
+                        mode="Talk"; break;
+                }
+                return string.Format("Opus {0} {1}kHz", mode, outputSampleRate / 1000);
+            }
+        }
 
         public virtual bool IsAvailable { get { return true; } }
+        public virtual int SortOrder { get { return 10; } }
 
         public int BitsPerSecond
         {

@@ -28,6 +28,7 @@ namespace FeenPhone.Audio.Codecs
     class ALawChatCodec : INetworkChatCodec
     {
         public CodecID CodecID { get { return CodecID.ALawChatCodec; } }
+        public virtual int SortOrder { get { return int.MaxValue; } }
 
         public string Name
         {
