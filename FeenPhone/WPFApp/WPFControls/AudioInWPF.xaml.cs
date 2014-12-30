@@ -23,6 +23,7 @@ using FeenPhone.WPFApp.Models;
 using NAudio.Wave.SampleProviders;
 using NAudio.Wave.Compression;
 using System.Diagnostics;
+using FeenPhone.Client;
 
 namespace FeenPhone.WPFApp.Controls
 {
@@ -60,6 +61,36 @@ namespace FeenPhone.WPFApp.Controls
 
             AudioEvents.OnAudioDeviceAdded += AudioEvents_OnAudioDeviceAdded;
             AudioEvents.OnAudioDeviceRemoved += AudioEvents_OnAudioDeviceRemoved;
+
+            EventSource.OnLoginStatus += EventSource_OnLoginStatus;
+            EventSource.OnUserConnected += EventSource_InvokeOnUserConnected;
+        }
+
+        private bool isFirstConnect = true;
+        private void EventSource_OnLoginStatus(object sender, BoolEventArgs e)
+        {
+            bool loginAccepted = e.Value;
+            if (loginAccepted)
+            {
+                DispatchOnConnected();
+            }
+        }
+
+        private void EventSource_InvokeOnUserConnected(object sender, OnUserEventArgs e)
+        {
+            DispatchOnConnected();
+        }
+
+        private void DispatchOnConnected()
+        {
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                if (isFirstConnect)
+                {
+                    isFirstConnect = false;
+                    IsRecording = true;
+                }
+            }));
         }
 
         private void AudioEvents_OnAudioDeviceAdded(object sender, AudioEvents.MMDeviceAddedRemovedArgs e)
