@@ -10,6 +10,12 @@
         <SolidColorBrush x:Key="clrSectionDivider" Color="Tan" />
         <SolidColorBrush x:Key="clrPrimaryText" Color="#5381ac" />
 
+        <SolidColorBrush x:Key="clrDumpButtonBack" Color="Black" />
+        <SolidColorBrush x:Key="clrDumpButtonFore" Color="#FFFFD208" />
+        <SolidColorBrush x:Key="clrDumpButtonBorder" Color="#FFFF0202" />
+        <SolidColorBrush x:Key="clrDumpButtonBack_Hover" Color="#FFFFD208" />
+        <SolidColorBrush x:Key="clrDumpButtonFore_Hover" Color="Black" />
+
         <local:BoolToVisiblityConverter x:Key="BoolToVisConverter" />
         <local:BoolToVisiblityConverter x:Key="InverseBoolToVisConverter" Inverse="True" />
         <local:NullToVisiblityConverter x:Key="NullToVisConverter" />
@@ -17,6 +23,29 @@
         <local:InverseBoolConverter x:Key="InverseBoolConverter" />
         <local:NullToBoolConverter x:Key="NullToBoolConverter" />
         <local:NullToBoolConverter x:Key="InverseNullToBoolConverter" Inverse="True" />
+
+        <Style TargetType="{x:Type Button}" x:Key="DumpButton">
+            <Setter Property="Background" Value="{StaticResource clrDumpButtonBack}"/>
+            <Setter Property="Foreground" Value="{StaticResource clrDumpButtonFore}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource clrDumpButtonBack}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="BorderBrush" Value="{StaticResource clrDumpButtonBorder}"/>
+                </Trigger>
+                <Trigger Property="IsMouseCaptured" Value="True">
+                    <Setter Property="Foreground" Value="{StaticResource clrDumpButtonBorder}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </Application.Resources>
     
 </Application>

@@ -24,11 +24,12 @@
             <DockPanel ToolTip="Audio data in milliseconds of lag that has been received and is buffered for play.  When duration exceeds max buffer size, incoming data will be dropped">
                 <Grid>
                     <Label>Buffer</Label>
-                    <Button HorizontalAlignment="Right" Click="Buffer_Clear_Click" Background="{x:Null}" BorderBrush="{x:Null}">
-                        <WrapPanel>
-                            <Image Source="/FeenPhone;component/WPFApp/Resources/Images/emblem-ubuntuone-unsynchronized.png" Height="16"></Image>
-                            <TextBlock Margin="0" Padding="0">DUMP</TextBlock>
-                        </WrapPanel>
+                    <Button 
+                        ToolTip="Clear the audio buffer to reduce incoming latency"
+                        HorizontalAlignment="Right" 
+                        Click="Buffer_Clear_Click" 
+                        Style="{StaticResource DumpButton}">
+                        <TextBlock Margin="0" Padding="0">DUMP</TextBlock>
                     </Button>
                 </Grid>
                 <Grid Name="modelValueContainer">
