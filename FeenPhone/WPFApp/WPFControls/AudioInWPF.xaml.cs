@@ -649,21 +649,8 @@ namespace FeenPhone.WPFApp.Controls
                 }), waveInArgs);
         }
 
-        public static DependencyProperty MinProperty = DependencyProperty.Register("Min", typeof(float), typeof(AudioInWPF));
-        float _MinUnscaled;
-        public float Min
-        {
-            get { return _MinUnscaled; }
-            set { _MinUnscaled = value; SetValue(MinProperty, value); }
-        }
-
-        public static DependencyProperty MaxProperty = DependencyProperty.Register("Max", typeof(float), typeof(AudioInWPF));
-        float _MaxUnscaled;
-        public float Max
-        {
-            get { return _MaxUnscaled; }
-            set { _MaxUnscaled = value; SetValue(MaxProperty, value); }
-        }
+        public static DependencyProperty LevelDbProperty = DependencyProperty.Register("LevelDb", typeof(double), typeof(AudioInWPF));
+        public static DependencyProperty LevelDbPercentProperty = DependencyProperty.Register("LevelDbPercent", typeof(double), typeof(AudioInWPF));
 
         private readonly FeenPhone.Audio.SampleAggregator aggregator;
         public event EventHandler<FeenPhone.Audio.FftEventArgs> FftCalculated
@@ -690,12 +677,23 @@ namespace FeenPhone.WPFApp.Controls
             }), sender, e);
         }
 
+        double MinDb { get { return -60; } }
+        double MaxDb { get { return 0; } }
+
         void audioGraph_MaximumCalculated(object sender, MaxSampleEventArgs e)
         {
             Dispatcher.BeginInvoke(new Action<object, MaxSampleEventArgs>((s, args) =>
             {
-                Min = args.MinSample;
-                Max = args.MaxSample;
+                double db = 20 * Math.Log10(args.MaxSample);
+                if (db < MinDb)
+                    db = MinDb;
+                if (db > MaxDb)
+                    db = MaxDb;
+                double percent = ((db - MinDb) / (MaxDb - MinDb)) * 100;
+             
+                SetValue(LevelDbProperty, db);
+                SetValue(LevelDbPercentProperty, percent);
+
                 //if (this.selectedVisualization != null)
                 //{
                 //    this.selectedVisualization.OnMaxCalculated(e.MinSample, e.MaxSample);
