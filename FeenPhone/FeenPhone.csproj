@@ -665,6 +665,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="WPFApp\Resources\Images\black-mic-muted.png" />
+    <Resource Include="WPFApp\Resources\Images\black-mic.png" />
+    <Resource Include="WPFApp\Resources\Images\raphael_microphone.png" />
+    <Resource Include="WPFApp\Resources\Images\raphael_microphone_mute.png" />
     <Resource Include="WPFApp\Resources\logos\BirdCircle.png" />
     <Resource Include="WPFApp\Resources\logos\FeenPhone.ico" />
     <Resource Include="WPFApp\Resources\logos\feen3_32_2.png" />

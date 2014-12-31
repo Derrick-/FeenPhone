@@ -19,7 +19,7 @@
         <TextBlock Background="{StaticResource clrBackgroundHeaders}" DockPanel.Dock="Top" TextAlignment="Center">AUDIO IN</TextBlock>
         <DockPanel IsEnabled="{Binding LevelManager, Converter={StaticResource NullToBoolConverter}}">
             <ProgressBar Orientation="Vertical" Width="20" Minimum="0" Maximum="100" Value="{Binding LevelDbPercent}"></ProgressBar>
-            <TextBlock DockPanel.Dock="Bottom" Text="{Binding Path=LevelManager.LevelPercent, StringFormat={}{0:#}%}"/>
+            <TextBlock Visibility="Collapsed" DockPanel.Dock="Bottom" Text="{Binding Path=LevelManager.LevelPercent, StringFormat={}{0:#}%}"/>
             <Slider 
             Orientation="Vertical"
             Minimum="0" 
@@ -43,10 +43,14 @@
                             <Image>
                                 <Image.Style>
                                     <Style>
-                                        <Setter Property="Image.Source" Value="/FeenPhone;component/WPFApp/Resources/Images/audio-volume-muted.png" />
+                                        <!--<Setter Property="Image.Source" Value="/FeenPhone;component/WPFApp/Resources/Images/audio-volume-muted.png" />-->
+                                        <!--<Setter Property="Image.Source" Value="/FeenPhone;component/WPFApp/Resources/Images/black-mic-muted.png" />-->
+                                        <Setter Property="Image.Source" Value="/FeenPhone;component/WPFApp/Resources/Images/raphael_microphone_mute.png" />
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsChecked,RelativeSource={RelativeSource AncestorType={x:Type ToggleButton}}}" Value="True">
-                                                <Setter Property="Image.Source" Value="/FeenPhone;component/WPFApp/Resources/Images/audio-volume-high.png" />
+                                                <!--<Setter Property="Image.Source" Value="/FeenPhone;component/WPFApp/Resources/Images/audio-volume-high.png" />-->
+                                                <!--<Setter Property="Image.Source" Value="/FeenPhone;component/WPFApp/Resources/Images/black-mic.png" />-->
+                                                <Setter Property="Image.Source" Value="/FeenPhone;component/WPFApp/Resources/Images/raphael_microphone.png" />
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
