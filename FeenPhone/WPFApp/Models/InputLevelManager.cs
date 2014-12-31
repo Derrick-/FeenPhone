@@ -79,7 +79,8 @@ namespace FeenPhone.WPFApp.Models
             var target = d as InputLevelManager;
             if (target != null)
             {
-                target.HandleLevelChange((double)(e.NewValue));
+                if (!target.SuppressLevelEvent)
+                    target.HandleLevelChange((double)(e.NewValue));
             }
         }
 
@@ -88,38 +89,44 @@ namespace FeenPhone.WPFApp.Models
             var target = d as InputLevelManager;
             if (target != null)
             {
-                target.Dispatcher.BeginInvoke(new Action(() =>
+                if (!target.SuppressLevelEvent)
                 {
-                    double newValue = ((double)e.NewValue) / 100.0;
-                    double delta = target.Max - target.Min;
-                    double offset = (delta * newValue);
-                    target.Level = target.Min + offset;
-                }));
+                    target.Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        double newValue = ((double)e.NewValue) / 100.0;
+                        double delta = target.Max - target.Min;
+                        double offset = (delta * newValue);
+                        target.Level = target.Min + offset;
+                    }));
+                }
             }
         }
 
         private void HandleLevelChange(double newLevel)
         {
-            Dispatcher.BeginInvoke(new Action(() =>
+            if (newLevel >= Min && newLevel <= Max)
             {
-                switch (Provider)
+                Dispatcher.BeginInvoke(new Action(() =>
                 {
-                    case DeviceProvider.Wave:
-                        {
-                            if (waveVolumeControl != null)
-                                waveVolumeControl.Value = (uint)newLevel;
-                            break;
-                        }
-                    case DeviceProvider.Wasapi:
-                        {
-                            if (mmDeviceVolume != null)
-                                mmDeviceVolume.MasterVolumeLevel = (float)newLevel;
-                            break;
-                        }
+                    switch (Provider)
+                    {
+                        case DeviceProvider.Wave:
+                            {
+                                if (waveVolumeControl != null)
+                                    waveVolumeControl.Value = (uint)newLevel;
+                                break;
+                            }
+                        case DeviceProvider.Wasapi:
+                            {
+                                if (mmDeviceVolume != null)
+                                    mmDeviceVolume.MasterVolumeLevel = (float)newLevel;
+                                break;
+                            }
 
-                }
-                UpdatePercent();
-            }));
+                    }
+                    UpdatePercent();
+                }));
+            }
         }
 
         private void UpdatePercent()
@@ -156,11 +163,28 @@ namespace FeenPhone.WPFApp.Models
 
             if (mmDeviceVolume != null)
             {
+                mmDeviceVolume.OnVolumeNotification += mmDeviceVolume_OnVolumeNotification;
+
                 Min = mmDeviceVolume.VolumeRange.MinDecibels;
                 Max = mmDeviceVolume.VolumeRange.MaxDecibels;
                 Level = mmDeviceVolume.MasterVolumeLevel;
             }
 
+        }
+
+        private volatile bool SuppressLevelEvent = false;
+        private object SuppressLevelLock = new object();
+        void mmDeviceVolume_OnVolumeNotification(AudioVolumeNotificationData data)
+        {
+            Dispatcher.BeginInvoke(new Action<float>((level) =>
+            {
+                lock (SuppressLevelLock)
+                {
+                    SuppressLevelEvent = true;
+                    LevelPercent = level;
+                    SuppressLevelEvent = false;
+                }
+            }), data.MasterVolume);
         }
 
         bool isDisposed = false;
