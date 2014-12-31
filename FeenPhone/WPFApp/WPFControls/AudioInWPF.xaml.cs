@@ -526,7 +526,7 @@ namespace FeenPhone.WPFApp.Controls
                     waveIn.WaveFormat = deviceFormat;
                     w.ShareMode = shareMode;
 
-                    LevelManager = new InputLevelManager(w);
+                    LevelManager = new InputLevelManager(w, mmdevice);
                 }
                 else
                 {
