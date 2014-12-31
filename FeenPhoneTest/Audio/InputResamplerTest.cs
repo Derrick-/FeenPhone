@@ -15,6 +15,26 @@ namespace FeenPhoneTest.Audio
         }
 
         [TestMethod]
+        public void PcmToFloatAndBackTest()
+        {
+            for (int i = 0; i < 200; i++)
+            {
+                short sample = RandomPCMSample();
+                float floatResult = InputResampler.PCMtoFloat(sample);
+                int shortResult = InputResampler.FloatToPCM(floatResult);
+
+                int delta = Math.Abs(sample - shortResult);
+                Assert.IsTrue(delta < 2, "Conversion to float and back should be within one unit. Delta was {0}", delta);
+            }
+        }
+
+        static Random rnd = new Random();
+        private static short RandomPCMSample()
+        {
+            return (short)(rnd.Next(short.MinValue, short.MaxValue));
+        }
+
+        [TestMethod]
         public void ChannelCountChangeTest()
         {
             int samples = 1000;

@@ -18,6 +18,7 @@
     <DockPanel>
         <TextBlock Background="{StaticResource clrBackgroundHeaders}" DockPanel.Dock="Top" TextAlignment="Center">AUDIO IN</TextBlock>
         <DockPanel IsEnabled="{Binding LevelManager, Converter={StaticResource NullToBoolConverter}}">
+            <ProgressBar Orientation="Vertical" Width="20" Minimum="0" Maximum="1.0" Value="{Binding Max}"></ProgressBar>
             <TextBlock DockPanel.Dock="Bottom" Text="{Binding Path=LevelManager.LevelPercent, StringFormat={}{0:#}%}"/>
             <Slider 
             Orientation="Vertical"

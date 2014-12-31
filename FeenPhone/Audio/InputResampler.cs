@@ -25,26 +25,26 @@ namespace FeenPhone.Audio
         static WaveFormat lastResampleSourceFormat;
         static WaveFormat lastResampleDestFormat;
 
-        public static byte[] Resample(float[] ieeeSamples, int samples, WaveFormat sourceFormat, WaveFormat destFormat, out int resultLength)
+        public static byte[] Resample(float[] ieeeSamples, int samples, WaveFormat sourceFormat, WaveFormat destPcmFormat, out int resultLength)
         {
             if (EnableTraces)
                 Trace.WriteLine(string.Format("Resample {6}bytes {0} {1} {2} to {3} {4} {5}",
                     sourceFormat.Encoding, sourceFormat.BitsPerSample, sourceFormat.SampleRate,
-                    destFormat.Encoding, destFormat.BitsPerSample, destFormat.SampleRate, samples));
+                    destPcmFormat.Encoding, destPcmFormat.BitsPerSample, destPcmFormat.SampleRate, samples));
 
             int newLength;
             byte[] toResample = IeeeTo16Bit(ieeeSamples, samples, sourceFormat, out newLength);
             sourceFormat = new WaveFormat(sourceFormat.SampleRate, 16, sourceFormat.Channels);
 
-            return ResamplePcm(ref toResample, ref newLength, sourceFormat, destFormat, out resultLength);
+            return ResamplePcm(ref toResample, ref newLength, sourceFormat, destPcmFormat, out resultLength);
         }
 
-        public static byte[] Resample(byte[] toResample, int sourceLength, WaveFormat sourceFormat, WaveFormat destFormat, out int resultLength)
+        public static byte[] Resample(byte[] toResample, int sourceLength, WaveFormat sourceFormat, WaveFormat destPcmFormat, out int resultLength)
         {
             if (EnableTraces)
                 Trace.WriteLine(string.Format("Resample {6}bytes {0} {1} {2} to {3} {4} {5}",
                     sourceFormat.Encoding, sourceFormat.BitsPerSample, sourceFormat.SampleRate,
-                    destFormat.Encoding, destFormat.BitsPerSample, destFormat.SampleRate, sourceLength));
+                    destPcmFormat.Encoding, destPcmFormat.BitsPerSample, destPcmFormat.SampleRate, sourceLength));
 
             if (sourceFormat.Encoding == WaveFormatEncoding.IeeeFloat)
             {
@@ -52,36 +52,39 @@ namespace FeenPhone.Audio
                 sourceFormat = new WaveFormat(sourceFormat.SampleRate, 16, sourceFormat.Channels);
             }
 
-            return ResamplePcm(ref toResample, ref sourceLength, sourceFormat, destFormat, out resultLength);
+            return ResamplePcm(ref toResample, ref sourceLength, sourceFormat, destPcmFormat, out resultLength);
         }
 
-        private static byte[] ResamplePcm(ref byte[] toResample, ref int sourceLength, WaveFormat sourceFormat, WaveFormat destFormat, out int resultLength)
+        private static byte[] ResamplePcm(ref byte[] toResample, ref int sourceLength, WaveFormat sourceFormat, WaveFormat destPcmFormat, out int resultLength)
         {
-            if (resampleRateStream != null && (!lastResampleSourceFormat.Equals(sourceFormat) || !lastResampleDestFormat.Equals(destFormat)))
+
+            Debug.Assert(destPcmFormat.Encoding == WaveFormatEncoding.Pcm, "Codec format must be PCM");
+
+            if (resampleRateStream != null && (!lastResampleSourceFormat.Equals(sourceFormat) || !lastResampleDestFormat.Equals(destPcmFormat)))
             {
                 resampleRateStream.Dispose();
                 resampleRateStream = null;
             }
             if (resampleRateStream == null)
             {
-                WaveFormat sourceRateFormat = new WaveFormat(sourceFormat.SampleRate, sourceFormat.BitsPerSample, destFormat.Channels);
-                resampleRateStream = new AcmStream(sourceRateFormat, destFormat);
-                if (sourceFormat.Channels != destFormat.Channels)
+                WaveFormat sourceRateFormat = new WaveFormat(sourceFormat.SampleRate, sourceFormat.BitsPerSample, destPcmFormat.Channels);
+                resampleRateStream = new AcmStream(sourceRateFormat, destPcmFormat);
+                if (sourceFormat.Channels != destPcmFormat.Channels)
                 {
-                    WaveFormat destChanFormat = new WaveFormat(sourceFormat.SampleRate, sourceFormat.BitsPerSample, destFormat.Channels);
+                    WaveFormat destChanFormat = new WaveFormat(sourceFormat.SampleRate, sourceFormat.BitsPerSample, destPcmFormat.Channels);
                     if (resampleChannelStream != null)
                         resampleChannelStream.Dispose();
                     resampleChannelStream = new AcmStream(sourceFormat, destChanFormat);
                 }
                 lastResampleSourceFormat = sourceFormat;
-                lastResampleDestFormat = destFormat;
+                lastResampleDestFormat = destPcmFormat;
             }
 
             int bytesConverted;
 
-            if (sourceFormat.Channels != destFormat.Channels)
+            if (sourceFormat.Channels != destPcmFormat.Channels)
             {
-                if (destFormat.Channels == 1 && sourceFormat.Channels == 2)
+                if (destPcmFormat.Channels == 1 && sourceFormat.Channels == 2)
                 {
                     toResample = MixStereoToMono(toResample, sourceLength);
                     sourceLength = toResample.Length;
@@ -157,12 +160,9 @@ namespace FeenPhone.Audio
             for (int n = 0; n < samples; n++)
             {
                 float sample32 = bufferF[n];
-                if (sample32 > 1.0f)
-                    sample32 = 1.0f;
-                if (sample32 < -1.0f)
-                    sample32 = -1.0f;
+                sample32 = ClipFloatSample(sample32);
 
-                destWaveBuffer.ShortBuffer[destOffset++] = (short)(sample32 * IeeeFloatToPcmOffset);
+                destWaveBuffer.ShortBuffer[destOffset++] = FloatToPCM(sample32);
             }
 
             newLength = samples * 2;
@@ -173,6 +173,37 @@ namespace FeenPhone.Audio
                 (newLength / (16 / 8)) / sourceFormat.Channels / (sourceFormat.SampleRate / 1000)));
 
             return bufferB;
+        }
+
+        public static short FloatToPCM(float sample32)
+        {
+            return (short)(sample32 * IeeeFloatToPcmOffset);
+        }
+
+        public static float PCMtoFloat(byte[] samples, int sampleIndex)
+        {
+            unsafe
+            {
+                fixed (byte* p = samples)
+                {
+                    short sample = *((short*)p + sampleIndex);
+                    return PCMtoFloat(sample);
+                }
+            }
+        }
+
+        public static float PCMtoFloat(short sample32)
+        {
+            return (float)(sample32 / IeeeFloatToPcmOffset);
+        }
+
+        private static float ClipFloatSample(float sample32)
+        {
+            if (sample32 > 1.0f)
+                sample32 = 1.0f;
+            if (sample32 < -1.0f)
+                sample32 = -1.0f;
+            return sample32;
         }
 
         public static float[] ReadIeeeWav(byte[] toResample, int length, WaveFormat sourceFormat)

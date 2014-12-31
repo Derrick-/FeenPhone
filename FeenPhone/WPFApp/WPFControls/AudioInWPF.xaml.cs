@@ -431,47 +431,79 @@ namespace FeenPhone.WPFApp.Controls
             {
                 this.codec = ((CodecComboItem)comboBoxCodecs.SelectedItem).Codec;
 
+                var deviceFormat = WaveFormat.CreateIeeeFloatWaveFormat(codec.RecordFormat.SampleRate, codec.RecordFormat.Channels);
                 bool canUseExclusive = false;
 
                 if (SelectedInputSource.Provider == DeviceProvider.Wasapi)
                 {
                     var mmdevice = SelectedInputSource.MMDevice;
 
-                    WaveFormat deviceFormat = mmdevice.AudioClient.MixFormat;
-
-                    if (mmdevice.AudioClient.IsFormatSupported(AudioClientShareMode.Exclusive, codec.RecordFormat))
+                    WaveFormatExtensible bestMatch;
+                    canUseExclusive = mmdevice.AudioClient.IsFormatSupported(AudioClientShareMode.Exclusive, deviceFormat, out bestMatch);
+                    if (canUseExclusive && shouldTryUseExclusive)
                     {
-                        canUseExclusive = true;
-                        deviceFormat = codec.RecordFormat;
-                    }
-                    else if (mmdevice.AudioClient.IsFormatSupported(AudioClientShareMode.Shared, codec.RecordFormat))
-                    {
-                        canUseExclusive = false;
-                        deviceFormat = codec.RecordFormat;
-                    }
-                    else if (deviceFormat.BitsPerSample != 16 || deviceFormat.Encoding != WaveFormatEncoding.Pcm)
-                    {
-                        WaveFormat altFormat = new WaveFormat(deviceFormat.SampleRate, 16, deviceFormat.Channels);
-
-                        if (mmdevice.AudioClient.IsFormatSupported(AudioClientShareMode.Exclusive, altFormat))
-                            canUseExclusive = true;
-                        else if (mmdevice.AudioClient.IsFormatSupported(AudioClientShareMode.Shared, altFormat))
-                            canUseExclusive = false;
-                        else
-                            throw new Exception("Device does not support 16bit PCM, or device is in use");
-
-                        deviceFormat = altFormat;
-
-                        Console.WriteLine("Initializing Wasapi\n  Device: {0}\n  Format: {1}\n  Mode: {2}\n  Resampling: {3}",
-                            mmdevice.FriendlyName,
-                            deviceFormat,
-                            canUseExclusive ? "Exclusive" : "Shared",
-                            deviceFormat.Equals(codec.RecordFormat) ? "NO" : "YES");
-
+                        if (bestMatch != null)
+                            deviceFormat = bestMatch;
                     }
                     else
                     {
-                        canUseExclusive = mmdevice.AudioClient.IsFormatSupported(AudioClientShareMode.Exclusive, deviceFormat);
+                        mmdevice.AudioClient.IsFormatSupported(AudioClientShareMode.Shared, deviceFormat, out bestMatch);
+                        if (bestMatch != null)
+                            deviceFormat = bestMatch;
+                    }
+
+
+                    if (deviceFormat.Encoding != WaveFormatEncoding.IeeeFloat && deviceFormat.BitsPerSample != 16)
+                    {
+                        deviceFormat = mmdevice.AudioClient.MixFormat;
+
+                        if (mmdevice.AudioClient.IsFormatSupported(AudioClientShareMode.Exclusive, codec.RecordFormat))
+                        {
+                            canUseExclusive = true;
+                            deviceFormat = codec.RecordFormat;
+                        }
+                        else if (mmdevice.AudioClient.IsFormatSupported(AudioClientShareMode.Shared, codec.RecordFormat))
+                        {
+                            canUseExclusive = false;
+                            deviceFormat = codec.RecordFormat;
+                        }
+                        else
+                        {
+                            WaveFormat newFormat;
+                            WaveFormat altWaveFormat = new WaveFormat(deviceFormat.SampleRate, 16, deviceFormat.Channels);
+                            WaveFormat altFloatFormat = WaveFormat.CreateIeeeFloatWaveFormat(mmdevice.AudioClient.MixFormat.SampleRate, mmdevice.AudioClient.MixFormat.Channels);
+
+                            if (mmdevice.AudioClient.IsFormatSupported(AudioClientShareMode.Exclusive, altFloatFormat))
+                            {
+                                canUseExclusive = true;
+                                newFormat = altFloatFormat;
+                            }
+                            else if (mmdevice.AudioClient.IsFormatSupported(AudioClientShareMode.Exclusive, altWaveFormat))
+                            {
+                                canUseExclusive = true;
+                                newFormat = altWaveFormat;
+                            }
+                            else if (mmdevice.AudioClient.IsFormatSupported(AudioClientShareMode.Shared, altFloatFormat))
+                            {
+                                canUseExclusive = false;
+                                newFormat = altFloatFormat;
+                            }
+                            else if (mmdevice.AudioClient.IsFormatSupported(AudioClientShareMode.Shared, altWaveFormat))
+                            {
+                                canUseExclusive = false;
+                                newFormat = altWaveFormat;
+                            }
+                            else
+                                throw new Exception("Device does not support 16bit PCM, or device is in use");
+
+                            deviceFormat = newFormat;
+
+                            Console.WriteLine("Initializing Wasapi\n  Device: {0}\n  Format: {1}\n  Mode: {2}\n  Resampling: {3}",
+                                mmdevice.FriendlyName,
+                                deviceFormat,
+                                canUseExclusive ? "Exclusive" : "Shared",
+                                deviceFormat.Equals(codec.RecordFormat) ? "NO" : "YES");
+                        }
                     }
 
                     AudioClientShareMode shareMode;
@@ -503,7 +535,7 @@ namespace FeenPhone.WPFApp.Controls
                     w.DeviceNumber = SelectedInputSource.WavDeviceNumber;
                     waveIn = w;
 
-                    waveIn.WaveFormat = codec.RecordFormat;
+                    waveIn.WaveFormat = deviceFormat; // codec.RecordFormat;
                     canUseExclusive = false;
 
                     LevelManager = new InputLevelManager(w);
@@ -585,15 +617,20 @@ namespace FeenPhone.WPFApp.Controls
                         {
                             if (waveIn.WaveFormat != codec.RecordFormat)
                             {
-                                if(waveIn.WaveFormat.Encoding == WaveFormatEncoding.IeeeFloat)
+                                if (waveIn.WaveFormat.Encoding == WaveFormatEncoding.IeeeFloat)
                                 {
                                     var floatSamples = InputResampler.ReadIeeeWav(toEncode, args.BytesRecorded, waveIn.WaveFormat);
                                     foreach (var sample in floatSamples)
                                         aggregator.Add(sample);
-                                    toEncode = InputResampler.Resample(floatSamples, args.BytesRecorded, waveIn.WaveFormat, codec.RecordFormat, out length);
+                                    toEncode = InputResampler.Resample(floatSamples, floatSamples.Length, waveIn.WaveFormat, codec.RecordFormat, out length);
                                 }
                                 else
+                                {
+                                    for (int i = 0; i < args.BytesRecorded + 1; i += 2)
+                                        aggregator.Add(InputResampler.PCMtoFloat(toEncode, i / 2));
+
                                     toEncode = InputResampler.Resample(toEncode, args.BytesRecorded, waveIn.WaveFormat, codec.RecordFormat, out length);
+                                }
                             }
                             if (toEncode == null)
                             {
@@ -612,20 +649,20 @@ namespace FeenPhone.WPFApp.Controls
                 }), waveInArgs);
         }
 
-        public static DependencyProperty MinProperty = DependencyProperty.Register("Min", typeof(int), typeof(AudioInWPF));
+        public static DependencyProperty MinProperty = DependencyProperty.Register("Min", typeof(float), typeof(AudioInWPF));
         float _MinUnscaled;
         public float Min
         {
             get { return _MinUnscaled; }
-            set { _MinUnscaled = value; SetValue(MinProperty, (int)(value * 100)); }
+            set { _MinUnscaled = value; SetValue(MinProperty, value); }
         }
 
-        public static DependencyProperty MaxProperty = DependencyProperty.Register("Max", typeof(int), typeof(AudioInWPF));
+        public static DependencyProperty MaxProperty = DependencyProperty.Register("Max", typeof(float), typeof(AudioInWPF));
         float _MaxUnscaled;
         public float Max
         {
             get { return _MaxUnscaled; }
-            set { _MaxUnscaled = value; SetValue(MaxProperty, (int)(value * 100)); }
+            set { _MaxUnscaled = value; SetValue(MaxProperty, value); }
         }
 
         private readonly FeenPhone.Audio.SampleAggregator aggregator;
@@ -659,7 +696,6 @@ namespace FeenPhone.WPFApp.Controls
             {
                 Min = args.MinSample;
                 Max = args.MaxSample;
-
                 //if (this.selectedVisualization != null)
                 //{
                 //    this.selectedVisualization.OnMaxCalculated(e.MinSample, e.MaxSample);
