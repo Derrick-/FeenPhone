@@ -9,7 +9,7 @@
     <DockPanel Background="GhostWhite">
         <TextBlock Background="{StaticResource clrBackgroundHeaders}" DockPanel.Dock="Top" TextAlignment="Center" TextWrapping="Wrap">LOG</TextBlock>
         <ScrollViewer Name="LogScroller">
-            <TextBlock Name="log"></TextBlock>
+            <TextBox IsReadOnly="True" Name="log"></TextBox>
         </ScrollViewer>
     </DockPanel>
 </UserControl>

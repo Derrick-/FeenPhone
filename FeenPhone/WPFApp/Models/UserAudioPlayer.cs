@@ -1,4 +1,5 @@
-﻿using FeenPhone.Audio;
+﻿using Alienseed.BaseNetworkServer.Accounting;
+using FeenPhone.Audio;
 using FeenPhone.WPFApp.Controls;
 using NAudio.CoreAudioApi;
 using NAudio.Wave;
@@ -25,6 +26,8 @@ namespace FeenPhone.WPFApp.Models
 
         AudioOutWPF Parent;
         public Guid UserID { get; private set; }
+        public IUser User { get; private set; }
+        public string Username { get; private set; }
 
         Audio.Codecs.CodecID? LastCodec = null;
         SampleChannel sampleChannel;
@@ -40,6 +43,10 @@ namespace FeenPhone.WPFApp.Models
             
             Parent = parent;
             this.UserID = userID;
+
+            User=Accounting.AccountHandler.FindUser(userID);
+            if (User != null)
+                this.Username = User.Nickname;
 
             aggregator = new FeenPhone.Audio.SampleAggregator();
             aggregator.NotificationCount = 882;
