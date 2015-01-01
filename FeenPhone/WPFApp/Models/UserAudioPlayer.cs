@@ -214,6 +214,12 @@ namespace FeenPhone.WPFApp.Models
                 byte[] decoded = remoteCodec.Decode(encoded, encoded.Length);
                 int length = decoded.Length;
 
+                var volumeScalar=LevelManager.LevelScalar;
+                if(volumeScalar < 1.0)
+                {
+                    InputResampler.ScalePCM16Volume(ref decoded, length, volumeScalar);
+                }
+
                 if (length > 0 && ShouldDropSilence)
                 {
                     int dropped = DropSilence(silenceThreshhold, ref decoded, ref length);
@@ -318,6 +324,7 @@ namespace FeenPhone.WPFApp.Models
             waveOut.Play();
 
             LevelManager = new AudioLevelManager();
+            LevelManager.SetValue(AudioLevelManager.IsAttachedProperty, true);
 
             OutputFormat = codec.RecordFormat.ToString();
         }
