@@ -38,6 +38,9 @@ namespace FeenPhone.WPFApp.Controls
 
         public static DependencyProperty AudioPlayersProperty = DependencyProperty.Register("AudioPlayers", typeof(ObservableCollection<UserAudioPlayerWPF>), typeof(AudioOutWPF), new PropertyMetadata(AudioPlayers));
 
+        public static DependencyProperty TotalOutputLevelPercentProperty = DependencyProperty.Register("TotalOutputLevelPercent", typeof(double), typeof(AudioOutWPF), new PropertyMetadata(0.0));
+        public static DependencyProperty LevelManagerProperty = DependencyProperty.Register("LevelManager", typeof(AudioLevelManager), typeof(AudioOutWPF), new PropertyMetadata(null));
+
         public OutputDeviceModel SelectedOutput
         {
             get { return (OutputDeviceModel)this.GetValue(SelectedOutputProperty); }
@@ -50,11 +53,40 @@ namespace FeenPhone.WPFApp.Controls
             set { this.SetValue(SelectedOutputIndexProperty, value); }
         }
 
+        private AudioLevelManager LevelManager
+        {
+            get { return (AudioLevelManager)this.GetValue(LevelManagerProperty); }
+            set { this.SetValue(LevelManagerProperty, value); }
+        }
+
         private static void OnOutputDeviceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var target = d as AudioOutWPF;
             if (d != null)
+            {
                 target.StopAll();
+
+                target.InitLevelManager();
+            }
+        }
+
+        private void InitLevelManager()
+        {
+            var output = SelectedOutput;
+            if (output != null)
+            {
+                switch (output.Provider)
+                {
+                    case DeviceProvider.Wasapi:
+                        LevelManager = new AudioOutLevelManager(output.MMDevice);
+                        break;
+                    default:
+                        LevelManager = null;
+                        break;
+                }
+            }
+            else
+                LevelManager = null;
         }
 
         private void StopAll()
@@ -82,6 +114,14 @@ namespace FeenPhone.WPFApp.Controls
 
             AudioEvents.OnAudioDeviceAdded += AudioEvents_OnAudioDeviceAdded;
             AudioEvents.OnAudioDeviceRemoved += AudioEvents_OnAudioDeviceRemoved;
+
+            UserAudioPlayerWPF.AnyLevelDbChanged += OnAnyLevelDbChanged;
+        }
+
+        private void OnAnyLevelDbChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            var total = AudioPlayers.Where(m => m.Player != null && m.Player.VisSource != null).Sum(m => m.Player.VisSource.LevelDbPercent);
+            SetValue(TotalOutputLevelPercentProperty, total);
         }
 
         private void AudioEvents_OnAudioDeviceAdded(object sender, AudioEvents.MMDeviceAddedRemovedArgs e)

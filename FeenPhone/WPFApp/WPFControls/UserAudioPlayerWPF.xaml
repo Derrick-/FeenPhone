@@ -7,6 +7,7 @@
              Background="{StaticResource clrBackgroundPrimary}"
              d:DesignWidth="800">
     <DockPanel>
+        <ProgressBar Orientation="Vertical" Width="20" Minimum="0" Maximum="100" Value="{Binding VisSource.LevelDbPercent}"></ProgressBar>
         <Slider 
             Orientation="Vertical"
             Minimum="0" 
@@ -14,7 +15,6 @@
             Value="{Binding LevelManager.LevelPercent, Mode=TwoWay}" 
             IsEnabled="{Binding LevelManager.IsAttached}" 
         />
-        <ProgressBar Orientation="Vertical" Width="20" Minimum="0" Maximum="100" Value="{Binding VisSource.LevelDbPercent}"></ProgressBar>
         <StackPanel>
             <WrapPanel>
                 <Label>Username</Label>

@@ -530,7 +530,7 @@ namespace FeenPhone.WPFApp.Controls
                     waveIn.WaveFormat = deviceFormat;
                     w.ShareMode = shareMode;
 
-                    LevelManager = new AudioLevelManager(w, mmdevice);
+                    LevelManager = new AudioInLevelManager(w, mmdevice);
                 }
                 else
                 {
@@ -542,7 +542,7 @@ namespace FeenPhone.WPFApp.Controls
                     waveIn.WaveFormat = deviceFormat; // codec.RecordFormat;
                     canUseExclusive = false;
 
-                    LevelManager = new AudioLevelManager(w);
+                    LevelManager = new AudioInLevelManager(w);
                 }
 
                 waveIn.DataAvailable += waveIn_DataAvailable;

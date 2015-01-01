@@ -12,7 +12,55 @@ using System.Windows.Threading;
 
 namespace FeenPhone.WPFApp.Models
 {
-    class AudioLevelManager : DependencyObject, IDisposable
+    class AudioInLevelManager : AudioLevelManager
+    {
+        private readonly WasapiCapture wasapiInDevice;
+
+        public AudioInLevelManager(WaveIn waveDevice) : base(waveDevice)
+        {
+            LoadSettings();
+        }
+
+        public AudioInLevelManager(WasapiCapture waspicapture, MMDevice mmdevice)  : base(mmdevice, DeviceType.In)
+        {
+            LoadSettings();
+            this.wasapiInDevice = waspicapture;
+        }
+
+        private void LoadSettings()
+        {
+            var settings = Settings.Container;
+            Level = settings.DefaultInputLevel;
+        }
+
+        private void SaveSettings()
+        {
+            var settings = Settings.Container;
+            settings.DefaultInputLevel = Level;
+        }
+
+        public override void Dispose()
+        {
+            if (!isDisposed)
+                SaveSettings();
+            base.Dispose();
+        }
+    }
+
+    class AudioOutLevelManager : AudioLevelManager
+    {
+        public AudioOutLevelManager(MMDevice mmdevice) : base(mmdevice, DeviceType.Out) { }
+    }
+
+    class AudioLevelManagerDisconnected : AudioLevelManager
+    {
+        public AudioLevelManagerDisconnected() : base() 
+        {
+            SetValue(AudioLevelManager.IsAttachedProperty, true);
+        }
+    }
+
+    abstract class AudioLevelManager : DependencyObject, IDisposable
     {
 
         public enum DeviceType
@@ -22,15 +70,12 @@ namespace FeenPhone.WPFApp.Models
             Out
         };
 
-        public DeviceProvider Provider { get; private set; }
-        public DeviceType DeviceDiection { get; private set; }
+        public DeviceProvider Provider { get; protected set; }
+        public DeviceType DeviceDirection { get; private set; }
 
         private readonly WaveIn waveInDevice;
-        private readonly WaveOut waveOutDevice;
-        private readonly UnsignedMixerControl waveVolumeControl;
+        protected UnsignedMixerControl waveVolumeControl;
 
-        private readonly WasapiCapture wasapiInDevice;
-        private readonly WasapiOut wasapiOutDevice;
         private readonly MMDevice mmdevice;
         private readonly AudioEndpointVolume mmDeviceVolume;
 
@@ -41,24 +86,12 @@ namespace FeenPhone.WPFApp.Models
         public static DependencyProperty LevelProperty = DependencyProperty.Register("Level", typeof(double), typeof(AudioLevelManager), new PropertyMetadata((double)50, OnLevelChanged));
         public static DependencyProperty LevelPercentProperty = DependencyProperty.Register("LevelPercent", typeof(double), typeof(AudioLevelManager), new PropertyMetadata(50.0, OnLevelPercentChanged));
 
-        public AudioLevelManager()
+        protected AudioLevelManager()
         {
             Provider = DeviceProvider.Unknown;
-            DeviceDiection = DeviceType.Unknown;
+            DeviceDirection = DeviceType.Unknown;
             Min = 0.0;
             Level = Max = 1.0;
-        }
-
-        private void LoadInputSettings()
-        {
-            var settings = Settings.Container;
-            Level = settings.DefaultInputLevel;
-        }
-
-        private void SaveInputSettings()
-        {
-            var settings = Settings.Container;
-            settings.DefaultInputLevel = Level;
         }
 
         public double Min
@@ -126,15 +159,8 @@ namespace FeenPhone.WPFApp.Models
                     {
                         case DeviceProvider.Wave:
                             {
-                                if (DeviceDiection == DeviceType.In)
-                                {
-                                    if (waveVolumeControl != null)
-                                        waveVolumeControl.Value = (uint)newLevel;
-                                }
-                                else
-                                {
-                                    waveOutDevice.Volume = (float)newLevel;
-                                }
+                                if (waveVolumeControl != null)
+                                    waveVolumeControl.Value = (uint)newLevel;
                                 break;
                             }
                         case DeviceProvider.Wasapi:
@@ -157,12 +183,10 @@ namespace FeenPhone.WPFApp.Models
             LevelScalar = offset / delta;
         }
 
-        public AudioLevelManager(WaveIn waveDevice)
+        protected AudioLevelManager(WaveIn waveDevice)
         {
-            LoadInputSettings();
-
             Provider = DeviceProvider.Wave;
-            DeviceDiection = DeviceType.In;
+            DeviceDirection = DeviceType.In;
             this.waveInDevice = waveDevice;
 
             waveVolumeControl = GetVolumeMixerControlForInputLine(waveDevice.GetMixerLine());
@@ -176,37 +200,11 @@ namespace FeenPhone.WPFApp.Models
             }
         }
 
-        public AudioLevelManager(WaveOut waveDevice)
-        {
-            Provider = DeviceProvider.Wave;
-            DeviceDiection = DeviceType.Out;
-            this.waveOutDevice = waveDevice;
-
-            Min = 0.0;
-            Max = 1.0;
-            Level = waveDevice.Volume;
-        }
-
-
-        public AudioLevelManager(WasapiCapture waspicapture, MMDevice mmdevice)
-            : this(mmdevice, DeviceType.In)
-        {
-            LoadInputSettings();
-
-            this.wasapiInDevice = waspicapture;
-        }
-
-        public AudioLevelManager(WasapiOut waspiout, MMDevice mmdevice)
-            : this(mmdevice, DeviceType.Out)
-        {
-            this.wasapiOutDevice = waspiout;
-        }
-
-        private AudioLevelManager(MMDevice mmdevice, DeviceType direction)
+        protected AudioLevelManager(MMDevice mmdevice, DeviceType direction)
         {
             Provider = DeviceProvider.Wasapi;
 
-            DeviceDiection = direction;
+            DeviceDirection = direction;
 
             this.mmdevice = mmdevice;
 
@@ -239,21 +237,18 @@ namespace FeenPhone.WPFApp.Models
             }), data.MasterVolume);
         }
 
-        bool isDisposed = false;
-        public void Dispose()
+        protected bool isDisposed { get; private set; }
+        public virtual void Dispose()
         {
             if (!isDisposed)
             {
-                if (DeviceDiection == DeviceType.In)
-                    SaveInputSettings();
-
                 SetValue(IsAttachedProperty, false);
                 isDisposed = true;
             }
         }
 
 
-        public UnsignedMixerControl GetVolumeMixerControlForInputLine(MixerLine destination)
+        protected UnsignedMixerControl GetVolumeMixerControlForInputLine(MixerLine destination)
         {
             if (destination.ComponentType == MixerLineComponentType.DestinationWaveIn)
                 foreach (MixerLine source in destination.Sources)
@@ -270,20 +265,26 @@ namespace FeenPhone.WPFApp.Models
             return null;
         }
 
-        public UnsignedMixerControl GetVolumeMixerControlForOutputLine(MixerLine destination)
+        protected UnsignedMixerControl GetVolumeMixerControlForOutputLine(Mixer mixer)
         {
-            if (destination.ComponentType == MixerLineComponentType.DestinationWaveIn)
-                foreach (MixerLine source in destination.Sources)
-                {
-                    if (source.ComponentType == MixerLineComponentType.SourceMicrophone)
+            foreach (var mixerline in mixer.Destinations)
+            {
+                if (mixerline.ComponentType == MixerLineComponentType.DestinationSpeakers ||
+                    mixerline.ComponentType == MixerLineComponentType.DestinationDigital ||
+                    mixerline.ComponentType == MixerLineComponentType.DestinationHeadphones
+                    )
+                    foreach (MixerLine source in mixerline.Sources)
                     {
-                        foreach (MixerControl control in source.Controls)
+                        if (source.ComponentType == MixerLineComponentType.SourceWaveOut)
                         {
-                            if (control.ControlType == MixerControlType.Volume)
-                                return (UnsignedMixerControl)control;
+                            foreach (MixerControl control in source.Controls)
+                            {
+                                if (control.ControlType == MixerControlType.Volume)
+                                    return (UnsignedMixerControl)control;
+                            }
                         }
                     }
-                }
+            }
             return null;
         }
 

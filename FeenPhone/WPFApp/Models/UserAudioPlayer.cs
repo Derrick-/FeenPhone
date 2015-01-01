@@ -323,8 +323,7 @@ namespace FeenPhone.WPFApp.Models
             waveOut.Init(sampleStream);
             waveOut.Play();
 
-            LevelManager = new AudioLevelManager();
-            LevelManager.SetValue(AudioLevelManager.IsAttachedProperty, true);
+            LevelManager = new AudioLevelManagerDisconnected();
 
             OutputFormat = codec.RecordFormat.ToString();
         }

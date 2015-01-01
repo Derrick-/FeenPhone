@@ -21,6 +21,8 @@ namespace FeenPhone.WPFApp.Controls
     /// </summary>
     public partial class UserAudioPlayerWPF : UserControl, IDisposable
     {
+        public static EventHandler<DependencyPropertyChangedEventArgs> AnyLevelDbChanged;
+
         public readonly UserAudioPlayer Player;
 
         public UserAudioPlayerWPF() { }
@@ -30,6 +32,14 @@ namespace FeenPhone.WPFApp.Controls
             Player = new UserAudioPlayer(userID, parent);
             DataContext = Player;
             InitializeComponent();
+
+            Player.VisSource.LevelDbChanged += OnLevelDbChanged;
+        }
+
+        private void OnLevelDbChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (AnyLevelDbChanged != null)
+                AnyLevelDbChanged(sender, e);
         }
 
         public Guid UserID { get { return Player.UserID; } }
@@ -51,6 +61,7 @@ namespace FeenPhone.WPFApp.Controls
 
         public void Dispose()
         {
+            Player.VisSource.LevelDbChanged -= OnLevelDbChanged;
             Player.Dispose();
         }
 

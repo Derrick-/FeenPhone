@@ -10,8 +10,35 @@ namespace FeenPhone.WPFApp.Models
 {
     public class AudioVisualizationSource : DependencyObject
     {
-        public static DependencyProperty LevelDbProperty = DependencyProperty.Register("LevelDb", typeof(double), typeof(AudioVisualizationSource));
+        public event EventHandler<DependencyPropertyChangedEventArgs> LevelDbChanged;
+
+        public static DependencyProperty LevelDbProperty = DependencyProperty.Register("LevelDb", typeof(double), typeof(AudioVisualizationSource), new PropertyMetadata(OnLevelDbChanged));
+
+        private static void OnLevelDbChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            AudioVisualizationSource target = d as AudioVisualizationSource;
+            if (target != null)
+                if (target.LevelDbChanged != null)
+                    target.LevelDbChanged(target, e);
+        }
+
         public static DependencyProperty LevelDbPercentProperty = DependencyProperty.Register("LevelDbPercent", typeof(double), typeof(AudioVisualizationSource));
+        double _LevelDbPercent;
+        public double LevelDbPercent
+        {
+            get
+            {
+                return _LevelDbPercent;
+            }
+            set
+            {
+                _LevelDbPercent = value;
+                SetValue(LevelDbPercentProperty, value);
+
+            }
+        }
+
+
         private Audio.SampleAggregator aggregator;
 
         public AudioVisualizationSource(Audio.SampleAggregator aggregator)
@@ -61,7 +88,7 @@ namespace FeenPhone.WPFApp.Models
                 double percent = ((db - MinDb) / (MaxDb - MinDb)) * 100;
 
                 SetValue(LevelDbProperty, db);
-                SetValue(LevelDbPercentProperty, percent);
+                LevelDbPercent = percent;
             }), sender, e);
         }
 
