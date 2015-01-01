@@ -34,6 +34,8 @@ namespace FeenPhone.WPFApp.Controls
     {
         static ObservableCollection<InputDeviceModel> InputList = new ObservableCollection<InputDeviceModel>();
 
+        public AudioVisualizationSource VisSource { get; private set; }
+
         [ImportMany(typeof(Audio.Codecs.INetworkChatCodec))]
         public IEnumerable<Audio.Codecs.INetworkChatCodec> Codecs { get; set; }
         private IOrderedEnumerable<Audio.Codecs.INetworkChatCodec> CodecsAvailableSorted()
@@ -45,6 +47,8 @@ namespace FeenPhone.WPFApp.Controls
                          select codec;
             return sorted;
         }
+
+        private readonly FeenPhone.Audio.SampleAggregator aggregator;
 
         public AudioInWPF()
         {
@@ -69,8 +73,7 @@ namespace FeenPhone.WPFApp.Controls
             aggregator.NotificationCount = 882;
             aggregator.PerformFFT = true;
 
-            MaximumCalculated += new EventHandler<MaxSampleEventArgs>(audioGraph_MaximumCalculated);
-            FftCalculated += new EventHandler<FftEventArgs>(audioGraph_FftCalculated);
+            VisSource = new AudioVisualizationSource(aggregator);
         }
 
         private bool isFirstConnect = true;
@@ -299,6 +302,8 @@ namespace FeenPhone.WPFApp.Controls
             }
         }
 
+        public static DependencyProperty LevelManagerProperty = DependencyProperty.Register("LevelManager", typeof(AudioLevelManager), typeof(AudioInWPF), new PropertyMetadata(null));
+        
         public static DependencyProperty IsRecordingProperty = DependencyProperty.Register("IsRecording", typeof(bool?), typeof(AudioInWPF), new PropertyMetadata(false, OnIsRecordingChanged));
         public static DependencyProperty InputSourceListProperty = DependencyProperty.Register("InputSourceList", typeof(ObservableCollection<InputDeviceModel>), typeof(AudioInWPF), new PropertyMetadata(InputList));
         public static DependencyProperty SelectedInputSourceProperty = DependencyProperty.Register("SelectedInputSource", typeof(InputDeviceModel), typeof(AudioInWPF), new PropertyMetadata(null, OnSelectedInputSourceChanged));
@@ -414,10 +419,9 @@ namespace FeenPhone.WPFApp.Controls
         }
 
         private IWaveIn waveIn;
-        public static DependencyProperty LevelManagerProperty = DependencyProperty.Register("LevelManager", typeof(InputLevelManager), typeof(AudioInWPF), new PropertyMetadata(null));
-        private InputLevelManager LevelManager
+        private AudioLevelManager LevelManager
         {
-            get { return (InputLevelManager)this.GetValue(LevelManagerProperty); }
+            get { return (AudioLevelManager)this.GetValue(LevelManagerProperty); }
             set { this.SetValue(LevelManagerProperty, value); }
         }
 
@@ -526,7 +530,7 @@ namespace FeenPhone.WPFApp.Controls
                     waveIn.WaveFormat = deviceFormat;
                     w.ShareMode = shareMode;
 
-                    LevelManager = new InputLevelManager(w, mmdevice);
+                    LevelManager = new AudioLevelManager(w, mmdevice);
                 }
                 else
                 {
@@ -538,7 +542,7 @@ namespace FeenPhone.WPFApp.Controls
                     waveIn.WaveFormat = deviceFormat; // codec.RecordFormat;
                     canUseExclusive = false;
 
-                    LevelManager = new InputLevelManager(w);
+                    LevelManager = new AudioLevelManager(w);
                 }
 
                 waveIn.DataAvailable += waveIn_DataAvailable;
@@ -647,58 +651,6 @@ namespace FeenPhone.WPFApp.Controls
                         }
                     }
                 }), waveInArgs);
-        }
-
-        public static DependencyProperty LevelDbProperty = DependencyProperty.Register("LevelDb", typeof(double), typeof(AudioInWPF));
-        public static DependencyProperty LevelDbPercentProperty = DependencyProperty.Register("LevelDbPercent", typeof(double), typeof(AudioInWPF));
-
-        private readonly FeenPhone.Audio.SampleAggregator aggregator;
-        public event EventHandler<FeenPhone.Audio.FftEventArgs> FftCalculated
-        {
-            add { aggregator.FftCalculated += value; }
-            remove { aggregator.FftCalculated -= value; }
-        }
-
-        public event EventHandler<FeenPhone.Audio.MaxSampleEventArgs> MaximumCalculated
-        {
-            add { aggregator.MaximumCalculated += value; }
-            remove { aggregator.MaximumCalculated -= value; }
-        }
-
-        void audioGraph_FftCalculated(object sender, FftEventArgs e)
-        {
-            Dispatcher.BeginInvoke(new Action<object, FftEventArgs>((s, args) =>
-            {
-                //if (this.selectedVisualization != null)
-                //{
-                //    this.selectedVisualization.OnFftCalculated(e.Result);
-                //}
-                //spectrumAnalyser.Update(e.Result);
-            }), sender, e);
-        }
-
-        double MinDb { get { return -60; } }
-        double MaxDb { get { return 0; } }
-
-        void audioGraph_MaximumCalculated(object sender, MaxSampleEventArgs e)
-        {
-            Dispatcher.BeginInvoke(new Action<object, MaxSampleEventArgs>((s, args) =>
-            {
-                double db = 20 * Math.Log10(args.MaxSample);
-                if (db < MinDb)
-                    db = MinDb;
-                if (db > MaxDb)
-                    db = MaxDb;
-                double percent = ((db - MinDb) / (MaxDb - MinDb)) * 100;
-             
-                SetValue(LevelDbProperty, db);
-                SetValue(LevelDbPercentProperty, percent);
-
-                //if (this.selectedVisualization != null)
-                //{
-                //    this.selectedVisualization.OnMaxCalculated(e.MinSample, e.MaxSample);
-                //}
-            }), sender, e);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

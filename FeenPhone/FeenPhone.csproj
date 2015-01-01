@@ -531,8 +531,9 @@
     <Compile Include="Server\Telnet\TelnetServer.cs" />
     <Compile Include="Server\Telnet\TelNetState.cs" />
     <Compile Include="Utils\Timekeeper.cs" />
+    <Compile Include="WPFApp\Models\AudioVisualizationSource.cs" />
     <Compile Include="WPFApp\Models\DeviceModels.cs" />
-    <Compile Include="WPFApp\Models\InputLevelManager.cs" />
+    <Compile Include="WPFApp\Models\AudioLevelManager.cs" />
     <Compile Include="WPFApp\Models\UserAudioPlayer.cs" />
     <Compile Include="WPFApp\Models\UserStatusModel.cs" />
     <Compile Include="WPFApp\Settings.cs" />
@@ -665,6 +666,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="WPFApp\Resources\Images\Headhone_64.png" />
     <Resource Include="WPFApp\Resources\Images\black-mic-muted.png" />
     <Resource Include="WPFApp\Resources\Images\black-mic.png" />
     <Resource Include="WPFApp\Resources\Images\raphael_microphone.png" />

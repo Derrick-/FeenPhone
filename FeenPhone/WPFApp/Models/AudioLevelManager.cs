@@ -12,36 +12,50 @@ using System.Windows.Threading;
 
 namespace FeenPhone.WPFApp.Models
 {
-    class InputLevelManager : DependencyObject, IDisposable
+    class AudioLevelManager : DependencyObject, IDisposable
     {
-        public DeviceProvider Provider { get; private set; }
 
-        private readonly WaveIn waveDevice;
+        public enum DeviceType
+        {
+            Unknown = 0,
+            In,
+            Out
+        };
+
+        public DeviceProvider Provider { get; private set; }
+        public DeviceType DeviceDiection { get; private set; }
+
+        private readonly WaveIn waveInDevice;
+        private readonly WaveOut waveOutDevice;
         private readonly UnsignedMixerControl waveVolumeControl;
 
-        private readonly WasapiCapture wasapi;
+        private readonly WasapiCapture wasapiInDevice;
+        private readonly WasapiOut wasapiOutDevice;
         private readonly MMDevice mmdevice;
         private readonly AudioEndpointVolume mmDeviceVolume;
 
-        public static DependencyProperty IsAttachedProperty = DependencyProperty.Register("IsAttached", typeof(bool), typeof(InputLevelManager), new PropertyMetadata(false));
+        public static DependencyProperty IsAttachedProperty = DependencyProperty.Register("IsAttached", typeof(bool), typeof(AudioLevelManager), new PropertyMetadata(false));
 
-        public static DependencyProperty MinProperty = DependencyProperty.Register("Min", typeof(double), typeof(InputLevelManager), new PropertyMetadata((double)0, OnLevelChanged));
-        public static DependencyProperty MaxProperty = DependencyProperty.Register("Max", typeof(double), typeof(InputLevelManager), new PropertyMetadata((double)100, OnLevelChanged));
-        public static DependencyProperty LevelProperty = DependencyProperty.Register("Level", typeof(double), typeof(InputLevelManager), new PropertyMetadata((double)50, OnLevelChanged));
-        public static DependencyProperty LevelPercentProperty = DependencyProperty.Register("LevelPercent", typeof(double), typeof(InputLevelManager), new PropertyMetadata(50.0, OnLevelPercentChanged));
+        public static DependencyProperty MinProperty = DependencyProperty.Register("Min", typeof(double), typeof(AudioLevelManager), new PropertyMetadata((double)0, OnLevelChanged));
+        public static DependencyProperty MaxProperty = DependencyProperty.Register("Max", typeof(double), typeof(AudioLevelManager), new PropertyMetadata((double)100, OnLevelChanged));
+        public static DependencyProperty LevelProperty = DependencyProperty.Register("Level", typeof(double), typeof(AudioLevelManager), new PropertyMetadata((double)50, OnLevelChanged));
+        public static DependencyProperty LevelPercentProperty = DependencyProperty.Register("LevelPercent", typeof(double), typeof(AudioLevelManager), new PropertyMetadata(50.0, OnLevelPercentChanged));
 
-        public InputLevelManager()
+        public AudioLevelManager()
         {
-            LoadSettings();
+            Provider = DeviceProvider.Unknown;
+            DeviceDiection = DeviceType.Unknown;
+            Min = 0.0;
+            Level = Max = 1.0;
         }
 
-        private void LoadSettings()
+        private void LoadInputSettings()
         {
             var settings = Settings.Container;
             Level = settings.DefaultInputLevel;
         }
 
-        private void SaveSettings()
+        private void SaveInputSettings()
         {
             var settings = Settings.Container;
             settings.DefaultInputLevel = Level;
@@ -63,20 +77,20 @@ namespace FeenPhone.WPFApp.Models
             set { SetValue(LevelProperty, value); }
         }
 
-        double _LevelPercent;
-        public double LevelPercent
+        double _LevelScalar;
+        public double LevelScalar
         {
-            get { return _LevelPercent; }
+            get { return _LevelScalar; }
             set
             {
-                _LevelPercent = value;
+                _LevelScalar = value;
                 SetValue(LevelPercentProperty, value * 100.0);
             }
         }
 
         private static void OnLevelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var target = d as InputLevelManager;
+            var target = d as AudioLevelManager;
             if (target != null)
             {
                 if (!target.SuppressLevelEvent)
@@ -86,7 +100,7 @@ namespace FeenPhone.WPFApp.Models
 
         private static void OnLevelPercentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var target = d as InputLevelManager;
+            var target = d as AudioLevelManager;
             if (target != null)
             {
                 if (!target.SuppressLevelEvent)
@@ -112,8 +126,15 @@ namespace FeenPhone.WPFApp.Models
                     {
                         case DeviceProvider.Wave:
                             {
-                                if (waveVolumeControl != null)
-                                    waveVolumeControl.Value = (uint)newLevel;
+                                if (DeviceDiection == DeviceType.In)
+                                {
+                                    if (waveVolumeControl != null)
+                                        waveVolumeControl.Value = (uint)newLevel;
+                                }
+                                else
+                                {
+                                    waveOutDevice.Volume = (float)newLevel;
+                                }
                                 break;
                             }
                         case DeviceProvider.Wasapi:
@@ -133,15 +154,18 @@ namespace FeenPhone.WPFApp.Models
         {
             double delta = Max - Min;
             double offset = Level - Min;
-            LevelPercent = offset / delta;
+            LevelScalar = offset / delta;
         }
 
-        public InputLevelManager(WaveIn waveDevice)
+        public AudioLevelManager(WaveIn waveDevice)
         {
-            Provider = DeviceProvider.Wave;
-            this.waveDevice = waveDevice;
+            LoadInputSettings();
 
-            waveVolumeControl = GetVolumeMixerControlForLine(waveDevice.GetMixerLine());
+            Provider = DeviceProvider.Wave;
+            DeviceDiection = DeviceType.In;
+            this.waveInDevice = waveDevice;
+
+            waveVolumeControl = GetVolumeMixerControlForInputLine(waveDevice.GetMixerLine());
             SetValue(IsAttachedProperty, waveVolumeControl != null);
 
             if (waveVolumeControl != null)
@@ -152,10 +176,38 @@ namespace FeenPhone.WPFApp.Models
             }
         }
 
-        public InputLevelManager(WasapiCapture waspicapture, MMDevice mmdevice)
+        public AudioLevelManager(WaveOut waveDevice)
+        {
+            Provider = DeviceProvider.Wave;
+            DeviceDiection = DeviceType.Out;
+            this.waveOutDevice = waveDevice;
+
+            Min = 0.0;
+            Max = 1.0;
+            Level = waveDevice.Volume;
+        }
+
+
+        public AudioLevelManager(WasapiCapture waspicapture, MMDevice mmdevice)
+            : this(mmdevice, DeviceType.In)
+        {
+            LoadInputSettings();
+
+            this.wasapiInDevice = waspicapture;
+        }
+
+        public AudioLevelManager(WasapiOut waspiout, MMDevice mmdevice)
+            : this(mmdevice, DeviceType.Out)
+        {
+            this.wasapiOutDevice = waspiout;
+        }
+
+        private AudioLevelManager(MMDevice mmdevice, DeviceType direction)
         {
             Provider = DeviceProvider.Wasapi;
-            this.wasapi = waspicapture;
+
+            DeviceDiection = direction;
+
             this.mmdevice = mmdevice;
 
             mmDeviceVolume = mmdevice.AudioEndpointVolume;
@@ -181,7 +233,7 @@ namespace FeenPhone.WPFApp.Models
                 lock (SuppressLevelLock)
                 {
                     SuppressLevelEvent = true;
-                    LevelPercent = level;
+                    LevelScalar = level;
                     SuppressLevelEvent = false;
                 }
             }), data.MasterVolume);
@@ -192,14 +244,33 @@ namespace FeenPhone.WPFApp.Models
         {
             if (!isDisposed)
             {
-                SaveSettings();
+                if (DeviceDiection == DeviceType.In)
+                    SaveInputSettings();
+
                 SetValue(IsAttachedProperty, false);
                 isDisposed = true;
             }
         }
 
 
-        public UnsignedMixerControl GetVolumeMixerControlForLine(MixerLine destination)
+        public UnsignedMixerControl GetVolumeMixerControlForInputLine(MixerLine destination)
+        {
+            if (destination.ComponentType == MixerLineComponentType.DestinationWaveIn)
+                foreach (MixerLine source in destination.Sources)
+                {
+                    if (source.ComponentType == MixerLineComponentType.SourceMicrophone)
+                    {
+                        foreach (MixerControl control in source.Controls)
+                        {
+                            if (control.ControlType == MixerControlType.Volume)
+                                return (UnsignedMixerControl)control;
+                        }
+                    }
+                }
+            return null;
+        }
+
+        public UnsignedMixerControl GetVolumeMixerControlForOutputLine(MixerLine destination)
         {
             if (destination.ComponentType == MixerLineComponentType.DestinationWaveIn)
                 foreach (MixerLine source in destination.Sources)

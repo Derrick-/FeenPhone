@@ -19,6 +19,9 @@ namespace FeenPhone.WPFApp.Models
 {
     public class UserAudioPlayer : DependencyObject, IDisposable
     {
+        public AudioVisualizationSource VisSource { get; private set; }
+        private readonly FeenPhone.Audio.SampleAggregator aggregator;
+
         [ImportMany(typeof(Audio.Codecs.INetworkChatCodec))]
         public IEnumerable<Audio.Codecs.INetworkChatCodec> Codecs { get; set; }
 
@@ -52,8 +55,7 @@ namespace FeenPhone.WPFApp.Models
             aggregator.NotificationCount = 882;
             aggregator.PerformFFT = true;
 
-            MaximumCalculated += new EventHandler<MaxSampleEventArgs>(audioGraph_MaximumCalculated);
-            FftCalculated += new EventHandler<FftEventArgs>(audioGraph_FftCalculated);
+            VisSource = new AudioVisualizationSource(aggregator);
 
             LastReceived = DateTime.UtcNow;
         }
@@ -71,6 +73,13 @@ namespace FeenPhone.WPFApp.Models
 
         static int BufferWarningDurationMs = 150;
         static int BufferCriticalDurationMs = 300;
+
+        public static DependencyProperty LevelManagerProperty = DependencyProperty.Register("LevelManager", typeof(AudioLevelManager), typeof(UserAudioPlayer), new PropertyMetadata(null));
+        private AudioLevelManager LevelManager
+        {
+            get { return (AudioLevelManager)this.GetValue(LevelManagerProperty); }
+            set { this.SetValue(LevelManagerProperty, value); }
+        }
 
         public static DependencyProperty CodecNameProperty = DependencyProperty.Register("CodecName", typeof(string), typeof(UserAudioPlayer), new PropertyMetadata(null));
         public string CodecName
@@ -93,21 +102,6 @@ namespace FeenPhone.WPFApp.Models
             set { SetValue(UnderRunsProperty, value); }
         }
 
-        public static DependencyProperty MinProperty = DependencyProperty.Register("Min", typeof(int), typeof(UserAudioPlayer));
-        float _MinUnscaled;
-        public float Min
-        {
-            get { return _MinUnscaled; }
-            set { _MinUnscaled = value; SetValue(MinProperty, (int)(value * 100)); }
-        }
-
-        public static DependencyProperty MaxProperty = DependencyProperty.Register("Max", typeof(int), typeof(UserAudioPlayer));
-        float _MaxUnscaled;
-        public float Max
-        {
-            get { return _MaxUnscaled; }
-            set { _MaxUnscaled = value; SetValue(MaxProperty, (int)(value * 100)); }
-        }
         public static DependencyProperty BufferedDurationStringProperty = DependencyProperty.Register("BufferedDurationString", typeof(string), typeof(UserAudioPlayer), new PropertyMetadata(null));
         public static DependencyProperty BufferedDurationProperty = DependencyProperty.Register("BufferedDurationMs", typeof(int), typeof(UserAudioPlayer), new PropertyMetadata(0));
         TimeSpan _BufferedDuration = TimeSpan.Zero;
@@ -323,6 +317,8 @@ namespace FeenPhone.WPFApp.Models
             waveOut.Init(sampleStream);
             waveOut.Play();
 
+            LevelManager = new AudioLevelManager();
+
             OutputFormat = codec.RecordFormat.ToString();
         }
 
@@ -362,46 +358,6 @@ namespace FeenPhone.WPFApp.Models
             waveProvider = null;
             sampleChannel = null;
             sampleStream = null;
-        }
-
-
-        private readonly FeenPhone.Audio.SampleAggregator aggregator;
-        public event EventHandler<FeenPhone.Audio.FftEventArgs> FftCalculated
-        {
-            add { aggregator.FftCalculated += value; }
-            remove { aggregator.FftCalculated -= value; }
-        }
-
-        public event EventHandler<FeenPhone.Audio.MaxSampleEventArgs> MaximumCalculated
-        {
-            add { aggregator.MaximumCalculated += value; }
-            remove { aggregator.MaximumCalculated -= value; }
-        }
-
-        void audioGraph_FftCalculated(object sender, FftEventArgs e)
-        {
-            Dispatcher.BeginInvoke(new Action<object, FftEventArgs>((s, args) =>
-            {
-                //if (this.selectedVisualization != null)
-                //{
-                //    this.selectedVisualization.OnFftCalculated(e.Result);
-                //}
-                //spectrumAnalyser.Update(e.Result);
-            }), sender, e);
-        }
-
-        void audioGraph_MaximumCalculated(object sender, MaxSampleEventArgs e)
-        {
-            Dispatcher.BeginInvoke(new Action<object, MaxSampleEventArgs>((s, args) =>
-            {
-                Min = args.MinSample;
-                Max = args.MaxSample;
-
-                //if (this.selectedVisualization != null)
-                //{
-                //    this.selectedVisualization.OnMaxCalculated(e.MinSample, e.MaxSample);
-                //}
-            }), sender, e);
         }
 
 

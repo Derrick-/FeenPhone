@@ -7,7 +7,14 @@
              Background="{StaticResource clrBackgroundPrimary}"
              d:DesignWidth="800">
     <DockPanel>
-        <ProgressBar DockPanel.Dock="Left" Height="{Binding ElementName=stack, Path=ActualHeight}" Width="20" Value="{Binding Path=Max}" Maximum="100" Orientation="Vertical" />
+        <Slider 
+            Orientation="Vertical"
+            Minimum="0" 
+            Maximum="100" 
+            Value="{Binding LevelManager.LevelPercent, Mode=TwoWay}" 
+            IsEnabled="{Binding LevelManager.IsAttached}" 
+        />
+        <ProgressBar Orientation="Vertical" Width="20" Minimum="0" Maximum="100" Value="{Binding VisSource.LevelDbPercent}"></ProgressBar>
         <StackPanel>
             <WrapPanel>
                 <Label>Username</Label>
@@ -22,14 +29,14 @@
                 <TextBlock Text="{Binding Path=CodecName}" d:DataContext="{d:DesignData Source=SampleData/MiscData.xaml}" ></TextBlock>
             </WrapPanel>
             <DockPanel ToolTip="Audio data in milliseconds of lag that has been received and is buffered for play.  When duration exceeds max buffer size, incoming data will be dropped">
-                <Grid>
+                <Grid Margin="0 0 5 0" >
                     <Label>Buffer</Label>
                     <Button 
                         ToolTip="Clear the audio buffer to reduce incoming latency"
                         HorizontalAlignment="Right" 
                         Click="Buffer_Clear_Click" 
                         Style="{StaticResource DumpButton}">
-                        <TextBlock Margin="0" Padding="0">DUMP</TextBlock>
+                        <TextBlock Margin="0" Padding="0" FontSize="11">BUFF DUMP</TextBlock>
                     </Button>
                 </Grid>
                 <Grid Name="modelValueContainer">
