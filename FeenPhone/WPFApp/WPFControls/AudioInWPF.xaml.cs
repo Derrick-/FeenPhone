@@ -660,7 +660,6 @@ namespace FeenPhone.WPFApp.Controls
                     }
                 }
             }
-                }), waveInArgs);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
