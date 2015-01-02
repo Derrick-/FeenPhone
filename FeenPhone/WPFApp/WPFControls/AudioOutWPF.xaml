@@ -9,8 +9,8 @@
     <DockPanel>
         <TextBlock Background="{StaticResource clrBackgroundHeaders}" DockPanel.Dock="Top" TextAlignment="Center">AUDIO OUT</TextBlock>
         <StackPanel Name="stack">
-            <DockPanel Background="{StaticResource clrBackgroundHeaders}">
-                <Border BorderBrush="Black" BorderThickness="0 1 0 1">
+            <DockPanel>
+                <Border BorderBrush="Black" BorderThickness="0 1 0 1" Background="{StaticResource clrBackgroundHeaders}">
                     <Label DockPanel.Dock="Left" RenderTransformOrigin="0.5,0.5" Height="Auto" Padding="1" Margin="-10,0" VerticalAlignment="Center" >
                         <Label.RenderTransform>
                             <TransformGroup>
@@ -41,21 +41,7 @@
                     </StackPanel>
                 </DockPanel>
             </DockPanel>
-            <ItemsControl ItemsSource="{Binding Path=AudioPlayers}" d:DataContext="{d:DesignData Source=SampleData/UserAudioPlayerList.xaml}">
-                <ItemsControl.Resources>
-                    <Style TargetType="{x:Type Label}">
-                        <Setter Property="Width" Value="100"/>
-                        <Setter Property="Height" Value="18"/>
-                        <Setter Property="VerticalAlignment" Value="Top"/>
-                        <Setter Property="Padding" Value="0"/>
-                    </Style>
-                    <Style TargetType="{x:Type TextBlock}">
-                        <Setter Property="Height" Value="18"></Setter>
-                        <Setter Property="VerticalAlignment" Value="Top"/>
-                        <Setter Property="Padding" Value="10 0 0 0"/>
-                    </Style>
-                </ItemsControl.Resources>
-            </ItemsControl>
+            <ItemsControl ItemsSource="{Binding Path=AudioPlayers}" d:DataContext="{d:DesignData Source=SampleData/UserAudioPlayerList.xaml}"/>
         </StackPanel>
     </DockPanel>
 </UserControl>

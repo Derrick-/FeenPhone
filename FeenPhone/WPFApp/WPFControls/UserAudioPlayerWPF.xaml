@@ -7,6 +7,22 @@
              Background="{StaticResource clrBackgroundPrimary}"
              d:DesignWidth="800">
     <DockPanel>
+        <Border BorderBrush="Black" BorderThickness="0 0 0 1" Background="{StaticResource clrBackgroundHeaders}">
+            <Label 
+                RenderTransformOrigin="0.5,0.5" 
+                Height="Auto" Padding="1" Margin="-10,0" 
+                VerticalAlignment="Center"
+                Content="{Binding Path=Username}" d:DataContext="{d:DesignData Source=SampleData/MiscData.xaml}">
+                <Label.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform ScaleY="1" ScaleX="1"/>
+                        <SkewTransform AngleY="0" AngleX="0"/>
+                        <RotateTransform Angle="-90"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Label.RenderTransform>
+            </Label>
+        </Border>
         <ProgressBar Orientation="Vertical" Width="20" Minimum="0" Maximum="100" Value="{Binding VisSource.LevelDbPercent}"></ProgressBar>
         <Slider 
             Orientation="Vertical"
@@ -16,13 +32,23 @@
             IsEnabled="{Binding LevelManager.IsAttached}" 
         />
         <StackPanel>
-            <WrapPanel>
-                <Label>Username</Label>
-                <TextBlock Text="{Binding Path=Username}" ></TextBlock>
-            </WrapPanel>
+            <StackPanel.Resources>
+                <Style TargetType="{x:Type Label}">
+                    <Setter Property="Width" Value="100"/>
+                    <Setter Property="Height" Value="18"/>
+                    <Setter Property="VerticalAlignment" Value="Top"/>
+                    <Setter Property="Padding" Value="0"/>
+                </Style>
+                <Style TargetType="{x:Type TextBlock}">
+                    <Setter Property="Height" Value="18"></Setter>
+                    <Setter Property="VerticalAlignment" Value="Top"/>
+                    <Setter Property="Padding" Value="10 0 0 0"/>
+                </Style>
+            </StackPanel.Resources>
+
             <WrapPanel Visibility="Collapsed">
                 <Label>Format</Label>
-                <TextBlock Text="{Binding Path=OutputFormat}" d:DataContext="{d:DesignData Source=SampleData/MiscData.xaml}" ></TextBlock>
+                <TextBlock Text="{Binding Path=OutputFormat}" d:DataContext="{d:DesignData Source=SampleData/MiscData.xaml}"></TextBlock>
             </WrapPanel>
             <WrapPanel>
                 <Label>Codec</Label>

@@ -666,6 +666,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="WPFApp\Resources\Images\AT2005-mic-muted.png" />
+    <Resource Include="WPFApp\Resources\Images\AT2005-mic.png" />
     <Resource Include="WPFApp\Resources\Images\Headhone_64.png" />
     <Resource Include="WPFApp\Resources\Images\black-mic-muted.png" />
     <Resource Include="WPFApp\Resources\Images\black-mic.png" />

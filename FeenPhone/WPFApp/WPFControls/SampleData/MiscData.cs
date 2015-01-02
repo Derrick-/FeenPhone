@@ -13,5 +13,6 @@ namespace FeenPhone.WPFApp.Controls.SampleData
         public int BufferedDuration { get; set; }
         public int MaxBufferedDuration { get; set; }
         public int DroppedPackets { get; set; }
+        public string Username { get; set; }
     }
 }

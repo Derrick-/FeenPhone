@@ -50,6 +50,8 @@ namespace FeenPhone.WPFApp.Models
             User=Accounting.AccountHandler.FindUser(userID);
             if (User != null)
                 this.Username = User.Nickname;
+            else
+                this.Username = " User ";
 
             aggregator = new FeenPhone.Audio.SampleAggregator();
             aggregator.NotificationCount = 882;
