@@ -7,7 +7,7 @@
              xmlns:dat="clr-namespace:System.Windows.Data;assembly=PresentationFramework"
              mc:Ignorable="d" 
              Background="{StaticResource clrBackgroundPrimary}"
-             d:DesignHeight="100" d:DesignWidth="300">
+             d:DesignHeight="100" d:DesignWidth="400">
     <UserControl.Resources>
         <CollectionViewSource x:Key="InputsView" Source="{Binding Path=InputSourceList}"  IsLiveFilteringRequested="True" >
             <CollectionViewSource.GroupDescriptions>
@@ -65,7 +65,6 @@
             </ToggleButton>
         </StackPanel>
         <StackPanel Name="modelValueContainer" DockPanel.Dock="Right">
-            <ComboBox DockPanel.Dock="Top" Name="comboBoxCodecs" SelectionChanged="comboBoxCodecs_SelectionChanged" />
             <DockPanel>
                 <ComboBox Name="comboInputGroups" 
                     DockPanel.Dock="left"
@@ -87,6 +86,10 @@
                     <TextBlock>ms</TextBlock>
                 </WrapPanel>
                 <Slider Height="20" ValueChanged="inBuffer_ValueChanged" TickFrequency="10" TickPlacement="TopLeft" Minimum="{Binding BufferMinMs}" Maximum="{Binding BufferMaxMs}" Value="{Binding BufferTargetMs}"/>
+            </DockPanel>
+            <DockPanel>
+                <Label>CODEC:</Label>
+                <ComboBox DockPanel.Dock="Top" Name="comboBoxCodecs" SelectionChanged="comboBoxCodecs_SelectionChanged" />
             </DockPanel>
         </StackPanel>
     </DockPanel>

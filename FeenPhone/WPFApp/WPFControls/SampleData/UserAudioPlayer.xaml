@@ -1,0 +1,12 @@
+﻿<UserAudioPlayerMock xmlns="clr-namespace:FeenPhone.WPFApp.Controls.SampleData"
+        OutputFormat="16 bit PCM: 24kHz 1 channels"
+        CodecName="Opus Voip 24kHz 32kbs"
+        MaxBufferedDurationMs="500"
+        BufferedDurationMs="150"
+        BufferTarget="50"
+        DroppedPackets="0">
+    <UserAudioPlayerMock.User>
+        <UserMock Username="Derrick"/>
+    </UserAudioPlayerMock.User>
+</UserAudioPlayerMock>
+ 

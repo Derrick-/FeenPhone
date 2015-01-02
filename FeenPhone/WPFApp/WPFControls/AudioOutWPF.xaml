@@ -11,15 +11,12 @@
         <StackPanel Name="stack">
             <DockPanel>
                 <Border BorderBrush="Black" BorderThickness="0 1 0 1" Background="{StaticResource clrBackgroundHeaders}">
-                    <Label DockPanel.Dock="Left" RenderTransformOrigin="0.5,0.5" Height="Auto" Padding="1" Margin="-10,0" VerticalAlignment="Center" >
-                        <Label.RenderTransform>
+                    <Label DockPanel.Dock="Left" VerticalAlignment="Center">
+                        <Label.LayoutTransform>
                             <TransformGroup>
-                                <ScaleTransform ScaleY="1" ScaleX="1"/>
-                                <SkewTransform AngleY="0" AngleX="0"/>
                                 <RotateTransform Angle="-90"/>
-                                <TranslateTransform/>
                             </TransformGroup>
-                        </Label.RenderTransform>
+                        </Label.LayoutTransform>
                         MASTER
                     </Label>
                 </Border>

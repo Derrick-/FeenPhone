@@ -29,8 +29,13 @@ namespace FeenPhone.WPFApp.Models
 
         AudioOutWPF Parent;
         public Guid UserID { get; private set; }
-        public IUser User { get; private set; }
-        public string Username { get; private set; }
+
+        public static DependencyProperty UserProperty = DependencyProperty.Register("User", typeof(UserStatusModel), typeof(UserAudioPlayer), new PropertyMetadata(null));
+        public UserStatusModel User 
+        {
+            get { return (UserStatusModel)this.GetValue(UserProperty); }
+            set { this.SetValue(UserProperty, value); }
+        }
 
         Audio.Codecs.CodecID? LastCodec = null;
         SampleChannel sampleChannel;
@@ -47,11 +52,7 @@ namespace FeenPhone.WPFApp.Models
             Parent = parent;
             this.UserID = userID;
 
-            User=Accounting.AccountHandler.FindUser(userID);
-            if (User != null)
-                this.Username = User.Nickname;
-            else
-                this.Username = " User ";
+            User = UserStatusRepo.FindUser(userID);
 
             aggregator = new FeenPhone.Audio.SampleAggregator();
             aggregator.NotificationCount = 882;
@@ -104,7 +105,6 @@ namespace FeenPhone.WPFApp.Models
             set { SetValue(UnderRunsProperty, value); }
         }
 
-        public static DependencyProperty BufferedDurationStringProperty = DependencyProperty.Register("BufferedDurationString", typeof(string), typeof(UserAudioPlayer), new PropertyMetadata(null));
         public static DependencyProperty BufferedDurationProperty = DependencyProperty.Register("BufferedDurationMs", typeof(int), typeof(UserAudioPlayer), new PropertyMetadata(0));
         TimeSpan _BufferedDuration = TimeSpan.Zero;
         public TimeSpan BufferedDuration
@@ -114,7 +114,6 @@ namespace FeenPhone.WPFApp.Models
             {
                 _BufferedDuration = value;
                 SetValue(BufferedDurationProperty, (int)value.TotalMilliseconds);
-                SetValue(BufferedDurationStringProperty, string.Format("{0}ms", value.TotalMilliseconds));
             }
         }
 

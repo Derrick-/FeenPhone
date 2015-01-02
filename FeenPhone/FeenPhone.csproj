@@ -535,6 +535,7 @@
     <Compile Include="WPFApp\Models\DeviceModels.cs" />
     <Compile Include="WPFApp\Models\AudioLevelManager.cs" />
     <Compile Include="WPFApp\Models\UserAudioPlayer.cs" />
+    <Compile Include="WPFApp\Models\UserStatusRepo.cs" />
     <Compile Include="WPFApp\Models\UserStatusModel.cs" />
     <Compile Include="WPFApp\Settings.cs" />
     <Compile Include="WPFApp\Utils\VisibilityConverters.cs" />
@@ -592,7 +593,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="WPFApp\WPFControls\SampleData\MiscData.xaml">
+    <Page Include="WPFApp\WPFControls\SampleData\UserAudioPlayer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
