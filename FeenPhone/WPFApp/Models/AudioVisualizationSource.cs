@@ -92,6 +92,9 @@ namespace FeenPhone.WPFApp.Models
             }), sender, e);
         }
 
-
+        internal void Reset()
+        {
+            LevelDbPercent = 0;
+        }
     }
 }

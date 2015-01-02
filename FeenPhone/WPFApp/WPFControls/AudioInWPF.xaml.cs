@@ -546,6 +546,8 @@ namespace FeenPhone.WPFApp.Controls
                 }
 
                 waveIn.DataAvailable += waveIn_DataAvailable;
+                waveIn.RecordingStopped += waveIn_RecordingStopped;
+
                 try
                 {
                     waveIn.StartRecording();
@@ -572,6 +574,11 @@ namespace FeenPhone.WPFApp.Controls
             }
             else
                 IsRecording = false;
+        }
+
+        void waveIn_RecordingStopped(object sender, StoppedEventArgs e)
+        {
+            VisSource.Reset();
         }
 
         void wasapi_RecordingStopped(object sender, StoppedEventArgs e)
@@ -610,46 +617,49 @@ namespace FeenPhone.WPFApp.Controls
 
         private void waveIn_DataAvailable(object sender, WaveInEventArgs waveInArgs)
         {
-            Dispatcher.BeginInvoke(new Action<WaveInEventArgs>((args) =>
+            Dispatcher.BeginInvoke(new Action<WaveInEventArgs>((args) => { HandleAudio(args); }), waveInArgs);
+        }
+
+        private void HandleAudio(WaveInEventArgs args)
+        {
+            if (IsRecording == true && !isDisposed)
+            {
+                byte[] toEncode = args.Buffer;
+
+                int length = args.BytesRecorded;
+                if (length > 0)
                 {
-                    if (IsRecording == true && !isDisposed)
+                    if (waveIn.WaveFormat != codec.RecordFormat)
                     {
-                        byte[] toEncode = args.Buffer;
-
-                        int length = args.BytesRecorded;
-                        if (length > 0)
+                        if (waveIn.WaveFormat.Encoding == WaveFormatEncoding.IeeeFloat)
                         {
-                            if (waveIn.WaveFormat != codec.RecordFormat)
-                            {
-                                if (waveIn.WaveFormat.Encoding == WaveFormatEncoding.IeeeFloat)
-                                {
-                                    var floatSamples = InputResampler.ReadIeeeWav(toEncode, args.BytesRecorded, waveIn.WaveFormat);
-                                    foreach (var sample in floatSamples)
-                                        aggregator.Add(sample);
-                                    toEncode = InputResampler.Resample(floatSamples, floatSamples.Length, waveIn.WaveFormat, codec.RecordFormat, out length);
-                                }
-                                else
-                                {
-                                    for (int i = 0; i < args.BytesRecorded + 1; i += 2)
-                                        aggregator.Add(InputResampler.PCMtoFloat(toEncode, i / 2));
+                            var floatSamples = InputResampler.ReadIeeeWav(toEncode, args.BytesRecorded, waveIn.WaveFormat);
+                            foreach (var sample in floatSamples)
+                                aggregator.Add(sample);
+                            toEncode = InputResampler.Resample(floatSamples, floatSamples.Length, waveIn.WaveFormat, codec.RecordFormat, out length);
+                        }
+                        else
+                        {
+                            for (int i = 0; i < args.BytesRecorded + 1; i += 2)
+                                aggregator.Add(InputResampler.PCMtoFloat(toEncode, i / 2));
 
-                                    toEncode = InputResampler.Resample(toEncode, args.BytesRecorded, waveIn.WaveFormat, codec.RecordFormat, out length);
-                                }
-                            }
-                            if (toEncode == null)
-                            {
-                                Console.WriteLine("Encode Error: Disabling input. Please choose another record format and report this bug..");
-                                StopRecording();
-                            }
-                            else
-                            {
-                                byte[] encoded = codec.Encode(toEncode, length);
-
-                                if (encoded.Length > 0 && NetworkWPF.Client != null)
-                                    NetworkWPF.Client.SendAudio(codec.CodecID, encoded, encoded.Length);
-                            }
+                            toEncode = InputResampler.Resample(toEncode, args.BytesRecorded, waveIn.WaveFormat, codec.RecordFormat, out length);
                         }
                     }
+                    if (toEncode == null)
+                    {
+                        Console.WriteLine("Encode Error: Disabling input. Please choose another record format and report this bug..");
+                        StopRecording();
+                    }
+                    else
+                    {
+                        byte[] encoded = codec.Encode(toEncode, length);
+
+                        if (encoded.Length > 0 && NetworkWPF.Client != null)
+                            NetworkWPF.Client.SendAudio(codec.CodecID, encoded, encoded.Length);
+                    }
+                }
+            }
                 }), waveInArgs);
         }
 
