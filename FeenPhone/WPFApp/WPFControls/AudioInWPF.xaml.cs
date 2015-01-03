@@ -209,6 +209,8 @@ namespace FeenPhone.WPFApp.Controls
             }
 
             BufferTargetMs = settings.InputLatency;
+
+            UseWaveEvent = settings.UseWaveInEvent;
         }
 
         private void Settings_SaveSettings(object sender, EventArgs e)
@@ -228,6 +230,8 @@ namespace FeenPhone.WPFApp.Controls
                 settings.InputDevice = null;
 
             settings.InputLatency = BufferTargetMs;
+
+            settings.UseWaveInEvent = UseWaveEvent;
         }
 
         private void InitializeInputDevices()
@@ -300,6 +304,17 @@ namespace FeenPhone.WPFApp.Controls
             {
                 return Text;
             }
+        }
+
+        public static DependencyProperty UseWaveEventProperty = DependencyProperty.Register("UseWaveEvent", typeof(bool), typeof(AudioInWPF), new PropertyMetadata(true, OnUseWaveEventChanged));
+        public bool UseWaveEvent
+        {
+            get { return (bool)GetValue(UseWaveEventProperty); }
+            private set { SetValue(UseWaveEventProperty, value); }
+        }
+        private static void OnUseWaveEventChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((AudioInWPF)d).RestartRecording();
         }
 
         public static DependencyProperty LevelManagerProperty = DependencyProperty.Register("LevelManager", typeof(AudioLevelManager), typeof(AudioInWPF), new PropertyMetadata(null));
@@ -534,15 +549,24 @@ namespace FeenPhone.WPFApp.Controls
                 }
                 else
                 {
-                    var w = new WaveIn();
-                    w.BufferMilliseconds = BufferTargetMs;
-                    w.DeviceNumber = SelectedInputSource.WavDeviceNumber;
-                    waveIn = w;
-
-                    waveIn.WaveFormat = deviceFormat; // codec.RecordFormat;
+                    if (UseWaveEvent)
+                    {
+                        var w = new WaveInEvent();
+                        w.BufferMilliseconds = BufferTargetMs;
+                        w.DeviceNumber = SelectedInputSource.WavDeviceNumber;
+                        LevelManager = new AudioInLevelManager(w);
+                        waveIn = w;
+                    }
+                    else
+                    {
+                        var w = new WaveIn();
+                        w.BufferMilliseconds = BufferTargetMs;
+                        w.DeviceNumber = SelectedInputSource.WavDeviceNumber;
+                        LevelManager = new AudioInLevelManager(w);
+                        waveIn = w;
+                    }
+                    waveIn.WaveFormat = deviceFormat;
                     canUseExclusive = false;
-
-                    LevelManager = new AudioInLevelManager(w);
                 }
 
                 waveIn.DataAvailable += waveIn_DataAvailable;
@@ -597,7 +621,14 @@ namespace FeenPhone.WPFApp.Controls
                     ((WasapiCapture)waveIn).RecordingStopped -= wasapi_RecordingStopped;
 
                 waveIn.DataAvailable -= waveIn_DataAvailable;
-                waveIn.StopRecording();
+                try
+                {
+                    waveIn.StopRecording();
+                }
+                catch(NAudio.MmException ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
                 try
                 {
                     Trace.WriteLine("Disposing waveIn");

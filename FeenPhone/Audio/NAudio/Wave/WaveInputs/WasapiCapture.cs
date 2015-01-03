@@ -153,7 +153,7 @@ namespace NAudio.CoreAudioApi
             }
             InitializeCaptureDevice();
             ThreadStart start = () => CaptureThread(this.audioClient);
-            this.captureThread = new Thread(start);
+            this.captureThread = new Thread(start) { Priority = ThreadPriority.Highest };
 
             Debug.WriteLine("Thread starting...");
             this.requestStop = false;

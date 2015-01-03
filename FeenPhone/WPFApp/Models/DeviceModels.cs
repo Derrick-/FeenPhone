@@ -43,6 +43,8 @@ namespace FeenPhone.WPFApp.Models
         protected readonly WaveInCapabilities? WaveInCapabilities = null;
         protected readonly WaveOutCapabilities? WaveOutCapabilities = null;
 
+        public bool IsWaveDevice { get { return WaveOutCapabilities != null || WaveInCapabilities != null; } }
+
         public int WavDeviceNumber { get; private set; }
 
         public DeviceModel(int wavDeviceNum, WaveInCapabilities waveincapabilities)

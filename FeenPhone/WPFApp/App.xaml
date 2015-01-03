@@ -16,8 +16,8 @@
         <SolidColorBrush x:Key="clrDumpButtonBack_Hover" Color="#FFFFD208" />
         <SolidColorBrush x:Key="clrDumpButtonFore_Hover" Color="Black" />
 
-        <local:BoolToVisiblityConverter x:Key="BoolToVisConverter" />
-        <local:BoolToVisiblityConverter x:Key="InverseBoolToVisConverter" Inverse="True" />
+        <local:BoolToVisiblityConverter x:Key="BoolToVisConverter" Collapse="True" />
+        <local:BoolToVisiblityConverter x:Key="InverseBoolToVisConverter" Inverse="True" Collapse="True" />
         <local:NullToVisiblityConverter x:Key="NullToVisConverter" />
         <local:NullToVisiblityConverter x:Key="InverseNullToVisConverter" Inverse="True" />
         <local:InverseBoolConverter x:Key="InverseBoolConverter" />

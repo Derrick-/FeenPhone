@@ -70,6 +70,12 @@
                     DockPanel.Dock="left"
                     ItemsSource="{Binding Source={StaticResource InputsView}, Path=Groups}"
                     DisplayMemberPath="Name" />
+                <ToggleButton DockPanel.Dock="Right" Width="16" 
+                              IsChecked="{Binding UseWaveEvent}" 
+                              Visibility="{Binding SelectedInputSource.IsWaveDevice, Converter={StaticResource BoolToVisConverter}}"
+                              ToolTip="Use WaveEvent Capture">
+                    <Image Height="16" Source="/FeenPhone;component/WPFApp/Resources/Images/Event.png"  />
+                </ToggleButton>
                 <ComboBox 
                     Loaded="comboInputs_Loaded"
                     ItemsSource="{Binding ElementName=comboInputGroups, Path=SelectedItem.Items}"

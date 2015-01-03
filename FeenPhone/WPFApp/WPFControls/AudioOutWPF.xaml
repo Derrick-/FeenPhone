@@ -34,7 +34,17 @@
                     <Image Margin="0 0 5 0" DockPanel.Dock="Left" Height="64" Source="/FeenPhone;component/WPFApp/Resources/Images/Headhone_64.png" />
                     <StackPanel>
                         <Label HorizontalAlignment="Left">Output Device</Label>
-                        <ComboBox DockPanel.Dock="Top" ItemsSource="{Binding Path=OutputList, Mode=TwoWay}" SelectedIndex="{Binding Path=SelectedOutputIndex, Mode=TwoWay}" SelectedItem="{Binding Path=SelectedOutput, Mode=TwoWay}" IsEnabled="{Binding ControlsEnabled}"/>
+                        <DockPanel>
+                            <ToggleButton DockPanel.Dock="Right" Width="16" 
+                              IsChecked="{Binding UseWaveEvent}" 
+                              Visibility="{Binding SelectedOutput.IsWaveDevice, Converter={StaticResource BoolToVisConverter}}"
+                              ToolTip="Use WaveEvent Output">
+                                <Image Height="16" Source="/FeenPhone;component/WPFApp/Resources/Images/Event.png"  />
+                            </ToggleButton>
+                            <ComboBox
+                                ItemsSource="{Binding Path=OutputList, Mode=TwoWay}"
+                                SelectedItem="{Binding Path=SelectedOutput, Mode=TwoWay}" />
+                        </DockPanel>
                     </StackPanel>
                 </DockPanel>
             </DockPanel>

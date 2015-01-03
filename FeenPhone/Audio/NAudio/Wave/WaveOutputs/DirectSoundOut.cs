@@ -138,7 +138,7 @@ namespace NAudio.Wave
                 // -------------------------------------------------------------------------------------
                 // Thread that process samples
                 // -------------------------------------------------------------------------------------
-                notifyThread = new Thread(new ThreadStart(PlaybackThreadFunc));
+                notifyThread = new Thread(new ThreadStart(PlaybackThreadFunc)) { Priority = ThreadPriority.Highest };
                 // put this back to highest when we are confident we don't have any bugs in the thread proc
                 notifyThread.Priority = ThreadPriority.Normal;
                 notifyThread.IsBackground = true;

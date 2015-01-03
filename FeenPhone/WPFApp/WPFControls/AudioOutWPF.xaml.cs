@@ -30,11 +30,22 @@ namespace FeenPhone.WPFApp.Controls
 
         static ObservableCollection<UserAudioPlayerWPF> AudioPlayers = new ObservableCollection<UserAudioPlayerWPF>();
 
-        public static DependencyProperty ControlsEnabledProperty = DependencyProperty.Register("ControlsEnabled", typeof(bool), typeof(AudioOutWPF), new PropertyMetadata(true));
+        public static DependencyProperty UseWaveEventProperty = DependencyProperty.Register("UseWaveEvent", typeof(bool), typeof(AudioOutWPF), new PropertyMetadata(true, OnUseWaveEventChanged));
+        public bool UseWaveEvent
+        {
+            get { return (bool)GetValue(UseWaveEventProperty); }
+            internal set { SetValue(UseWaveEventProperty, value); }
+        }
+        private static void OnUseWaveEventChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            bool useWaveEvent = (bool)(e.NewValue);
+            foreach (var player in AudioPlayers)
+                if (player.Player != null)
+                    player.Player.UseWaveEvent = useWaveEvent;
+        }
 
         public static DependencyProperty OutputListProperty = DependencyProperty.Register("OutputList", typeof(ObservableCollection<OutputDeviceModel>), typeof(AudioOutWPF), new PropertyMetadata(OutputList));
         public static DependencyProperty SelectedOutputProperty = DependencyProperty.Register("SelectedOutput", typeof(OutputDeviceModel), typeof(AudioOutWPF), new PropertyMetadata(null, OnOutputDeviceChanged));
-        public static DependencyProperty SelectedOutputIndexProperty = DependencyProperty.Register("SelectedOutputIndex", typeof(int?), typeof(AudioOutWPF), new PropertyMetadata(-1));
 
         public static DependencyProperty AudioPlayersProperty = DependencyProperty.Register("AudioPlayers", typeof(ObservableCollection<UserAudioPlayerWPF>), typeof(AudioOutWPF), new PropertyMetadata(AudioPlayers));
 
@@ -45,12 +56,6 @@ namespace FeenPhone.WPFApp.Controls
         {
             get { return (OutputDeviceModel)this.GetValue(SelectedOutputProperty); }
             set { this.SetValue(SelectedOutputProperty, value); }
-        }
-
-        public int? SelectedOutputIndex
-        {
-            get { return (int?)this.GetValue(SelectedOutputIndexProperty); }
-            set { this.SetValue(SelectedOutputIndexProperty, value); }
         }
 
         private AudioLevelManager LevelManager
@@ -236,7 +241,7 @@ namespace FeenPhone.WPFApp.Controls
 
             if (!AudioPlayers.Any(m => m.UserID == userID))
             {
-                toReturn = new UserAudioPlayerWPF(userID, this);
+                toReturn = new UserAudioPlayerWPF(userID, this, UseWaveEvent);
                 UIUpdateTimer.Elapsed += toReturn.UIUpdateTimer_Elapsed;
                 AudioPlayers.Add(toReturn);
             }

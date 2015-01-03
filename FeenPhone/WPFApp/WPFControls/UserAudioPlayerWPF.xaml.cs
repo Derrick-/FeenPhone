@@ -27,9 +27,9 @@ namespace FeenPhone.WPFApp.Controls
 
         public UserAudioPlayerWPF() { }
 
-        internal UserAudioPlayerWPF(Guid userID, AudioOutWPF parent)  : this()
+        internal UserAudioPlayerWPF(Guid userID, AudioOutWPF parent, bool useWaveEvent = true) : this()
         {
-            Player = new UserAudioPlayer(userID, parent);
+            Player = new UserAudioPlayer(userID, parent, useWaveEvent);
             DataContext = Player;
             InitializeComponent();
 

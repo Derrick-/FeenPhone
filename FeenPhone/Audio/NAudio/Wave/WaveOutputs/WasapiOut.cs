@@ -229,7 +229,7 @@ namespace NAudio.Wave
             {
                 if (playbackState == PlaybackState.Stopped)
                 {
-                    playThread = new Thread(PlayThread);
+                    playThread = new Thread(PlayThread) { Priority = ThreadPriority.Highest };
                     playbackState = PlaybackState.Playing;
                     playThread.Start();                    
                 }

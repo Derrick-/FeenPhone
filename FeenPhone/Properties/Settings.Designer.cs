@@ -214,5 +214,29 @@ namespace FeenPhone.Properties {
                 this["DefaultInputLevel"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UseWaveOutEvent {
+            get {
+                return ((bool)(this["UseWaveOutEvent"]));
+            }
+            set {
+                this["UseWaveOutEvent"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UseWaveInEvent {
+            get {
+                return ((bool)(this["UseWaveInEvent"]));
+            }
+            set {
+                this["UseWaveInEvent"] = value;
+            }
+        }
     }
 }

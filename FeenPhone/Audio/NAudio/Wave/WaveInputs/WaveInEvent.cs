@@ -122,6 +122,8 @@ namespace NAudio.Wave
 
         private void RecordThread()
         {
+            Thread.CurrentThread.Priority = ThreadPriority.Highest;
+
             Exception exception = null;
             try
             {

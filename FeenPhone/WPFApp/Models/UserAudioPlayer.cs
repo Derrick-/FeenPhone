@@ -31,7 +31,7 @@ namespace FeenPhone.WPFApp.Models
         public Guid UserID { get; private set; }
 
         public static DependencyProperty UserProperty = DependencyProperty.Register("User", typeof(UserStatusModel), typeof(UserAudioPlayer), new PropertyMetadata(null));
-        public UserStatusModel User 
+        public UserStatusModel User
         {
             get { return (UserStatusModel)this.GetValue(UserProperty); }
             set { this.SetValue(UserProperty, value); }
@@ -44,13 +44,14 @@ namespace FeenPhone.WPFApp.Models
         private IWavePlayer waveOut;
         private BufferedWaveProvider waveProvider;
 
-        public UserAudioPlayer(Guid userID, AudioOutWPF parent)
+        public UserAudioPlayer(Guid userID, AudioOutWPF parent, bool useWaveEvent = true)
         {
             if (!DesignerProperties.GetIsInDesignMode(this))
                 new CompositionContainer(new AssemblyCatalog(Assembly.GetExecutingAssembly())).ComposeParts(this);
-            
+
             Parent = parent;
             this.UserID = userID;
+            UseWaveEvent = useWaveEvent;
 
             User = UserStatusRepo.FindUser(userID);
 
@@ -76,6 +77,16 @@ namespace FeenPhone.WPFApp.Models
 
         static int BufferWarningDurationMs = 150;
         static int BufferCriticalDurationMs = 300;
+
+        public static DependencyProperty UseWaveEventProperty = DependencyProperty.Register("UseWaveEvent", typeof(bool), typeof(UserAudioPlayer), new PropertyMetadata(true, OnUseWaveEventChanged));
+        public bool UseWaveEvent { 
+            get { return (bool)GetValue(UseWaveEventProperty); }
+            set { SetValue(UseWaveEventProperty, value); }
+        }
+        private static void OnUseWaveEventChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((UserAudioPlayer)d).Stop();
+        }
 
         public static DependencyProperty LevelManagerProperty = DependencyProperty.Register("LevelManager", typeof(AudioLevelManager), typeof(UserAudioPlayer), new PropertyMetadata(null));
         private AudioLevelManager LevelManager
@@ -215,8 +226,8 @@ namespace FeenPhone.WPFApp.Models
                 byte[] decoded = remoteCodec.Decode(encoded, encoded.Length);
                 int length = decoded.Length;
 
-                var volumeScalar=LevelManager.LevelScalar;
-                if(volumeScalar < 1.0)
+                var volumeScalar = LevelManager.LevelScalar;
+                if (volumeScalar < 1.0)
                 {
                     InputResampler.ScalePCM16Volume(ref decoded, length, volumeScalar);
                 }
@@ -314,6 +325,8 @@ namespace FeenPhone.WPFApp.Models
 
         private void Start(Audio.Codecs.INetworkChatCodec codec)
         {
+            Stop();
+
             waveOut = GetWavePlayer();
 
             waveProvider = new BufferedWaveProvider(codec.RecordFormat);
@@ -341,7 +354,12 @@ namespace FeenPhone.WPFApp.Models
             switch (SelectedOutput.Provider)
             {
                 case DeviceProvider.Wave:
-                    return new WaveOut() { DeviceNumber = SelectedOutput.WavDeviceNumber, DesiredLatency = desiredLatency };
+                    {
+                        if (UseWaveEvent)
+                            return new WaveOutEvent() { DeviceNumber = SelectedOutput.WavDeviceNumber, DesiredLatency = desiredLatency };
+                        else
+                            return new WaveOut() { DeviceNumber = SelectedOutput.WavDeviceNumber, DesiredLatency = desiredLatency };
+                    }
                 case DeviceProvider.DirectSound:
                     return new DirectSoundOut(SelectedOutput.DirectSoundDeviceInfo.Guid, desiredLatency);
                 case DeviceProvider.Wasapi:

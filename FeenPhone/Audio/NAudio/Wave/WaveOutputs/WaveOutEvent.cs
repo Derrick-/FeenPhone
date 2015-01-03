@@ -127,6 +127,8 @@ namespace NAudio.Wave
 
         private void PlaybackThread()
         {
+            Thread.CurrentThread.Priority = ThreadPriority.Highest;
+
             Exception exception = null;
             try
             {
