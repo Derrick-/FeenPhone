@@ -69,7 +69,7 @@ namespace FeenPhone.WPFApp.Controls
             EventSource.OnLoginStatus += EventSource_OnLoginStatus;
             EventSource.OnUserConnected += EventSource_InvokeOnUserConnected;
 
-            aggregator = new FeenPhone.Audio.SampleAggregator();
+            aggregator = new FeenPhone.Audio.SampleAggregator() { PerformFFT = false };
             aggregator.NotificationCount = 882;
             aggregator.PerformFFT = true;
 
