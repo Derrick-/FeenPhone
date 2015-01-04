@@ -245,7 +245,10 @@ namespace FeenPhone.Audio
             fixed (byte* p = pcm16Samples)
                 for (int sampleIndex = 1; sampleIndex < count; sampleIndex++)
                 {
-                    double volumeScalar = sampleIndex / (double)count;
+                    double volumeScalar;
+                    volumeScalar = sampleIndex / (double)count;
+                    if (direction == RampDirection.FullToZero)
+                        volumeScalar = 1.0 - volumeScalar;
                     ApplyVolumeScalar(volumeScalar, p, sampleIndex);
                 }
         }
