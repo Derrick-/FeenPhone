@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FeenPhone.WPFApp.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -27,6 +28,9 @@ namespace FeenPhone.WPFApp
             LoadSettings();
             this.Closed += new EventHandler(Window_Closed);
             Settings.AppClosing += Settings_SaveSettings;
+
+            FeenPhone.Client.EventSource.OnChat += EventSource_OnChat;
+            UserStatusRepo.Users.CollectionChanged += Users_CollectionChanged;
         }
 
         private void LoadSettings()
@@ -39,7 +43,7 @@ namespace FeenPhone.WPFApp
             Properties.Settings settings = Settings.Container;
 
         }
-        
+
         void Window_Closed(object sender, EventArgs e)
         {
             Settings.InvokeAppClosing(this);
@@ -47,6 +51,24 @@ namespace FeenPhone.WPFApp
 
             AudioIn.Dispose();
             AudioOut.Dispose();
+        }
+
+        private void EventSource_OnChat(object sender, Client.OnChatEventArgs e)
+        {
+            InvokeFlash();
+        }
+
+        void Users_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
+            {
+                InvokeFlash();
+            }
+        }
+
+        private void InvokeFlash()
+        {
+            Dispatcher.BeginInvoke(new Action(() => { this.Flash(); }));
         }
 
     }

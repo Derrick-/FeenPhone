@@ -538,6 +538,7 @@
     <Compile Include="WPFApp\Models\UserStatusRepo.cs" />
     <Compile Include="WPFApp\Models\UserStatusModel.cs" />
     <Compile Include="WPFApp\Settings.cs" />
+    <Compile Include="WPFApp\Utils\FormExtensions.cs" />
     <Compile Include="WPFApp\Utils\VisibilityConverters.cs" />
     <Compile Include="WPFApp\WPFControls\AudioInWPF.xaml.cs">
       <DependentUpon>AudioInWPF.xaml</DependentUpon>
