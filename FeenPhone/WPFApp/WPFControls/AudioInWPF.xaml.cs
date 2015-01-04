@@ -632,10 +632,13 @@ namespace FeenPhone.WPFApp.Controls
                 try
                 {
                     Trace.WriteLine("Disposing waveIn");
-                    Dispatcher.Invoke(new Action(waveIn.Dispose), TimeSpan.FromMilliseconds(1000));
+                    waveIn.Dispose();
                     Trace.WriteLine("waveIn disposed");
                 }
-                catch { }
+                catch
+                {
+                    Trace.WriteLine("waveIn NOT disposed");
+                }
                 waveIn = null;
             }
             if (LevelManager != null)
