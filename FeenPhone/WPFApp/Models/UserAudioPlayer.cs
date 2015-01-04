@@ -70,6 +70,7 @@ namespace FeenPhone.WPFApp.Models
         }
 
         static int DefaultMaxBufferedDurationMs = 500;
+        TimeSpan FrameDropThresholdMs { get { return _MaxBufferedDuration.Add(_MaxBufferedDuration); } }
         static ushort DefaultSilenceAggression = 1;
 
         static int DefaultBufferTargetMs = 50;
@@ -79,7 +80,8 @@ namespace FeenPhone.WPFApp.Models
         static int BufferCriticalDurationMs = 300;
 
         public static DependencyProperty UseWaveEventProperty = DependencyProperty.Register("UseWaveEvent", typeof(bool), typeof(UserAudioPlayer), new PropertyMetadata(true, OnUseWaveEventChanged));
-        public bool UseWaveEvent { 
+        public bool UseWaveEvent
+        {
             get { return (bool)GetValue(UseWaveEventProperty); }
             set { SetValue(UseWaveEventProperty, value); }
         }
@@ -219,9 +221,10 @@ namespace FeenPhone.WPFApp.Models
 
             TimeSpan buffered = waveProvider.BufferedDuration;
 
-            if (buffered == TimeSpan.Zero) UnderRuns++;
+            bool isPlaying = buffered == TimeSpan.Zero;
+            if (isPlaying) UnderRuns++;
 
-            if (buffered <= MaxBufferedDuration)
+            if (buffered <= FrameDropThresholdMs)
             {
                 byte[] decoded = remoteCodec.Decode(encoded, encoded.Length);
                 int length = decoded.Length;
