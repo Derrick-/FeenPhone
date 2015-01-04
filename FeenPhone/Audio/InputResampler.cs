@@ -229,22 +229,32 @@ namespace FeenPhone.Audio
             return bufferF;
         }
 
-        public static void ScalePCM16Volume(ref byte[] pcm16Samples, int length, double volumeScalar)
+        unsafe public static void ScalePCM16Volume(ref byte[] pcm16Samples, int length, double volumeScalar)
         {
             int count = length / 2;
-            unsafe
-            {
-                fixed (byte* p = pcm16Samples)
-                {
-                    for (int sampleIndex = 0; sampleIndex < count; sampleIndex++)
-                    {
-                        short sample = *((short*)p + sampleIndex);
-                        double result = sample * volumeScalar;
-                        (*((short*)p + sampleIndex)) = (short)result;
-                    }
-                }
-            }
+            fixed (byte* p = pcm16Samples)
+                for (int sampleIndex = 0; sampleIndex < count; sampleIndex++)
+                    ApplyVolumeScalar(volumeScalar, p, sampleIndex);
 
+        }
+
+        internal enum RampDirection { ZeroToFull, FullToZero }
+        unsafe internal static void RampPCM16Volume(ref byte[] pcm16Samples, int length, RampDirection direction)
+        {
+            int count = length / 2;
+            fixed (byte* p = pcm16Samples)
+                for (int sampleIndex = 1; sampleIndex < count; sampleIndex++)
+                {
+                    double volumeScalar = sampleIndex / (double)count;
+                    ApplyVolumeScalar(volumeScalar, p, sampleIndex);
+                }
+        }
+
+        unsafe private static void ApplyVolumeScalar(double volumeScalar, byte* p, int sampleIndex)
+        {
+            short sample = *((short*)p + sampleIndex);
+            double result = sample * volumeScalar;
+            (*((short*)p + sampleIndex)) = (short)result;
         }
 
         private static void Settings_AppClosing(object sender, EventArgs e)

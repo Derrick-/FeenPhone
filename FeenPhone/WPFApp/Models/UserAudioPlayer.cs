@@ -221,13 +221,18 @@ namespace FeenPhone.WPFApp.Models
 
             TimeSpan buffered = waveProvider.BufferedDuration;
 
-            bool isPlaying = buffered == TimeSpan.Zero;
-            if (isPlaying) UnderRuns++;
+            bool isPlaying = buffered != TimeSpan.Zero;
+            if (!isPlaying) UnderRuns++;
 
             if (buffered <= FrameDropThresholdMs)
             {
                 byte[] decoded = remoteCodec.Decode(encoded, encoded.Length);
                 int length = decoded.Length;
+
+                if (!isPlaying)
+                {
+                    InputResampler.RampPCM16Volume(ref decoded, length, InputResampler.RampDirection.ZeroToFull);
+                }
 
                 var volumeScalar = LevelManager.LevelScalar;
                 if (volumeScalar < 1.0)
