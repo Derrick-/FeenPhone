@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             mc:Ignorable="d" d:DesignWidth="400">
+             mc:Ignorable="d" d:DesignWidth="300">
     <UserControl.Resources>
         <Style TargetType="TextBlock">
             <Setter Property="Padding" Value="4 2"/>
@@ -29,7 +29,10 @@
         </Style>
     </UserControl.Resources>
     <DockPanel Background="{StaticResource clrBackgroundPrimary}">
-        <TextBlock DockPanel.Dock="Top" TextAlignment="Center" Background="{StaticResource clrBackgroundHeaders}" >NETWORK</TextBlock>
+        <Grid DockPanel.Dock="Top">
+            <TextBlock TextAlignment="Center" Background="{StaticResource clrBackgroundHeaders}" >NETWORK</TextBlock>
+            <TextBlock TextAlignment="Center" Background="{StaticResource clrBackgroundHeaders}" Visibility="{Binding IsServer, Converter={StaticResource BoolToVisConverter}}" >NETWORK: RUNNING SERVER</TextBlock>
+        </Grid>
         <TabControl>
             <TabControl.Resources>
                 <Style TargetType="TabItem">
@@ -47,21 +50,21 @@
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="3*" />
-                        <ColumnDefinition Width="8*"/>
-                        <ColumnDefinition Width="2*" />
                         <ColumnDefinition Width="4*"/>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="4*" />
                     </Grid.ColumnDefinitions>
                     <Label Grid.Row="0" Grid.Column="0">Server</Label>
                     <TextBox Grid.Row="0" Grid.Column="1" Name="txtServer" IsEnabled="{Binding ControlsEnabled}">localhost</TextBox>
                     <Label Grid.Row="0" Grid.Column="2">Port</Label>
                     <TextBox Grid.Row="0" Grid.Column="3" Name="txtPort" IsEnabled="{Binding ControlsEnabled}" >5150</TextBox>
                     <Label Grid.Row="1" Grid.Column="0">Nickname</Label>
-                    <TextBox IsEnabled="{Binding ControlsEnabled}" TextChanged="txtNickname_TextChanged" Name="txtNickname" Grid.Row="1" Grid.Column="1">CHANGE ME</TextBox>
-                    <ComboBox Visibility="Hidden" IsEnabled="{Binding ControlsEnabled}" Name="comboProt" Grid.Row="1" Grid.Column="2" Height="20">
+                    <TextBox IsEnabled="{Binding ControlsEnabled}" TextChanged="txtNickname_TextChanged" Name="txtNickname" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2">CHANGE ME</TextBox>
+                    <ComboBox Visibility="{Binding ShowAdvancedControls, Converter={StaticResource BoolToVisConverter}}" IsEnabled="{Binding ControlsEnabled}" Name="comboProt" Grid.Row="1" Grid.Column="3" Height="20">
                         <ComboBoxItem IsSelected="True">TCP</ComboBoxItem>
                         <ComboBoxItem>UDP</ComboBoxItem>
                     </ComboBox>
-                    <Button Name="btnConnect" Grid.Row="1" Grid.Column="3" Click="Connect_Click">Connect</Button>
+                    <Button Name="btnConnect" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Click="Connect_Click">Connect</Button>
                     <Label Grid.Row="2" Grid.Column="2" Visibility="{Binding ControlsEnabled, Converter={StaticResource InverseBoolToVisConverter}}">Ping</Label>
                     <TextBlock Name="txtPing" Grid.Row="2" Grid.Column="3" Visibility="{Binding ControlsEnabled, Converter={StaticResource InverseBoolToVisConverter}}"></TextBlock>
                 </Grid>
@@ -81,14 +84,16 @@
                         <ColumnDefinition Width="105*" />
                     </Grid.ColumnDefinitions>
                     <Label Grid.Row="0" Grid.Column="1"></Label>
-                    <CheckBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" ClickMode="Release" IsChecked="{Binding Path=IsServer, Mode=TwoWay}" ToolTip="Run as server" Margin="10,2">Run Server(s)</CheckBox>
+                    <ToggleButton Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" ClickMode="Release" FontSize="10" IsChecked="{Binding Path=IsServer, Mode=TwoWay}" ToolTip="Run as server" Margin="10 0 0 0" Padding="2"  VerticalAlignment="Center">Run Server</ToggleButton>
+                    <CheckBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" ClickMode="Release" IsChecked="{Binding Path=RequireAuth, Mode=TwoWay}" ToolTip="Require incoming clients to authenticate" Margin="10,2">Require Auth</CheckBox>
+                    <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" ClickMode="Release" FontSize="9" Visibility="{Binding Path=RequireAuth, Converter={StaticResource BoolToVisConverter}}" ToolTip="Run as server" Margin="10,2">Manage Users</Button>
                     <Label Grid.Row="0" Grid.Column="2">Ports</Label>
                     <TextBox Grid.Row="0" Grid.Column="3" Margin="0,1" Text="{Binding Path=TCPPortText, Mode=TwoWay}" IsEnabled="{Binding Path=TCPEnabled, Converter={StaticResource InverseBoolConverter}}"></TextBox>
-                    <TextBox Grid.Row="1" Grid.Column="3" Margin="0,1" Text="{Binding Path=UDPPortText, Mode=TwoWay}" IsEnabled="{Binding Path=UDPEnabled, Converter={StaticResource InverseBoolConverter}}"></TextBox>
-                    <TextBox Grid.Row="2" Grid.Column="3" Margin="0,1" Text="{Binding Path=TelnetPortText, Mode=TwoWay}" IsEnabled="{Binding Path=TelnetEnabled, Converter={StaticResource InverseBoolConverter}}"></TextBox>
-                    <CheckBox Grid.Row="0" Grid.Column="4" Margin="10,2" IsChecked="{Binding Path=TCPEnabled, Mode=TwoWay}">TCP</CheckBox>
-                    <CheckBox Grid.Row="1" Grid.Column="4" Margin="10,2" IsChecked="{Binding Path=UDPEnabled, Mode=TwoWay}">UDP</CheckBox>
-                    <CheckBox Grid.Row="2" Grid.Column="4" Margin="10,2" IsChecked="{Binding Path=TelnetEnabled, Mode=TwoWay}">Telnet</CheckBox>
+                    <TextBox Grid.Row="1" Grid.Column="3" Margin="0,1" Text="{Binding Path=UDPPortText, Mode=TwoWay}" Visibility="{Binding ShowAdvancedControls, Converter={StaticResource BoolToVisConverter}}" IsEnabled="{Binding Path=UDPEnabled, Converter={StaticResource InverseBoolConverter}}"></TextBox>
+                    <TextBox Grid.Row="2" Grid.Column="3" Margin="0,1" Text="{Binding Path=TelnetPortText, Mode=TwoWay}" Visibility="{Binding ShowAdvancedControls, Converter={StaticResource BoolToVisConverter}}" IsEnabled="{Binding Path=TelnetEnabled, Converter={StaticResource InverseBoolConverter}}"></TextBox>
+                    <CheckBox Grid.Row="0" Grid.Column="4" Margin="10,2" IsChecked="{Binding Path=TCPEnabled, Mode=TwoWay}" Visibility="{Binding ShowAdvancedControls, Converter={StaticResource BoolToVisConverter}}">TCP</CheckBox>
+                    <CheckBox Grid.Row="1" Grid.Column="4" Margin="10,2" IsChecked="{Binding Path=UDPEnabled, Mode=TwoWay}" Visibility="{Binding ShowAdvancedControls, Converter={StaticResource BoolToVisConverter}}">UDP</CheckBox>
+                    <CheckBox Grid.Row="2" Grid.Column="4" Margin="10,2" IsChecked="{Binding Path=TelnetEnabled, Mode=TwoWay}" Visibility="{Binding ShowAdvancedControls, Converter={StaticResource BoolToVisConverter}}" >Telnet</CheckBox>
                 </Grid>
             </TabItem>
         </TabControl>

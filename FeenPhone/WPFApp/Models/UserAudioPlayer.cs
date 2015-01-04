@@ -27,7 +27,7 @@ namespace FeenPhone.WPFApp.Models
 
         public DateTime LastReceived { get; set; }
 
-        AudioOutWPF Parent;
+        public AudioOutWPF Parent { get; private set; }
         public Guid UserID { get; private set; }
 
         public static DependencyProperty UserProperty = DependencyProperty.Register("User", typeof(UserStatusModel), typeof(UserAudioPlayer), new PropertyMetadata(null));
@@ -229,7 +229,7 @@ namespace FeenPhone.WPFApp.Models
                 byte[] decoded = remoteCodec.Decode(encoded, encoded.Length);
                 int length = decoded.Length;
 
-                if (!isPlaying)
+                if (!isPlaying && AudioOutWPF.shouldRampUnderruns)
                 {
                     InputResampler.RampPCM16Volume(ref decoded, length, InputResampler.RampDirection.ZeroToFull);
                 }

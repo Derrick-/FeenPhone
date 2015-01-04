@@ -3,19 +3,22 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="FeenPhone" Height="505" Width="682.5" Icon="Resources/logos/FeenPhone.ico">
     <DockPanel>
+        <CheckBox DockPanel.Dock="Top" IsChecked="{Binding ShowAdvancedControls,Mode=TwoWay}">Show Advanced Controls</CheckBox>
         <Grid DockPanel.Dock="Right" MinWidth="200">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition MaxWidth="350" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition MinHeight="20" />
+                <RowDefinition MinHeight="20" />
                 <RowDefinition Height="auto"/>
                 <RowDefinition MinHeight="250"/>
             </Grid.RowDefinitions>
-            <DockPanel Grid.Row="0" Grid.Column="0">
+            <WPFControls:NetworkWPF x:Name="Network" DockPanel.Dock="Top"/>
+            <DockPanel Grid.Row="1" Grid.Column="0">
                 <WPFControls:UserListWPF />
             </DockPanel>
-            <GridSplitter Grid.Row="1"
+            <GridSplitter Grid.Row="2"
                 HorizontalAlignment="Stretch" 
                 VerticalAlignment="Center"
                 Background="{StaticResource clrSectionDivider}" 
@@ -23,13 +26,12 @@
                 ResizeDirection="Rows"
                 Height="5">
             </GridSplitter>
-            <DockPanel Grid.Row="2" Grid.Column="0">
+            <DockPanel Grid.Row="3" Grid.Column="0">
                 <WPFControls:ChatWPF/>
             </DockPanel>
         </Grid>
-        <WPFControls:NetworkWPF DockPanel.Dock="Top"/>
         <WPFControls:AudioInWPF x:Name="AudioIn" DockPanel.Dock="Top"/>
         <WPFControls:AudioOutWPF x:Name="AudioOut" DockPanel.Dock="Top"/>
-                <WPFControls:LogWPF />
+        <WPFControls:LogWPF />
     </DockPanel>
 </Window>

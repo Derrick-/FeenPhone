@@ -26,7 +26,7 @@ namespace FeenPhone.Server
             }
         }
 
-        public const int PingTimerIntervalMs = 250;
+        public const int PingTimerIntervalMs = 500;
         Timer PingTimer;
         public ServerHost()
         {
@@ -133,6 +133,11 @@ namespace FeenPhone.Server
 
             return failed;
 
+        }
+
+        public bool AnyServersAreRunning()
+        {
+            return Servers.Any(m => m.Running);
         }
 
         private void StopAllServers()

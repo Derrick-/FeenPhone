@@ -306,6 +306,22 @@ namespace FeenPhone.WPFApp.Controls
             }
         }
 
+
+        public static DependencyProperty ShowAdvancedControlsProperty = DependencyProperty.Register("ShowAdvancedControls", typeof(bool), typeof(AudioInWPF), new PropertyMetadata(true, OnAdvancedControlsChanged));
+        internal bool ShowAdvancedControls { get { return (bool)GetValue(ShowAdvancedControlsProperty); } }
+        private static void OnAdvancedControlsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            AudioInWPF target = (AudioInWPF)d;
+            if (((bool)e.NewValue) == false)
+            {
+                target.UseWaveEvent = true;
+                if (target.comboInputGroups.Items != null)
+                {
+                    target.comboInputGroups.SelectedIndex = 0;
+                }
+            }
+        }
+
         public static DependencyProperty UseWaveEventProperty = DependencyProperty.Register("UseWaveEvent", typeof(bool), typeof(AudioInWPF), new PropertyMetadata(true, OnUseWaveEventChanged));
         public bool UseWaveEvent
         {
@@ -318,7 +334,7 @@ namespace FeenPhone.WPFApp.Controls
         }
 
         public static DependencyProperty LevelManagerProperty = DependencyProperty.Register("LevelManager", typeof(AudioLevelManager), typeof(AudioInWPF), new PropertyMetadata(null));
-        
+
         public static DependencyProperty IsRecordingProperty = DependencyProperty.Register("IsRecording", typeof(bool?), typeof(AudioInWPF), new PropertyMetadata(false, OnIsRecordingChanged));
         public static DependencyProperty InputSourceListProperty = DependencyProperty.Register("InputSourceList", typeof(ObservableCollection<InputDeviceModel>), typeof(AudioInWPF), new PropertyMetadata(InputList));
         public static DependencyProperty SelectedInputSourceProperty = DependencyProperty.Register("SelectedInputSource", typeof(InputDeviceModel), typeof(AudioInWPF), new PropertyMetadata(null, OnSelectedInputSourceChanged));
@@ -625,7 +641,7 @@ namespace FeenPhone.WPFApp.Controls
                 {
                     waveIn.StopRecording();
                 }
-                catch(NAudio.MmException ex)
+                catch (NAudio.MmException ex)
                 {
                     Console.WriteLine(ex.Message);
                 }

@@ -38,7 +38,7 @@ namespace FeenPhone.WPFApp.Controls
             EventSource.OnPingReq += EventSource_OnPingReq;
             EventSource.OnPingResp += EventSource_OnPingResp;
 
-            UIUpdateTimer = new System.Timers.Timer(5000);
+            UIUpdateTimer = new System.Timers.Timer(1000);
             UIUpdateTimer.Start();
             UIUpdateTimer.Elapsed += UIUpdateTimer_Elapsed;
         }
@@ -56,6 +56,27 @@ namespace FeenPhone.WPFApp.Controls
                 txtPing.Text = string.Format("{0}ms", e.Value);
             }));
         }
+
+        public static DependencyProperty ShowAdvancedControlsProperty = DependencyProperty.Register("ShowAdvancedControls", typeof(bool), typeof(NetworkWPF), new PropertyMetadata(true, OnAdvancedControlsChanged));
+        private static void OnAdvancedControlsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            NetworkWPF target = (NetworkWPF)d;
+            if (((bool)e.NewValue) == false)
+            {
+                target.TCPEnabled = true;
+                target.UDPEnabled = false;
+                target.TelnetEnabled = false;
+                target.comboProt.SelectedIndex = 0;
+            }
+        }
+
+        public static DependencyProperty RequireAuthProperty = DependencyProperty.Register("RequireAuth", typeof(bool), typeof(NetworkWPF), new PropertyMetadata(false));
+        public bool RequireAuth
+        {
+            get { return (bool)this.GetValue(RequireAuthProperty); }
+            set { this.SetValue(RequireAuthProperty, value); }
+        }
+
 
         public static DependencyProperty ControlsEnabledProperty = DependencyProperty.Register("ControlsEnabled", typeof(bool), typeof(NetworkWPF), new PropertyMetadata(true));
         public bool ControlsEnabled
@@ -320,6 +341,11 @@ namespace FeenPhone.WPFApp.Controls
                         target.server.UDPServerPort = target.UDPPort;
                         target.server.TelnetServerPort = target.TelnetPort;
                         target.server.InitServers(target.TCPEnabled, target.UDPEnabled, target.TelnetEnabled);
+                        if(!target.server.AnyServersAreRunning())
+                        {
+                            Console.WriteLine("No servers were able to be started.");
+                            target.SetValue(IsServerProperty, false);
+                        }
                     }
                     else
                     {

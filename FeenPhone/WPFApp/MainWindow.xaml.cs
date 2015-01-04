@@ -1,4 +1,5 @@
-﻿using FeenPhone.WPFApp.Models;
+﻿using FeenPhone.WPFApp.Controls;
+using FeenPhone.WPFApp.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,17 +32,22 @@ namespace FeenPhone.WPFApp
 
             FeenPhone.Client.EventSource.OnChat += EventSource_OnChat;
             UserStatusRepo.Users.CollectionChanged += Users_CollectionChanged;
+
+            DataContext = this;
         }
 
         private void LoadSettings()
         {
             Properties.Settings settings = Settings.Container;
+
+            SetValue(ShowAdvancedControlsProperty, settings.ShowAdvancedControls);
         }
 
         private void Settings_SaveSettings(object sender, EventArgs e)
         {
             Properties.Settings settings = Settings.Container;
 
+            settings.ShowAdvancedControls = (bool)GetValue(ShowAdvancedControlsProperty);
         }
 
         void Window_Closed(object sender, EventArgs e)
@@ -69,6 +75,24 @@ namespace FeenPhone.WPFApp
         private void InvokeFlash()
         {
             Dispatcher.BeginInvoke(new Action(() => { this.Flash(); }));
+        }
+
+        public static DependencyProperty ShowAdvancedControlsProperty = DependencyProperty.Register("ShowAdvancedControls", typeof(bool), typeof(MainWindow), new PropertyMetadata(true, OnAdvancedControlsChanged));
+        private static void OnAdvancedControlsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            bool newValue = (bool)e.NewValue;
+            var target = (MainWindow)d;
+            target.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    target.SetAdvanced(newValue);
+                }));
+        }
+
+        private void SetAdvanced(bool showAdvanced)
+        {
+            Network.SetValue(NetworkWPF.ShowAdvancedControlsProperty, showAdvanced);
+            AudioIn.SetValue(AudioInWPF.ShowAdvancedControlsProperty, showAdvanced);
+            AudioOut.SetValue(AudioOutWPF.ShowAdvancedControlsProperty, showAdvanced);
         }
 
     }

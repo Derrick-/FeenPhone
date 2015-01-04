@@ -32,7 +32,14 @@ namespace FeenPhone.Client
             var ep = new IPEndPoint(HostIP, Port);
             client.Connect(ep);
             client.Send(new byte[] { 1 }, 1);
-            client.BeginReceive(new AsyncCallback(ConnectCallback), client);
+            try
+            {
+                client.BeginReceive(new AsyncCallback(ConnectCallback), client);
+            }
+            catch (SocketException ex)
+            {
+                ConnectionFailed(ex.Message);
+            }
         }
 
         private void ConnectCallback(IAsyncResult ar)
@@ -104,9 +111,9 @@ namespace FeenPhone.Client
         {
             base.Disconnect();
 
+            Console.WriteLine("Disconnected.");
             if (Client != null)
             {
-                Console.WriteLine("Disconnected.");
                 Client.Close();
             }
             Client = null;

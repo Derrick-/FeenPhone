@@ -35,12 +35,15 @@
                     <StackPanel>
                         <Label HorizontalAlignment="Left">Output Device</Label>
                         <DockPanel>
-                            <ToggleButton DockPanel.Dock="Right" Width="16" 
-                              IsChecked="{Binding UseWaveEvent}" 
-                              Visibility="{Binding SelectedOutput.IsWaveDevice, Converter={StaticResource BoolToVisConverter}}"
-                              ToolTip="Use WaveEvent Output">
-                                <Image Height="16" Source="/FeenPhone;component/WPFApp/Resources/Images/Event.png"  />
-                            </ToggleButton>
+                            <WrapPanel DockPanel.Dock="Right" Visibility="{Binding ShowAdvancedControls, Converter={StaticResource BoolToVisConverter}}" >
+                                <ToggleButton Width="16" 
+                                      IsChecked="{Binding UseWaveEvent}" 
+                                      Visibility="{Binding SelectedOutput.IsWaveDevice, Converter={StaticResource BoolToVisConverter}}"
+                                      ToolTip="Use WaveEvent Output">
+                                    <Image Height="16" Source="/FeenPhone;component/WPFApp/Resources/Images/Event.png"  />
+                                </ToggleButton>
+                                <CheckBox VerticalAlignment="Center" IsChecked="{Binding ShouldRampUnderruns}" ToolTip="Should ramp underruns"></CheckBox>
+                            </WrapPanel>
                             <ComboBox
                                 ItemsSource="{Binding Path=OutputList, Mode=TwoWay}"
                                 SelectedItem="{Binding Path=SelectedOutput, Mode=TwoWay}" />

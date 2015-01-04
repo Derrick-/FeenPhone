@@ -238,5 +238,17 @@ namespace FeenPhone.Properties {
                 this["UseWaveInEvent"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ShowAdvancedControls {
+            get {
+                return ((bool)(this["ShowAdvancedControls"]));
+            }
+            set {
+                this["ShowAdvancedControls"] = value;
+            }
+        }
     }
 }

@@ -51,6 +51,7 @@ namespace FeenPhone.Client
         protected virtual void ConnectionFailed(string message)
         {
             Console.WriteLine("Connection failed: {0}", message);
+            Disconnect();
         }
 
         protected virtual void Disconnect()

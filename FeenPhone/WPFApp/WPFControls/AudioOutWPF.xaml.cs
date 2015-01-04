@@ -30,6 +30,45 @@ namespace FeenPhone.WPFApp.Controls
 
         static ObservableCollection<UserAudioPlayerWPF> AudioPlayers = new ObservableCollection<UserAudioPlayerWPF>();
 
+        public static DependencyProperty ShowAdvancedControlsProperty = DependencyProperty.Register("ShowAdvancedControls", typeof(bool), typeof(AudioOutWPF), new PropertyMetadata(true, OnAdvancedControlsChanged));
+        internal bool ShowAdvancedControls { get { return (bool)GetValue(ShowAdvancedControlsProperty); } }
+        private static void OnAdvancedControlsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            AudioOutWPF target = (AudioOutWPF)d;
+
+            bool newValue = (bool)e.NewValue;
+
+            if (newValue)
+            {
+                var selected = target.SelectedOutput;
+                target.InitializeOutputDevices();
+                var found = OutputList.FirstOrDefault(m => m.Guid == selected.Guid && m.Provider == selected.Provider);
+                if (found != null)
+                    target.SelectedOutput = found;
+            }
+            else
+            {
+                target.UseWaveEvent = true;
+                target.SetValue(ShouldRampUnderrunsProperty, true);
+
+                var selected=target.SelectedOutput;
+                var toRemove = OutputList.Where(m => m.MMDevice == null && m != selected).ToList();
+                foreach (var item in toRemove)
+                    OutputList.Remove(item);
+            }
+
+            foreach(UserAudioPlayerWPF player in AudioPlayers)
+                player.SetValue(UserAudioPlayerWPF.ShowAdvancedControlsProperty, newValue);
+
+        }
+
+        public static bool shouldRampUnderruns = true;
+        public static DependencyProperty ShouldRampUnderrunsProperty = DependencyProperty.Register("ShouldRampUnderruns", typeof(bool), typeof(AudioOutWPF), new PropertyMetadata(shouldRampUnderruns, OnShouldRampUnderrunsChanged));
+        private static void OnShouldRampUnderrunsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            shouldRampUnderruns = (bool)(e.NewValue);
+        }
+
         public static DependencyProperty UseWaveEventProperty = DependencyProperty.Register("UseWaveEvent", typeof(bool), typeof(AudioOutWPF), new PropertyMetadata(true, OnUseWaveEventChanged));
         public bool UseWaveEvent
         {
@@ -176,16 +215,18 @@ namespace FeenPhone.WPFApp.Controls
         {
             OutputList.Clear();
 
-            foreach (var device in DirectSoundOut.Devices)
-            {
-                OutputList.Add(new OutputDeviceModel(device));
-            }
+            if (ShowAdvancedControls)
+                foreach (var device in DirectSoundOut.Devices)
+                {
+                    OutputList.Add(new OutputDeviceModel(device));
+                }
 
-            for (int n = 0; n < WaveOut.DeviceCount; n++)
-            {
-                var capabilities = WaveOut.GetCapabilities(n);
-                OutputList.Add(new OutputDeviceModel(n, capabilities));
-            }
+            if (ShowAdvancedControls)
+                for (int n = 0; n < WaveOut.DeviceCount; n++)
+                {
+                    var capabilities = WaveOut.GetCapabilities(n);
+                    OutputList.Add(new OutputDeviceModel(n, capabilities));
+                }
 
             foreach (var device in MMDevices.deviceEnum.EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active).ToList())
             {

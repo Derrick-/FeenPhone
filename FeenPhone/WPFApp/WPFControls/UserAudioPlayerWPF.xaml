@@ -84,7 +84,7 @@
                         Width="{Binding ElementName=modelValueContainer, Path=ActualWidth}">
                 </Slider>
             </WrapPanel>
-            <WrapPanel>
+            <WrapPanel Visibility="{Binding Parent.ShowAdvancedControls, Converter={StaticResource BoolToVisConverter}}">
                 <Label ToolTip="The speed at which buffer overruns are recovered by skipping silence">Buffer Recovery</Label>
                 <Slider Minimum="0" Maximum="10" 
                         Value="{Binding Path=SilenceAggression}" 
@@ -94,6 +94,15 @@
                 </Slider>
             </WrapPanel>
             <Grid>
+                <Grid.Resources>
+                    <Style TargetType="{x:Type Label}">
+                        <Setter Property="Width" Value="60"/>
+                        <Setter Property="Height" Value="18"/>
+                        <Setter Property="VerticalAlignment" Value="Top"/>
+                        <Setter Property="HorizontalAlignment" Value="Right"/>
+                        <Setter Property="Padding" Value="0"/>
+                    </Style>
+                </Grid.Resources>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
@@ -109,19 +118,19 @@
                     <TextBlock Text="{Binding Path=MaxBufferedDurationMs}" ></TextBlock>
                 </WrapPanel>
                 <WrapPanel Grid.Column="1" Grid.Row="0" ToolTip="Number of incoming packets that were ignored because the buffer was full">
-                    <Label>DroppedFrames</Label>
-                    <TextBlock Text="{Binding Path=DroppedPackets}" ></TextBlock>
+                    <Label>Dropped</Label>
+                    <TextBlock Text="{Binding Path=DroppedPackets, StringFormat={}{0} bytes}" ></TextBlock>
                 </WrapPanel>
                 <WrapPanel Grid.Column="2" Grid.Row="0" ToolTip="Number of silent bytes dropped from incoming stream.">
-                    <Label>Dropped Silence</Label>
-                    <TextBlock Text="{Binding Path=DroppedSilence}" ></TextBlock>
+                    <Label>Skipped</Label>
+                    <TextBlock Text="{Binding Path=DroppedSilence, StringFormat={}{0} bytes}"></TextBlock>
                 </WrapPanel>
                 <WrapPanel Grid.Column="2" Grid.Row="0" ToolTip="Number of silent bytes added to incoming stream." Visibility="Collapsed">
                     <Label>Added Silence</Label>
                     <TextBlock Text="{Binding Path=AddedSilence}"></TextBlock>
                 </WrapPanel>
                 <WrapPanel Grid.Column="0" Grid.Row="0" ToolTip="Number of times the incoming stream stopped for lack of data">
-                    <Label>UnderRuns</Label>
+                    <Label>Underruns</Label>
                     <TextBlock Text="{Binding Path=UnderRuns}"></TextBlock>
                 </WrapPanel>
             </Grid>

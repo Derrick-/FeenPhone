@@ -27,6 +27,15 @@ namespace FeenPhone.WPFApp.Controls
 
         public UserAudioPlayerWPF() { }
 
+        public static DependencyProperty ShowAdvancedControlsProperty = DependencyProperty.Register("ShowAdvancedControls", typeof(bool), typeof(UserAudioPlayerWPF), new PropertyMetadata(true, OnAdvancedControlsChanged));
+        private static void OnAdvancedControlsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var target = (UserAudioPlayerWPF)d;
+            bool newValue=(bool)e.NewValue;
+            if (newValue)
+                target.Player.SilenceAggression = 1;
+        }
+
         internal UserAudioPlayerWPF(Guid userID, AudioOutWPF parent, bool useWaveEvent = true) : this()
         {
             Player = new UserAudioPlayer(userID, parent, useWaveEvent);
