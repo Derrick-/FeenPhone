@@ -107,18 +107,6 @@
                                     <Setter Property="Foreground" Value="White"/>
                                 </Style>
                             </StackPanel.Resources>
-                            <Label>alpha testers and beta testers:</Label>
-                            <TextBlock>Lousander Feen</TextBlock>
-                            <TextBlock>Davi Barker</TextBlock>
-                            <TextBlock>Dianna Keiler</TextBlock>
-                            <TextBlock>Randy England</TextBlock>
-                            <TextBlock>Ian Freeman</TextBlock>
-                            <TextBlock>Ben Stone</TextBlock>
-                            <TextBlock>MK Lords</TextBlock>
-                            <TextBlock>Václav Navrátil</TextBlock>
-                            <TextBlock>Derrick Slopey</TextBlock>
-                            <TextBlock>Michael W. Dean</TextBlock>
-
                             <Label>LIST OF DONATORS FROM FIRST ROUND OF INDIEGOGO FUNDING:</Label>
                             <Label>Thanks again for your help!</Label>
                             <TextBlock>Ian Freeman</TextBlock>
@@ -139,10 +127,23 @@
                             <TextBlock>Mark Harris</TextBlock>
                             <TextBlock>Gavin Carolan</TextBlock>
                             <TextBlock>Anonymous Contributor</TextBlock>
+                            
+                            <Label>alpha testers and beta testers:</Label>
+                            <TextBlock>Lousander Feen</TextBlock>
+                            <TextBlock>Davi Barker</TextBlock>
+                            <TextBlock>Dianna Keiler</TextBlock>
+                            <TextBlock>Randy England</TextBlock>
+                            <TextBlock>Ian Freeman</TextBlock>
+                            <TextBlock>Ben Stone</TextBlock>
+                            <TextBlock>MK Lords</TextBlock>
+                            <TextBlock>Václav Navrátil</TextBlock>
+                            <TextBlock>Derrick Slopey</TextBlock>
+                            <TextBlock>Michael W. Dean</TextBlock>
 
                             <TextBlock Margin="20">Leaping Kitty FeenPhone logo poster (also adopted into funding video) by Crazy Rich.</TextBlock>
 
                             <TextBlock>Special thanks: Darryl W. Perry, Phil Abatecola.</TextBlock>
+
                         </StackPanel>
                     </Canvas>
                 </Border>
