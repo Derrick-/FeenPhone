@@ -24,6 +24,12 @@
         <local:NullToBoolConverter x:Key="NullToBoolConverter" />
         <local:NullToBoolConverter x:Key="InverseNullToBoolConverter" Inverse="True" />
 
+        <Style TargetType="{x:Type ToggleButton}" x:Key="TopToggles">
+            <Setter Property="Background" Value="{x:Null}"/>
+            <Setter Property="BorderBrush" Value="{x:Null}"/>
+            <Setter Property="Margin" Value="0 0 10 0"/>
+        </Style>
+
         <Style TargetType="{x:Type Button}" x:Key="DumpButton">
             <Setter Property="Background" Value="{StaticResource clrDumpButtonBack}"/>
             <Setter Property="Foreground" Value="{StaticResource clrDumpButtonFore}"/>

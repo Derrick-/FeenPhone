@@ -1,0 +1,152 @@
+﻿<UserControl x:Class="FeenPhone.WPFApp.Controls.AboutWPF"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="400" d:DesignWidth="500">
+    <UserControl.Resources>
+        <Style x:Key="CanvasScroller" TargetType="StackPanel">
+            <Style.Triggers>
+                <EventTrigger RoutedEvent="Loaded">
+                    <BeginStoryboard>
+                        <Storyboard RepeatBehavior="Forever">
+                            <DoubleAnimation
+                                BeginTime="0:0:15"
+                                Duration="0:01:00"
+                                From="10"
+                                To="-800"
+                                Storyboard.TargetProperty="(Canvas.Top)" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+    <Grid Background="Black">
+        <Image Source="/FeenPhone;component/WPFApp/Resources/logos/BirdCircle.png" Opacity="0.12"/>
+        <Button Click="AboutClose_Click" Height="24" VerticalAlignment="Top" HorizontalAlignment="Right" Background="{x:Null}" BorderBrush="{x:Null}">
+            <Image Source="/FeenPhone;component/WPFApp/Resources/Images/305_Close_24x24_72.png" />
+        </Button>
+        <DockPanel Margin="0">
+            <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Foreground="#FFE82323" FontSize="40" FontFamily="Rockwell Extra Bold">FeenPhone</TextBlock>
+            <DockPanel HorizontalAlignment="Stretch">
+                <DockPanel.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="HorizontalAlignment" Value="Left"/>
+                        <Setter Property="FontSize" Value="10"/>
+                        <Setter Property="Margin" Value="20 0 0 0"/>
+                    </Style>
+                    <Style TargetType="Label">
+                        <Setter Property="Foreground" Value="#FFE8DC5C"/>
+                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                        <Setter  Property="Padding" Value="0"/>
+                    </Style>
+                </DockPanel.Resources>
+                <Label DockPanel.Dock="Top">Brought to you by The Beastlick Internet Policy Outreach Team</Label>
+                <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center">Michael W. Dean: CAO (Chief Anarchy Officer) audio engineer and cat herder</TextBlock>
+                <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center">Derrick Slopey: Programmer.</TextBlock>
+                <Label DockPanel.Dock="Top">And the following sponsors</Label>
+                <StackPanel DockPanel.Dock="Bottom">
+                    <StackPanel.Resources>
+                        <Style TargetType="Label">
+                            <Setter Property="Foreground" Value="#FFE8DC5C"/>
+                            <Setter Property="HorizontalAlignment" Value="Left"/>
+                            <Setter Property="FontFamily" Value="Tahoma"/>
+                            <Setter Property="FontSize" Value="10"/>
+                            <Setter Property="Margin" Value="10 0 0 0"/>
+                            <Setter Property="Padding" Value="0 6 0 0"/>
+                        </Style>
+                    </StackPanel.Resources>
+                    <Label>WEBSITE:</Label>
+                    <TextBlock >http://feenphone.com</TextBlock>
+
+                    <Label>QUICK-START GUIDE:</Label>
+                    <TextBlock >http://feenphone.com/?page_id=308</TextBlock>
+
+                    <Label>HOW TO GET GREAT AUDIO WITH FeenPhone:</Label>
+                    <TextBlock >http://feenphone.com/?page_id=1123</TextBlock>
+
+                    <Label>DONATE LINK:</Label>
+                    <TextBlock>http://feenphone.com/?page_id=18</TextBlock>
+
+                    <Label>BTC address for donations:</Label>
+                    <TextBlock>1Q3QxoXcX5HYpkqRZ4uHXJXrmZzHehBZVP</TextBlock>
+                </StackPanel>
+                <Border x:Name="border" BorderThickness="1" BorderBrush="GhostWhite">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                            <GradientStop Offset="0" Color="Black" />
+                            <GradientStop Offset="0.2" Color="#00000000" />
+                            <GradientStop Offset="0.8" Color="#00000000" />
+                            <GradientStop Offset="1" Color="Black" />
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Canvas
+                        HorizontalAlignment="Stretch"
+                        ClipToBounds="True"
+                        x:Name="scrollerCanvas">
+                        <StackPanel
+                                HorizontalAlignment="Center"
+                                Style="{DynamicResource CanvasScroller}"
+                                x:Name="scroller"
+                                Canvas.Top="10"
+                                Width="{Binding ActualWidth}">
+                            <StackPanel.Resources>
+                                <Style TargetType="Label">
+                                    <Setter Property="Foreground" Value="#FFE8DC5C"/>
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    <Setter Property="FontFamily" Value="Tahoma"/>
+                                    <Setter Property="FontSize" Value="10"/>
+                                    <Setter Property="Margin" Value="0 0 0 0"/>
+                                    <Setter Property="Padding" Value="0 6 0 0"/>
+                                </Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    <Setter Property="Foreground" Value="White"/>
+                                </Style>
+                            </StackPanel.Resources>
+                            <Label>alpha testers and beta testers:</Label>
+                            <TextBlock>Lousander Feen</TextBlock>
+                            <TextBlock>Davi Barker</TextBlock>
+                            <TextBlock>Dianna Keiler</TextBlock>
+                            <TextBlock>Randy England</TextBlock>
+                            <TextBlock>Ian Freeman</TextBlock>
+                            <TextBlock>Ben Stone</TextBlock>
+                            <TextBlock>MK Lords</TextBlock>
+                            <TextBlock>Václav Navrátil</TextBlock>
+                            <TextBlock>Derrick Slopey</TextBlock>
+                            <TextBlock>Michael W. Dean</TextBlock>
+
+                            <Label>LIST OF DONATORS FROM FIRST ROUND OF INDIEGOGO FUNDING:</Label>
+                            <Label>Thanks again for your help!</Label>
+                            <TextBlock>Ian Freeman</TextBlock>
+                            <TextBlock>Vaclav Navratil</TextBlock>
+                            <TextBlock>Stephan Kinsella</TextBlock>
+                            <TextBlock>Mark Schisler</TextBlock>
+                            <TextBlock>Tobias Kaatz</TextBlock>
+                            <TextBlock>Ryan Gilbert</TextBlock>
+                            <TextBlock>Anders Hass</TextBlock>
+                            <TextBlock>Dianna Keiler</TextBlock>
+                            <TextBlock>Christian Saucier</TextBlock>
+                            <TextBlock>Randy England</TextBlock>
+                            <TextBlock>Per Sjöborg</TextBlock>
+                            <TextBlock>teo524</TextBlock>
+                            <TextBlock>Jacob Tothe</TextBlock>
+                            <TextBlock>Travis McQuivey</TextBlock>
+                            <TextBlock>Tobias Kaatz</TextBlock>
+                            <TextBlock>Mark Harris</TextBlock>
+                            <TextBlock>Gavin Carolan</TextBlock>
+                            <TextBlock>Anonymous Contributor</TextBlock>
+
+                            <TextBlock Margin="20">Leaping Kitty FeenPhone logo poster (also adopted into funding video) by Crazy Rich.</TextBlock>
+
+                            <TextBlock>Special thanks: Darryl W. Perry, Phil Abatecola.</TextBlock>
+                        </StackPanel>
+                    </Canvas>
+                </Border>
+            </DockPanel>
+        </DockPanel>
+    </Grid>
+</UserControl>

@@ -1,37 +1,62 @@
 ﻿<Window xmlns:WPFControls="clr-namespace:FeenPhone.WPFApp.Controls"  x:Class="FeenPhone.WPFApp.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local ="clr-namespace:FeenPhone.WPFApp" 
+        MouseDown="TitleBar_MouseDown"
+        x:Name="thisWindow"
         Title="FeenPhone" Height="505" Width="682.5" Icon="Resources/logos/FeenPhone.ico">
-    <DockPanel>
-        <CheckBox DockPanel.Dock="Top" IsChecked="{Binding ShowAdvancedControls,Mode=TwoWay}">Show Advanced Controls</CheckBox>
-        <Grid DockPanel.Dock="Right" MinWidth="200">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition MaxWidth="350" />
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition MinHeight="20" />
-                <RowDefinition MinHeight="20" />
-                <RowDefinition Height="auto"/>
-                <RowDefinition MinHeight="250"/>
-            </Grid.RowDefinitions>
-            <WPFControls:NetworkWPF x:Name="Network" DockPanel.Dock="Top"/>
-            <DockPanel Grid.Row="1" Grid.Column="0">
-                <WPFControls:UserListWPF />
+    <Grid>
+        <DockPanel>
+            <DockPanel x:Name="TitleBar" DockPanel.Dock="Top" Height="20" VerticalAlignment="Center" HorizontalAlignment="Right">
+                <DockPanel.Resources>
+                    <Style TargetType="ToggleButton">
+                        <Setter Property="Margin" Value="10" />
+                        <Setter Property="Padding" Value="100"/>
+                    </Style>
+                </DockPanel.Resources>
+                <ToggleButton Style="{DynamicResource TopToggles}" IsChecked="{Binding ShowAboutBox, Mode=TwoWay}">ABOUT</ToggleButton>
+                <ToggleButton 
+                        Style="{DynamicResource TopToggles}"
+                        HorizontalAlignment="Right" 
+                        VerticalAlignment="Top" 
+                        IsChecked="{Binding ShowAdvancedControls,Mode=TwoWay}"
+                        ToolTip="Show Advanced Settings"
+                        Height="20">
+                    <Image Height="12" Source="Resources/Images/Wizard_Sparkle.png"></Image>
+                </ToggleButton>
             </DockPanel>
-            <GridSplitter Grid.Row="2"
+            <DockPanel>
+                <Grid DockPanel.Dock="Right" MinWidth="200">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition MaxWidth="350" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition MinHeight="20" />
+                        <RowDefinition MinHeight="20" />
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition MinHeight="250"/>
+                    </Grid.RowDefinitions>
+                    <WPFControls:NetworkWPF x:Name="Network" DockPanel.Dock="Top"/>
+                    <DockPanel Grid.Row="1" Grid.Column="0">
+                        <WPFControls:UserListWPF />
+                    </DockPanel>
+                    <GridSplitter Grid.Row="2"
                 HorizontalAlignment="Stretch" 
                 VerticalAlignment="Center"
                 Background="{StaticResource clrSectionDivider}" 
                 ShowsPreview="true"
                 ResizeDirection="Rows"
                 Height="5">
-            </GridSplitter>
-            <DockPanel Grid.Row="3" Grid.Column="0">
-                <WPFControls:ChatWPF/>
+                    </GridSplitter>
+                    <DockPanel Grid.Row="3" Grid.Column="0">
+                        <WPFControls:ChatWPF/>
+                    </DockPanel>
+                </Grid>
+                <WPFControls:AudioInWPF x:Name="AudioIn" DockPanel.Dock="Top"/>
+                <WPFControls:AudioOutWPF x:Name="AudioOut" DockPanel.Dock="Top"/>
+                <WPFControls:LogWPF DockPanel.Dock="Top" />
             </DockPanel>
-        </Grid>
-        <WPFControls:AudioInWPF x:Name="AudioIn" DockPanel.Dock="Top"/>
-        <WPFControls:AudioOutWPF x:Name="AudioOut" DockPanel.Dock="Top"/>
-        <WPFControls:LogWPF />
-    </DockPanel>
+        </DockPanel>
+        <WPFControls:AboutWPF Visibility="{Binding ElementName=thisWindow, Path=ShowAboutBox, Mode=TwoWay, Converter={StaticResource BoolToVisConverter}}"/>
+    </Grid>
 </Window>

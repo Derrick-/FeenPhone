@@ -35,6 +35,11 @@ namespace FeenPhone.WPFApp
 
             DataContext = this;
         }
+        protected override void OnSourceInitialized(EventArgs e)
+        {
+            base.OnSourceInitialized(e);
+            GlassHelper.ExtendGlassFrame(this, new Thickness(-1));
+        }
 
         private void LoadSettings()
         {
@@ -77,6 +82,13 @@ namespace FeenPhone.WPFApp
             Dispatcher.BeginInvoke(new Action(() => { this.Flash(); }));
         }
 
+        public static DependencyProperty ShowAboutBoxProperty = DependencyProperty.Register("ShowAboutBox", typeof(bool), typeof(MainWindow), new PropertyMetadata(false));
+        public bool ShowAboutBox
+        {
+            get { return (bool)GetValue(ShowAboutBoxProperty); }
+            set { SetValue(ShowAboutBoxProperty, value); }
+        }
+
         public static DependencyProperty ShowAdvancedControlsProperty = DependencyProperty.Register("ShowAdvancedControls", typeof(bool), typeof(MainWindow), new PropertyMetadata(true, OnAdvancedControlsChanged));
         private static void OnAdvancedControlsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -95,5 +107,36 @@ namespace FeenPhone.WPFApp
             AudioOut.SetValue(AudioOutWPF.ShowAdvancedControlsProperty, showAdvanced);
         }
 
+        /// <summary>
+        /// TitleBar_MouseDown - Drag if single-click, resize if double-click
+        /// </summary>
+        private void TitleBar_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+                if (e.ClickCount == 2)
+                {
+                    AdjustWindowSize();
+                }
+                else
+                {
+                    Application.Current.MainWindow.DragMove();
+                }
+        }
+
+        /// <summary>
+        /// Adjusts the WindowSize to correct parameters when Maximize button is clicked
+        /// </summary>
+        private void AdjustWindowSize()
+        {
+            if (this.WindowState == WindowState.Maximized)
+            {
+                this.WindowState = WindowState.Normal;
+            }
+            else
+            {
+                this.WindowState = WindowState.Maximized;
+            }
+
+        }
     }
 }

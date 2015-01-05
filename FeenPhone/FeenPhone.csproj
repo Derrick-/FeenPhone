@@ -539,7 +539,11 @@
     <Compile Include="WPFApp\Models\UserStatusModel.cs" />
     <Compile Include="WPFApp\Settings.cs" />
     <Compile Include="WPFApp\Utils\FormExtensions.cs" />
+    <Compile Include="WPFApp\Utils\GlassHelper.cs" />
     <Compile Include="WPFApp\Utils\VisibilityConverters.cs" />
+    <Compile Include="WPFApp\WPFControls\AboutWPF.xaml.cs">
+      <DependentUpon>AboutWPF.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WPFApp\WPFControls\AudioInWPF.xaml.cs">
       <DependentUpon>AudioInWPF.xaml</DependentUpon>
     </Compile>
@@ -574,6 +578,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="WPFApp\WPFControls\AboutWPF.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="WPFApp\WPFControls\AudioInWPF.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -668,6 +676,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="WPFApp\Resources\Images\305_Close_24x24_72.png" />
+    <Resource Include="WPFApp\Resources\Images\Wizard_Sparkle.png" />
     <Resource Include="WPFApp\Resources\Images\Event.png" />
     <Resource Include="WPFApp\Resources\Images\AT2005-mic-muted.png" />
     <Resource Include="WPFApp\Resources\Images\AT2005-mic.png" />
