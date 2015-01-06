@@ -532,6 +532,7 @@
     <Compile Include="Server\Telnet\TelNetState.cs" />
     <Compile Include="Utils\Timekeeper.cs" />
     <Compile Include="WPFApp\Models\AudioVisualizationSource.cs" />
+    <Compile Include="WPFApp\Models\CodecModel.cs" />
     <Compile Include="WPFApp\Models\DeviceModels.cs" />
     <Compile Include="WPFApp\Models\AudioLevelManager.cs" />
     <Compile Include="WPFApp\Models\UserAudioPlayer.cs" />

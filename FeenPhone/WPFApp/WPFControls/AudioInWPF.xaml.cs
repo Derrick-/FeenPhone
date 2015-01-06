@@ -185,14 +185,16 @@ namespace FeenPhone.WPFApp.Controls
             string strCodec = settings.Codec;
             string strInputDevice = settings.InputDevice;
 
-            if (!string.IsNullOrWhiteSpace(strCodec))
+            var codecs = comboBoxCodecs.Items.OfType<CodecModel>();
+            if (codecs.Any())
             {
-                var selectCodecItem = comboBoxCodecs.Items.OfType<CodecComboItem>().Where(m => m.Text == strCodec).FirstOrDefault();
-                if (selectCodecItem != null)
+                CodecModel selectCodecItem = null;
+                if (!string.IsNullOrWhiteSpace(strCodec))
                 {
-                    comboBoxCodecs.SelectedItem = selectCodecItem;
-                    this.codec = selectCodecItem.Codec;
+                    selectCodecItem = codecs.Where(m => m.Text == strCodec).FirstOrDefault();
                 }
+                SelectedCodec = selectCodecItem ?? codecs.First();
+                this.codec = SelectedCodec.Codec;
             }
 
             if (!string.IsNullOrWhiteSpace(strInputDevice))
@@ -217,7 +219,7 @@ namespace FeenPhone.WPFApp.Controls
         {
             var settings = Settings.Container;
 
-            var selectedCodec = comboBoxCodecs.SelectedItem as CodecComboItem;
+            var selectedCodec = SelectedCodec;
             if (selectedCodec != null)
                 settings.Codec = selectedCodec.Text;
             else
@@ -260,7 +262,7 @@ namespace FeenPhone.WPFApp.Controls
 
                 foreach (var codec in sorted)
                 {
-                    this.comboBoxCodecs.Items.Add(new CodecComboItem() { Text = codec.Name(), Codec = codec });
+                    this.comboBoxCodecs.Items.Add(new CodecModel() { Text = codec.Name(), Codec = codec });
                 }
             }
             else
@@ -296,17 +298,6 @@ namespace FeenPhone.WPFApp.Controls
             BufferMinMs = min;
         }
 
-        class CodecComboItem
-        {
-            public string Text { get; set; }
-            public Audio.Codecs.INetworkChatCodec Codec { get; set; }
-            public override string ToString()
-            {
-                return Text;
-            }
-        }
-
-
         public static DependencyProperty ShowAdvancedControlsProperty = DependencyProperty.Register("ShowAdvancedControls", typeof(bool), typeof(AudioInWPF), new PropertyMetadata(true, OnAdvancedControlsChanged));
         internal bool ShowAdvancedControls { get { return (bool)GetValue(ShowAdvancedControlsProperty); } }
         private static void OnAdvancedControlsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -315,10 +306,10 @@ namespace FeenPhone.WPFApp.Controls
             if (((bool)e.NewValue) == false)
             {
                 target.UseWaveEvent = true;
-                if (target.comboInputGroups.Items != null)
-                {
+                if (target.comboInputGroups.Items != null && target.comboInputGroups.Items.Count > 0)
                     target.comboInputGroups.SelectedIndex = 0;
-                }
+                if (target.comboBoxCodecs.Items != null && target.comboBoxCodecs.Items.Count > 0)
+                    target.comboBoxCodecs.SelectedIndex = 0;
             }
         }
 
@@ -338,6 +329,7 @@ namespace FeenPhone.WPFApp.Controls
         public static DependencyProperty IsRecordingProperty = DependencyProperty.Register("IsRecording", typeof(bool?), typeof(AudioInWPF), new PropertyMetadata(false, OnIsRecordingChanged));
         public static DependencyProperty InputSourceListProperty = DependencyProperty.Register("InputSourceList", typeof(ObservableCollection<InputDeviceModel>), typeof(AudioInWPF), new PropertyMetadata(InputList));
         public static DependencyProperty SelectedInputSourceProperty = DependencyProperty.Register("SelectedInputSource", typeof(InputDeviceModel), typeof(AudioInWPF), new PropertyMetadata(null, OnSelectedInputSourceChanged));
+        public static DependencyProperty SelectedCodecProperty = DependencyProperty.Register("SelectedCodec", typeof(CodecModel), typeof(AudioInWPF), new PropertyMetadata(null));
         public static DependencyProperty ControlsEnabledProperty = DependencyProperty.Register("ControlsEnabled", typeof(bool), typeof(AudioInWPF), new PropertyMetadata(true));
 
         public static DependencyProperty BufferTargetMsProperty = DependencyProperty.Register("BufferTargetMs", typeof(int), typeof(AudioInWPF), new PropertyMetadata(50));
@@ -377,6 +369,12 @@ namespace FeenPhone.WPFApp.Controls
             }
         }
 
+        public CodecModel SelectedCodec
+        {
+            get { return (CodecModel)this.GetValue(SelectedCodecProperty); }
+            set { this.SetValue(SelectedCodecProperty, value); }
+        }
+
         public InputDeviceModel SelectedInputSource
         {
             get { return (InputDeviceModel)this.GetValue(SelectedInputSourceProperty); }
@@ -405,7 +403,6 @@ namespace FeenPhone.WPFApp.Controls
         {
             RestartRecording();
         }
-
 
         private void inBuffer_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
@@ -464,7 +461,7 @@ namespace FeenPhone.WPFApp.Controls
                 StopRecording();
             if (SelectedInputSource != null)
             {
-                this.codec = ((CodecComboItem)comboBoxCodecs.SelectedItem).Codec;
+                this.codec = SelectedCodec.Codec;
 
                 var deviceFormat = WaveFormat.CreateIeeeFloatWaveFormat(codec.RecordFormat.SampleRate, codec.RecordFormat.Channels);
                 bool canUseExclusive = false;

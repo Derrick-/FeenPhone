@@ -9,6 +9,9 @@
              Background="{StaticResource clrBackgroundPrimary}"
              d:DesignHeight="100" d:DesignWidth="400">
     <UserControl.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
         <CollectionViewSource x:Key="InputsView" Source="{Binding Path=InputSourceList}"  IsLiveFilteringRequested="True" >
             <CollectionViewSource.GroupDescriptions>
                 <dat:PropertyGroupDescription PropertyName="Provider" />
@@ -98,7 +101,8 @@
             </DockPanel>
             <DockPanel>
                 <Label>CODEC:</Label>
-                <ComboBox DockPanel.Dock="Top" Name="comboBoxCodecs" SelectionChanged="comboBoxCodecs_SelectionChanged" />
+                <ComboBox DockPanel.Dock="Top" Name="comboBoxCodecs" SelectedItem="{Binding SelectedCodec}" Visibility="{Binding ShowAdvancedControls, Converter={StaticResource BoolToVisConverter}}" SelectionChanged="comboBoxCodecs_SelectionChanged" />
+                <TextBlock DockPanel.Dock="Top" Text="{Binding SelectedCodec}" Visibility="{Binding ShowAdvancedControls, Converter={StaticResource InverseBoolToVisConverter}}" />
             </DockPanel>
         </StackPanel>
     </DockPanel>

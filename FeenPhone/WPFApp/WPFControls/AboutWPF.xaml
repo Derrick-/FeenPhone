@@ -122,6 +122,7 @@
         					Style="{DynamicResource CanvasScroller}"
         					x:Name="scroller"
         					Canvas.Top="10"
+                            Margin="-20 0 0 0"
         					Width="{Binding ActualWidth}">
                             <StackPanel.Resources>
                                 <Style TargetType="{x:Type Label}">
