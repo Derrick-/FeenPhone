@@ -660,6 +660,9 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="Audio\NAudio\NAudio.ruleset" />
+    <None Include="LICENSE.rtf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -676,6 +679,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="WPFApp\Resources\Images\Logo.png" />
     <Resource Include="WPFApp\Resources\Images\305_Close_24x24_72.png" />
     <Resource Include="WPFApp\Resources\Images\Wizard_Sparkle.png" />
     <Resource Include="WPFApp\Resources\Images\Event.png" />

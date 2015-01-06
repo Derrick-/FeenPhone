@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,6 +32,14 @@ namespace FeenPhone.WPFApp.Controls
         private void AboutClose_Click(object sender, RoutedEventArgs e)
         {
             this.Visibility = System.Windows.Visibility.Collapsed;
+        }
+
+        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+        {
+
+            Uri uri = e.Uri;
+            Process.Start(new ProcessStartInfo(uri.AbsoluteUri));
+            e.Handled = true;
         }
     }
 }

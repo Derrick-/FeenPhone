@@ -15,7 +15,7 @@
                                 BeginTime="0:0:15"
                                 Duration="0:01:00"
                                 From="10"
-                                To="-800"
+                                To="-600"
                                 Storyboard.TargetProperty="(Canvas.Top)" />
                         </Storyboard>
                     </BeginStoryboard>
@@ -29,7 +29,7 @@
             <Image Source="/FeenPhone;component/WPFApp/Resources/Images/305_Close_24x24_72.png" />
         </Button>
         <DockPanel Margin="0">
-            <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Foreground="#FFE82323" FontSize="40" FontFamily="Rockwell Extra Bold">FeenPhone</TextBlock>
+            <Image MaxHeight="288" DockPanel.Dock="Top" HorizontalAlignment="Center" Margin="0 0 0 -20" Source="/FeenPhone;component/WPFApp/Resources/Images/Logo.png"/>
             <DockPanel HorizontalAlignment="Stretch">
                 <DockPanel.Resources>
                     <Style TargetType="TextBlock">
@@ -48,8 +48,23 @@
                 <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center">Michael W. Dean: CAO (Chief Anarchy Officer) audio engineer and cat herder</TextBlock>
                 <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center">Derrick Slopey: Programmer.</TextBlock>
                 <Label DockPanel.Dock="Top">And the following sponsors</Label>
-                <StackPanel DockPanel.Dock="Bottom">
-                    <StackPanel.Resources>
+                <Grid DockPanel.Dock="Bottom">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition MinWidth="220" MaxWidth="300"/>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition MinWidth="280" MaxWidth="300" />
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="20"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid.Resources>
+                        <Style TargetType="Hyperlink">
+                            <Setter Property="Foreground" Value="#FF5D5DFB"/>
+                        </Style>
                         <Style TargetType="Label">
                             <Setter Property="Foreground" Value="#FFE8DC5C"/>
                             <Setter Property="HorizontalAlignment" Value="Left"/>
@@ -58,23 +73,39 @@
                             <Setter Property="Margin" Value="10 0 0 0"/>
                             <Setter Property="Padding" Value="0 6 0 0"/>
                         </Style>
-                    </StackPanel.Resources>
-                    <Label>WEBSITE:</Label>
-                    <TextBlock >http://feenphone.com</TextBlock>
+                    </Grid.Resources>
+                    <StackPanel Grid.Column="1">
+                        <Label>WEBSITE:</Label>
+                        <TextBlock><Hyperlink RequestNavigate="Hyperlink_RequestNavigate"  NavigateUri="http://feenphone.com">http://feenphone.com</Hyperlink></TextBlock>
 
-                    <Label>QUICK-START GUIDE:</Label>
-                    <TextBlock >http://feenphone.com/?page_id=308</TextBlock>
+                        <Label>QUICK-START GUIDE:</Label>
+                        <TextBlock><Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="http://feenphone.com/?page_id=308">http://feenphone.com/?page_id=308</Hyperlink></TextBlock>
 
-                    <Label>HOW TO GET GREAT AUDIO WITH FeenPhone:</Label>
-                    <TextBlock >http://feenphone.com/?page_id=1123</TextBlock>
+                        <Label>HOW TO GET GREAT AUDIO WITH FeenPhone:</Label>
+                        <TextBlock><Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="http://feenphone.com/?page_id=1123">http://feenphone.com/?page_id=1123</Hyperlink></TextBlock>
+                    </StackPanel>
 
-                    <Label>DONATE LINK:</Label>
-                    <TextBlock>http://feenphone.com/?page_id=18</TextBlock>
+                    <StackPanel Grid.Column="3">
+                        <Label>DONATE LINK:</Label>
+                        <TextBlock><Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="http://feenphone.com/?page_id=18">http://feenphone.com/?page_id=18</Hyperlink></TextBlock>
 
-                    <Label>BTC address for donations:</Label>
-                    <TextBlock>1Q3QxoXcX5HYpkqRZ4uHXJXrmZzHehBZVP</TextBlock>
-                </StackPanel>
-                <Border x:Name="border" BorderThickness="1" BorderBrush="GhostWhite">
+                        <Label>BTC address for donations:</Label>
+                        <TextBlock><Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="bitcoin:1Q3QxoXcX5HYpkqRZ4uHXJXrmZzHehBZVP">1Q3QxoXcX5HYpkqRZ4uHXJXrmZzHehBZVP</Hyperlink></TextBlock>
+
+                        <Label>Software License:</Label>
+                        <TextBlock>Covered by 
+                            <Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="http://opensource.org/licenses/BSD-3-Clause">BSD 3-Clause License</Hyperlink>, 
+                            <Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="http://www.opus-codec.org/license/">OPUS CODEC LICENSE</Hyperlink></TextBlock>
+                        <TextBlock>And <Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="https://naudio.codeplex.com/license">Microsoft Public License (Ms-PL)</Hyperlink></TextBlock>
+                    </StackPanel>
+                </Grid>
+                <Border x:Name="border" BorderThickness="1" Margin="20 0">
+                    <Border.BorderBrush>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <GradientStop Color="Gold" Offset="0"/>
+                            <GradientStop Color="GhostWhite" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.BorderBrush>
                     <Border.Background>
                         <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                             <GradientStop Offset="0" Color="Black" />
@@ -127,7 +158,7 @@
                             <TextBlock>Mark Harris</TextBlock>
                             <TextBlock>Gavin Carolan</TextBlock>
                             <TextBlock>Anonymous Contributor</TextBlock>
-                            
+
                             <Label>alpha testers and beta testers:</Label>
                             <TextBlock>Lousander Feen</TextBlock>
                             <TextBlock>Davi Barker</TextBlock>
@@ -137,10 +168,12 @@
                             <TextBlock>Ben Stone</TextBlock>
                             <TextBlock>MK Lords</TextBlock>
                             <TextBlock>Václav Navrátil</TextBlock>
+                            <TextBlock>Nikki Darling</TextBlock>
                             <TextBlock>Derrick Slopey</TextBlock>
                             <TextBlock>Michael W. Dean</TextBlock>
 
-                            <TextBlock Margin="20">Leaping Kitty FeenPhone logo poster (also adopted into funding video) by Crazy Rich.</TextBlock>
+                            <TextBlock Margin="0 20 0 0">Leaping Kitty FeenPhone logo poster (also adopted into funding video) by Crazy Rich.</TextBlock>
+                            <TextBlock Margin="0 0 0 20">Feenphone logos and Artwork: Michael W. Dean and Davi Barker</TextBlock>
 
                             <TextBlock>Special thanks: Darryl W. Perry, Phil Abatecola.</TextBlock>
 
