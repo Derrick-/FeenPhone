@@ -680,6 +680,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="WPFApp\Resources\Images\BlueCrow_16.png" />
     <Resource Include="WPFApp\Resources\Images\Logo.png" />
     <Resource Include="WPFApp\Resources\Images\305_Close_24x24_72.png" />
     <Resource Include="WPFApp\Resources\Images\Wizard_Sparkle.png" />

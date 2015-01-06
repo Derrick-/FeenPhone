@@ -22,7 +22,7 @@
                         IsChecked="{Binding ShowAdvancedControls,Mode=TwoWay}"
                         ToolTip="Show Advanced Settings"
                         Height="20">
-                    <Image Height="12" Source="Resources/Images/Wizard_Sparkle.png" Effect="{StaticResource GoldGlow}">
+                    <Image Height="16" Source="Resources/Images/BlueCrow_16.png">
                     </Image>
                 </ToggleButton>
                 <ToggleButton Style="{DynamicResource TopToggles}" IsChecked="{Binding ShowAboutBox, Mode=TwoWay}">
