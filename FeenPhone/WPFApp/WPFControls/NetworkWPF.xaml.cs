@@ -234,6 +234,10 @@ namespace FeenPhone.WPFApp.Controls
         public static DependencyProperty UDPEnabledProperty = DependencyProperty.Register("UDPEnabled", typeof(bool?), typeof(NetworkWPF), new PropertyMetadata(false, OnUDPEnabledChanged));
         public static DependencyProperty TelnetEnabledProperty = DependencyProperty.Register("TelnetEnabled", typeof(bool?), typeof(NetworkWPF), new PropertyMetadata(false, OnTelnetEnabledChanged));
 
+        public static DependencyProperty TCPPortEnabledProperty = DependencyProperty.Register("TCPPortEnabled", typeof(bool?), typeof(NetworkWPF), new PropertyMetadata(true));
+        public static DependencyProperty UDPPortEnabledProperty = DependencyProperty.Register("UDPPortEnabled", typeof(bool?), typeof(NetworkWPF), new PropertyMetadata(true));
+        public static DependencyProperty TelnetPortEnabledProperty = DependencyProperty.Register("TelnetPortEnabled", typeof(bool?), typeof(NetworkWPF), new PropertyMetadata(true));
+
         public static DependencyProperty TCPPortProperty = DependencyProperty.Register("TCPPort", typeof(int), typeof(NetworkWPF), new PropertyMetadata(5150, OnTCPPortChanged));
         public static DependencyProperty UDPPortProperty = DependencyProperty.Register("UDPPort", typeof(int), typeof(NetworkWPF), new PropertyMetadata(5150, OnUDPPortChanged));
         public static DependencyProperty TelnetPortProperty = DependencyProperty.Register("TelnetPort", typeof(int), typeof(NetworkWPF), new PropertyMetadata(23, OnTelnetPortChanged));
@@ -419,7 +423,15 @@ namespace FeenPhone.WPFApp.Controls
                         target.server.Dispose();
                     target.server = null;
                 }
+                target.UpdatePortEnabledBindings();
             }
+        }
+
+        private void UpdatePortEnabledBindings()
+        {
+            SetValue(UDPPortEnabledProperty, !IsServer || !UDPEnabled);
+            SetValue(TCPPortEnabledProperty, !IsServer || !TCPEnabled);
+            SetValue(TelnetPortEnabledProperty, !IsServer || !TelnetEnabled);
         }
 
 
@@ -432,6 +444,7 @@ namespace FeenPhone.WPFApp.Controls
                 {
                     target.server.EnableTCP((bool)e.NewValue);
                 }
+                target.UpdatePortEnabledBindings();
             }
         }
 
@@ -444,6 +457,7 @@ namespace FeenPhone.WPFApp.Controls
                 {
                     target.server.EnableUDP((bool)e.NewValue);
                 }
+                target.UpdatePortEnabledBindings();
             }
         }
 
@@ -456,6 +470,7 @@ namespace FeenPhone.WPFApp.Controls
                 {
                     target.server.EnableTelnet((bool)e.NewValue);
                 }
+                target.UpdatePortEnabledBindings();
             }
         }
 
