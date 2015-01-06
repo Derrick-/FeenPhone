@@ -35,7 +35,8 @@ namespace FeenPhone.WPFApp.Models
         private void LoadSettings()
         {
             var settings = Settings.Container;
-            Level = settings.DefaultInputLevel;
+            if (settings.DefaultInputLevel > 0.0)
+                Level = settings.DefaultInputLevel;
         }
 
         private void SaveSettings()
