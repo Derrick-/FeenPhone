@@ -42,7 +42,8 @@ namespace FeenPhone.WPFApp.Models
         private void SaveSettings()
         {
             var settings = Settings.Container;
-            settings.DefaultInputLevel = Level;
+            if (IsAttached)
+                settings.DefaultInputLevel = Level;
         }
 
         public override void Dispose()
@@ -97,6 +98,11 @@ namespace FeenPhone.WPFApp.Models
             DeviceDirection = DeviceType.Unknown;
             Min = 0.0;
             Level = Max = 1.0;
+        }
+
+        public bool IsAttached
+        {
+            get { return (bool)this.GetValue(IsAttachedProperty); }
         }
 
         public double Min
