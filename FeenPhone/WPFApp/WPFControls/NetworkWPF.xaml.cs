@@ -609,6 +609,7 @@ namespace FeenPhone.WPFApp.Controls
         private void ClearServerPassword()
         {
             RequireAuth = false;
+            FeenPhone.Accounting.PasswordOnlyRepo.RequirePassword = null;
             Console.WriteLine("Server password cleared.");
         }
     }

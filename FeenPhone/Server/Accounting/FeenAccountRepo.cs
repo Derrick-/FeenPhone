@@ -67,7 +67,7 @@ namespace FeenPhone.Accounting
 
                 if (AutoCreateAccounts)
                 {
-                    var newAccount = new MockAccount(username.ToLowerInvariant(), textInfo.ToTitleCase(username));
+                    var newAccount = new FeenAccount(username.ToLowerInvariant(), textInfo.ToTitleCase(username));
                     accounts.Add(newAccount.Username, newAccount);
                     return newAccount;
                 }
@@ -85,13 +85,13 @@ namespace FeenPhone.Accounting
 
     }
 
-    internal class MockAccount : Account
+    internal class FeenAccount : Account
     {
         static int usernum = 0;
 
-        public MockAccount() : this(null) { }
+        public FeenAccount() : this(null) { }
 
-        public MockAccount(string username, string nickname = null, bool isadmin = false)
+        public FeenAccount(string username, string nickname = null, bool isadmin = false)
             : base(Guid.NewGuid(), username == null ? "user" + usernum++.ToString() : username, isadmin: isadmin)
         {
         }

@@ -1,5 +1,5 @@
 ﻿
 <sysCol:ArrayList xmlns:sysCol="clr-namespace:System.Collections;assembly=mscorlib">
-    <m:MockAccount xmlns:m="clr-namespace:FeenPhone.Accounting" Nickname="Derrick"/>
-    <m:MockAccount xmlns:m="clr-namespace:FeenPhone.Accounting" Nickname="MWD"/>
+    <m:FeenAccount xmlns:m="clr-namespace:FeenPhone.Accounting" Nickname="Derrick"/>
+    <m:FeenAccount xmlns:m="clr-namespace:FeenPhone.Accounting" Nickname="MWD"/>
 </sysCol:ArrayList>

@@ -17,9 +17,8 @@ namespace FeenPhone.Server
         internal static void OnChat(IFeenPhoneNetstate state, string text)
         {
             foreach (var feen in AllFeens)
-                if (feen != state.Notifier)
-                    if (state.User != null)
-                        feen.OnChat(state, text);
+                if (feen != state.Notifier && state.User != null)
+                    feen.OnChat(state, text);
             if (ServerHost.LocalClient != null)
                 ServerHost.LocalClient.Notifier.OnChat(state, text);
         }
@@ -27,7 +26,7 @@ namespace FeenPhone.Server
         internal static void OnAudio(IFeenPhoneNetstate state, Guid userID, Audio.Codecs.CodecID Codec, byte[] data, int dataLen)
         {
             foreach (var feen in AllFeens)
-                if (feen != state.Notifier)
+                if (feen != state.Notifier && state.User != null)
                     feen.OnAudio(userID, Codec, data, dataLen);
             if (ServerHost.LocalClient != null && ServerHost.LocalClient != state)
                 ServerHost.LocalClient.Notifier.OnAudio(userID, Codec, data, dataLen);
@@ -36,7 +35,7 @@ namespace FeenPhone.Server
         internal static void OnConnect(IFeenPhoneNetstate state)
         {
             foreach (var feen in AllFeens)
-                if (feen != state.Notifier)
+                if (feen != state.Notifier && state.User != null)
                     feen.OnUserConnected(state);
             if (ServerHost.LocalClient != null)
                 ServerHost.LocalClient.Notifier.OnUserConnected(state);
@@ -45,7 +44,7 @@ namespace FeenPhone.Server
         internal static void OnDisconnect(IFeenPhoneNetstate state)
         {
             foreach (var feen in AllFeens.ToList())
-                if (feen != state.Notifier)
+                if (feen != state.Notifier && state.User != null)
                     feen.OnUserDisconnected(state);
             if (ServerHost.LocalClient != null)
                 ServerHost.LocalClient.Notifier.OnUserDisconnected(state);
@@ -54,7 +53,7 @@ namespace FeenPhone.Server
         internal static void OnLogin(IFeenPhoneNetstate state)
         {
             foreach (var feen in AllFeens)
-                if (feen != state.Notifier)
+                if (feen != state.Notifier && state.User != null)
                     feen.OnUserLogin(state.User);
             if (ServerHost.LocalClient != null)
                 ServerHost.LocalClient.Notifier.OnUserLogin(state.User);
@@ -63,7 +62,7 @@ namespace FeenPhone.Server
         internal static void OnLogout(IFeenPhoneNetstate state)
         {
             foreach (var feen in AllFeens)
-                if (feen != state.Notifier)
+                if (feen != state.Notifier && state.User != null)
                     feen.OnUserLogout(state.User);
             if (ServerHost.LocalClient != null)
                 ServerHost.LocalClient.Notifier.OnUserLogout(state.User);

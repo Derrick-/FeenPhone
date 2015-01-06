@@ -24,7 +24,7 @@ namespace FeenPhoneTest
             List<IUser> UsersList = new List<IUser>();
 
             for (int i = 0; i < 10; i++)
-                UsersList.Add(new MockAccount());
+                UsersList.Add(new FeenAccount());
 
             MemoryStream ms = new MemoryStream();
             writer.SetStream(ms);
