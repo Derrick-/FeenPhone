@@ -21,7 +21,7 @@ namespace FeenPhone.Server.PacketServer
 
         public bool Login(string Username, string password)
         {
-            var user = FeenPhone.Accounting.AccountHandler.Login(Username, password);
+            var user = FeenPhone.Accounting.AccountHandler.Instance.Login(Username, password);
 
             State.LogLine("Login {0}: {1}", user != null ? "SUCCESS" : "FAILED", user != null ? user.Username : Username);
 

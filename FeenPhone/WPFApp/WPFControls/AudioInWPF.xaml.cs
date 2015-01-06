@@ -77,9 +77,9 @@ namespace FeenPhone.WPFApp.Controls
         }
 
         private bool isFirstConnect = true;
-        private void EventSource_OnLoginStatus(object sender, BoolEventArgs e)
+        private void EventSource_OnLoginStatus(object sender, LoginStatusEventArgs e)
         {
-            bool loginAccepted = e.Value;
+            bool loginAccepted = e.isLoggedIn;
             if (loginAccepted)
             {
                 DispatchOnConnected();

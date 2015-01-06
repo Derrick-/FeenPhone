@@ -250,5 +250,17 @@ namespace FeenPhone.Properties {
                 this["ShowAdvancedControls"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string RequireServerPass {
+            get {
+                return ((string)(this["RequireServerPass"]));
+            }
+            set {
+                this["RequireServerPass"] = value;
+            }
+        }
     }
 }

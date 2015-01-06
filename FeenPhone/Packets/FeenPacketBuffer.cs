@@ -23,7 +23,7 @@ namespace FeenPhone.Packets
 
             Write(packetID);
             if (payload == null)
-                Write((ushort)0);
+                WriteLength(0);
             else
             {
                 WriteLength(payload);
@@ -36,7 +36,7 @@ namespace FeenPhone.Packets
             Write((byte)packetID);
         }
 
-        internal void WriteLength(Audio.Codecs.CodecID Codec)
+        internal void Write(Audio.Codecs.CodecID Codec)
         {
             Write((byte)Codec);
         }

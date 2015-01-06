@@ -5,6 +5,10 @@ namespace Alienseed.BaseNetworkServer.Accounting
 {
     public interface IAccountRepository
     {
+        ushort Version { get; }
+        string RequestLoginMessage { get; }
+        string LoginSuccessMessage { get; }
+        string LoginFailureMessage { get; }
         IUserClient Login(string username, string password);
         IUser FindUser(Guid id);
     }

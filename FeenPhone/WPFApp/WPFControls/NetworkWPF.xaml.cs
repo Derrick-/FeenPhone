@@ -26,6 +26,8 @@ namespace FeenPhone.WPFApp.Controls
         System.Timers.Timer UIUpdateTimer;
         public NetworkWPF()
         {
+            isInitializing = true;
+
             InitializeComponent();
             DataContext = this;
 
@@ -41,6 +43,8 @@ namespace FeenPhone.WPFApp.Controls
             UIUpdateTimer = new System.Timers.Timer(1000);
             UIUpdateTimer.Start();
             UIUpdateTimer.Elapsed += UIUpdateTimer_Elapsed;
+
+            isInitializing = false;
         }
 
         void UIUpdateTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
@@ -70,11 +74,25 @@ namespace FeenPhone.WPFApp.Controls
             }
         }
 
-        public static DependencyProperty RequireAuthProperty = DependencyProperty.Register("RequireAuth", typeof(bool), typeof(NetworkWPF), new PropertyMetadata(false));
+        public static DependencyProperty RequireAuthProperty = DependencyProperty.Register("RequireAuth", typeof(bool), typeof(NetworkWPF), new PropertyMetadata(false, OnRequireAuthChanged));
         public bool RequireAuth
         {
             get { return (bool)this.GetValue(RequireAuthProperty); }
             set { this.SetValue(RequireAuthProperty, value); }
+        }
+        private readonly bool isInitializing = false;
+        private static void OnRequireAuthChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+
+            bool newValue = (bool)e.NewValue;
+            var target = (NetworkWPF)d;
+            if (!target.isInitializing && (bool)e.OldValue != newValue)
+            {
+                if (newValue)
+                    target.Dispatcher.BeginInvoke(new Action(() => { target.PromptSetServerPassword(); }));
+                else
+                    target.ClearServerPassword();
+            }
         }
 
 
@@ -120,6 +138,12 @@ namespace FeenPhone.WPFApp.Controls
             TCPPort = settings.TCPPort;
             UDPPort = settings.UDPPort;
             TelnetPort = settings.TelnetPort;
+
+            if (!string.IsNullOrWhiteSpace(settings.RequireServerPass))
+            {
+                FeenPhone.Accounting.PasswordOnlyRepo.RequirePassword = settings.RequireServerPass;
+                RequireAuth = true;
+            }
         }
 
         private void Settings_SaveSettings(object sender, EventArgs e)
@@ -136,26 +160,61 @@ namespace FeenPhone.WPFApp.Controls
             settings.TCPPort = TCPPort;
             settings.UDPPort = UDPPort;
             settings.TelnetPort = TelnetPort;
+
+            if (RequireAuth)
+                settings.RequireServerPass = FeenPhone.Accounting.PasswordOnlyRepo.RequirePassword;
+        }
+
+        void EventSource_OnLoginStatus(object sender, LoginStatusEventArgs e)
+        {
+            Dispatcher.Invoke(new Action<LoginStatusEventArgs>((args) => { InvokeLoginEvent(args); }), e);
         }
 
         int invalidLoginAttempts = 0;
-        void EventSource_OnLoginStatus(object sender, BoolEventArgs e)
+        private string Password = null;
+        private void InvokeLoginEvent(LoginStatusEventArgs e)
         {
-            bool isLoggedIn = e.Value;
+            bool isLoggedIn = e.isLoggedIn;
+            int version = e.version;
+            string message = e.message;
+
+            if (message != null)
+                Console.WriteLine(message);
+
             if (!isLoggedIn)
             {
+                Console.WriteLine("Server requests login.");
                 if (invalidLoginAttempts == 0)
                 {
-                    invalidLoginAttempts++;
-                    Console.WriteLine("Server requests login.");
                     Client.SendLoginInfo();
+                }
+                else if (version == 1 && invalidLoginAttempts < 3)
+                {
+                    using (LoginPassWindow pwWindow = new LoginPassWindow(initialPassword: Client.Password, messsage: message))
+                    {
+                        pwWindow.ShowDialog();
+                        string pass = pwWindow.GetInput();
+                        if (pwWindow.Canceled || string.IsNullOrWhiteSpace(pass))
+                        {
+                            Console.WriteLine("Server login canceled.");
+                            Client.Dispose();
+                            Client = null;
+                        }
+                        else
+                        {
+                            Password = Client.Password = pwWindow.GetInput();
+                            Client.SendLoginInfo();
+                        }
+                    }
                 }
                 else
                 {
                     Console.WriteLine("Server login rejected.");
-                    Client.Dispose();
+                    if (Client != null)
+                        Client.Dispose();
                     Client = null;
                 }
+                invalidLoginAttempts++;
             }
             else
             {
@@ -341,7 +400,7 @@ namespace FeenPhone.WPFApp.Controls
                         target.server.UDPServerPort = target.UDPPort;
                         target.server.TelnetServerPort = target.TelnetPort;
                         target.server.InitServers(target.TCPEnabled, target.UDPEnabled, target.TelnetEnabled);
-                        if(!target.server.AnyServersAreRunning())
+                        if (!target.server.AnyServersAreRunning())
                         {
                             Console.WriteLine("No servers were able to be started.");
                             target.SetValue(IsServerProperty, false);
@@ -495,11 +554,62 @@ namespace FeenPhone.WPFApp.Controls
                 remClient = new RemoteTCPClient(User, IP, port);
 
             Client = remClient;
+
             invalidLoginAttempts = 0;
+            Client.Password = Password;
+
             EventSource.InvokeOnUserList(null, null);
             ControlsEnabled = false;
             btnConnect.Content = "Disconnect";
             remClient.Connect();
+        }
+
+        private void ManageAuth_Click(object sender, RoutedEventArgs e)
+        {
+            PromptSetServerPassword();
+        }
+
+        private void PromptSetServerPassword()
+        {
+            var initialPassword = FeenPhone.Accounting.PasswordOnlyRepo.RequirePassword;
+            using (LoginPassWindow pwWindow = new LoginPassWindow(
+                initialPassword: initialPassword,
+                messsage: "Set Server Password.",
+                confirmButtonText: "Set Pass"))
+            {
+                pwWindow.ShowDialog();
+                if (pwWindow.Canceled)
+                {
+                    if (initialPassword == null)
+                        RequireAuth = false;
+                    else
+                        Console.WriteLine("Server password unchanged.");
+                }
+                else
+                {
+                    string newPass = pwWindow.GetInput();
+                    SetServerPassword(newPass);
+                }
+            }
+        }
+
+        private void SetServerPassword(string newPass)
+        {
+            if (string.IsNullOrWhiteSpace(newPass))
+            {
+                ClearServerPassword();
+            }
+            else
+            {
+                FeenPhone.Accounting.PasswordOnlyRepo.RequirePassword = newPass;
+                Console.WriteLine("Server password updated.");
+            }
+        }
+
+        private void ClearServerPassword()
+        {
+            RequireAuth = false;
+            Console.WriteLine("Server password cleared.");
         }
     }
 }

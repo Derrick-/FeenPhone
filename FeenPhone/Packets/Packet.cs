@@ -23,13 +23,20 @@ namespace FeenPhone
 
     static class Packet
     {
-        internal static void WriteLoginStatus(IPacketWriter Writer, bool isLoggedIn)
+        internal static void WriteLoginStatus(IPacketWriter Writer, bool isLoggedIn, string message = null)
         {
+            byte[] dataText = message == null || message.Length == 0 ? null : Encoding.ASCII.GetBytes(message);
+            int dataTextLen = dataText == null ? 0 : dataText.Length;
+
             using (var buffer = new FeenPacketBuffer(1))
             {
                 buffer.Write(PacketID.LoginStatus);
-                buffer.WriteLength(1);
+                buffer.WriteLength(3 + dataTextLen);
                 buffer.Write(isLoggedIn);
+                buffer.Write((ushort)FeenPhone.Accounting.AccountHandler.Instance.Version);
+
+                if (dataText != null)
+                    buffer.Write(dataText);
 
                 if (Writer != null)
                     Writer.Write(buffer);
@@ -126,7 +133,7 @@ namespace FeenPhone
                     buffer.Write(true);
                     buffer.Write(userID.ToByteArray());
                 }
-                buffer.WriteLength(Codec);
+                buffer.Write(Codec);
                 buffer.Write(AudioData, AudioDataLen);
 
                 if (Writer != null)

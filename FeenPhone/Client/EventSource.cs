@@ -61,6 +61,19 @@ namespace FeenPhone.Client
         }
     }
 
+    public class LoginStatusEventArgs : EventArgs
+    {
+        public bool isLoggedIn { get; set; }
+        public ushort version { get; set; }
+        public string message { get; set; }
+        public LoginStatusEventArgs(bool isLoggedIn, ushort version, string message)
+        {
+            this.isLoggedIn = isLoggedIn;
+            this.version = version;
+            this.message = message;
+        }
+    }
+
     public class BoolEventArgs : EventArgs
     {
         public bool Value { get; private set; }
@@ -76,7 +89,7 @@ namespace FeenPhone.Client
         public static event EventHandler<OnUserEventArgs> OnUserDisconnected;
         public static event EventHandler<OnChatEventArgs> OnChat;
         public static event EventHandler<UserListEventArgs> OnUserList;
-        public static event EventHandler<BoolEventArgs> OnLoginStatus;
+        public static event EventHandler<LoginStatusEventArgs> OnLoginStatus;
         public static event EventHandler<AudioDataEventArgs> OnAudioData;
         public static event EventHandler<PingEventArgs> OnPingReq;
         public static event EventHandler<PingEventArgs> OnPingResp;
@@ -99,10 +112,10 @@ namespace FeenPhone.Client
                 OnChat(sender, new OnChatEventArgs(user, text));
         }
 
-        internal static void InvokeOnLoginStatus(object sender, bool isLoggedIn)
+        internal static void InvokeOnLoginStatus(object sender, bool isLoggedIn, ushort version, string message)
         {
             if (OnLoginStatus != null)
-                OnLoginStatus(sender, new BoolEventArgs(isLoggedIn));
+                OnLoginStatus(sender, new LoginStatusEventArgs(isLoggedIn, version, message));
         }
 
         internal static void InvokeOnUserList(object sender, IEnumerable<IUser> users)

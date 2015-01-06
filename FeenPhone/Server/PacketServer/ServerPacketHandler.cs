@@ -44,7 +44,7 @@ namespace FeenPhone.Server.PacketServer
                 EventSink.OnAudio(state, state.User.ID, Codec, data, dataLen);
         }
 
-        protected override void OnLoginStatus(bool isLoggedIn)
+        protected override void OnLoginStatus(bool isLoggedIn, ushort version, string message)
         {
             Console.WriteLine("Invalid server packet LoginDemand received.");
         }
@@ -74,7 +74,7 @@ namespace FeenPhone.Server.PacketServer
 
         protected override IUser GetUserObject(Guid id, bool isadmin, string username, string nickname)
         {
-            return AccountHandler.FindUser(id);
+            return AccountHandler.Instance.FindUser(id);
         }
     }
 }

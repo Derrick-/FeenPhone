@@ -11,6 +11,8 @@ namespace FeenPhone.Client
         protected readonly IUserClient _LocalUser;
         public IUser LocalUser { get { return _LocalUser; } }
 
+        internal string Password { get; set; }
+
         public BaseClient(IUserClient localUser)
         {
             this._LocalUser = localUser;

@@ -513,7 +513,7 @@
     <Compile Include="Packets\Packet.cs" />
     <Compile Include="Server\Accounting\Account.cs" />
     <Compile Include="Server\Accounting\AccountHandler.cs" />
-    <Compile Include="Server\Accounting\MockRepo\MockRepo.cs" />
+    <Compile Include="Server\Accounting\FeenAccountRepo.cs" />
     <Compile Include="Server\Accounting\Passwords.cs" />
     <Compile Include="Server\EventSink.cs" />
     <Compile Include="Server\ServerHost.cs" />
@@ -531,6 +531,9 @@
     <Compile Include="Server\Telnet\TelnetServer.cs" />
     <Compile Include="Server\Telnet\TelNetState.cs" />
     <Compile Include="Utils\Timekeeper.cs" />
+    <Compile Include="WPFApp\LoginPassWindow.xaml.cs">
+      <DependentUpon>LoginPassWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WPFApp\Models\AudioVisualizationSource.cs" />
     <Compile Include="WPFApp\Models\CodecModel.cs" />
     <Compile Include="WPFApp\Models\DeviceModels.cs" />
@@ -567,6 +570,10 @@
     <Compile Include="WPFApp\WPFControls\UserListWPF.xaml.cs">
       <DependentUpon>UserListWPF.xaml</DependentUpon>
     </Compile>
+    <Page Include="WPFApp\LoginPassWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="WPFApp\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

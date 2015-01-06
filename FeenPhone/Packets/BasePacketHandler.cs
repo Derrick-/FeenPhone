@@ -87,13 +87,22 @@ namespace FeenPhone
             return len + 3;
         }
 
-        protected abstract void OnLoginStatus(bool isLoggedIn);
+        protected abstract void OnLoginStatus(bool isLoggedIn, ushort version, string message);
         protected void Handle_LoginStatus(IEnumerable<byte> payload)
         {
-            if (payload.Count() != 1)
+            int len = payload.Count();
+            if (len < 3)
                 throw new ArgumentException("Invalid LoginStatus packet length");
 
-            OnLoginStatus(payload.Single() == 0 ? false : true);
+            bool isLoggedIn = payload.First() == 0 ? false : true;
+            ushort version = ReadUshort(payload.Skip(1));
+
+            string message = null;
+            if (len > 3)
+                message = Encoding.ASCII.GetString(payload.Skip(3).ToArray());
+
+            OnLoginStatus(isLoggedIn, version, message);
+
         }
 
         protected abstract void LoginInfo(string username, string password);
@@ -200,26 +209,26 @@ namespace FeenPhone
         protected abstract void OnPingReq(ushort timestamp);
         protected void Handle_PingReq(IEnumerable<byte> payload)
         {
-            ushort timestamp = ReadPingTimestamp(payload);
+            ushort timestamp = ReadUshort(payload);
             OnPingReq(timestamp);
         }
 
         protected abstract void OnPingResp(ushort elapsed);
         protected void Handle_PingResp(IEnumerable<byte> payload)
         {
-            ushort timestamp = ReadPingTimestamp(payload);
+            ushort timestamp = ReadUshort(payload);
             int now = (int)Timekeeper.Elapsed.TotalMilliseconds;
             ushort elapsed;
             unchecked { elapsed = (ushort)(now - timestamp); }
             OnPingResp(elapsed);
         }
 
-        private static ushort ReadPingTimestamp(IEnumerable<byte> payload)
+        private static ushort ReadUshort(IEnumerable<byte> payload)
         {
             var count = payload.Count();
 
             if (count < 2)
-                throw new ArgumentException("Out of data in ReadPingTimestamp");
+                throw new ArgumentException("Out of data in ReadUshort");
 
             byte[] tsBytes = payload.Take(2).ToArray();
             ushort timestamp = (ushort)(tsBytes[0] << 8 | tsBytes[1]);

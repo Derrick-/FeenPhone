@@ -80,7 +80,7 @@ namespace FeenPhone.Client
         internal override void SendLoginInfo()
         {
             Console.WriteLine("Logging in as {0}", LocalUser.Nickname);
-            Packet.WriteLoginRequest(Writer, LocalUser.Nickname, LocalUser.Nickname);
+            Packet.WriteLoginRequest(Writer, LocalUser.Nickname, Password ?? LocalUser.Nickname);
         }
 
         internal override void SendPingReq()

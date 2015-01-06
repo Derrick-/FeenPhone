@@ -4,28 +4,32 @@ using System;
 
 namespace FeenPhone.Accounting
 {
-    public static class AccountHandler
-    {
-        static readonly bool UseMockRepo = true;
 
-        static IAccountRepository _repo = null;
-        static IAccountRepository Repo { get { return _repo ?? (_repo = CreateRepo()); } }
+    internal static class AccountHandler
+    {
+        public static AccountHandlerInstance<PasswordOnlyRepo> Instance = new AccountHandlerInstance<PasswordOnlyRepo>();
+    }
+
+    internal class AccountHandlerInstance<TRepo> where TRepo : IAccountRepository, new()
+    {
+        IAccountRepository _repo = null;
+        IAccountRepository Repo { get { return _repo ?? (_repo = CreateRepo()); } }
 
         private static IAccountRepository CreateRepo()
         {
-            if (UseMockRepo)
-                return new MockRepo(autoCreate: true);
-            return null; //new SQL.SqlAccountRepo();
+            return new TRepo();
         }
 
-        public static IUserClient Login(string username, string password)
+        public IUserClient Login(string username, string password)
         {
             return Repo.Login(username, password);
         }
 
-        public static IUser FindUser(Guid id)
+        public IUser FindUser(Guid id)
         {
             return Repo.FindUser(id);
         }
+
+        public ushort Version { get { return Repo.Version; } }
     }
 }

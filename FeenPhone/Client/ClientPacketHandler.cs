@@ -38,9 +38,9 @@ namespace FeenPhone.Client
             FeenPhone.Client.EventSource.InvokeOnPingResp(this, elapsed);
         }
 
-        protected override void OnLoginStatus(bool isLoggedIn)
+        protected override void OnLoginStatus(bool isLoggedIn, ushort version, string message)
         {
-            EventSource.InvokeOnLoginStatus(this, isLoggedIn);
+            EventSource.InvokeOnLoginStatus(this, isLoggedIn, version, message);
         }
 
         protected override void LoginInfo(string username, string password)
