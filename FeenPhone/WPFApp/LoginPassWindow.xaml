@@ -4,7 +4,7 @@
         WindowStyle="SingleBorderWindow"
         ResizeMode="NoResize"
         ShowInTaskbar="True"
-        Title="{Binding ServerMessage}" Height="130" Width="300">
+        Title="{Binding ServerMessage, StringFormat=Feen Phone: {0}}" Height="130" Width="300" Icon="Resources/Images/BlueCrow_16.png">
     <DockPanel>
         <StackPanel>
             <DockPanel>

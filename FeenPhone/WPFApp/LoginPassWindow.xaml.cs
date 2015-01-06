@@ -33,6 +33,7 @@ namespace FeenPhone.WPFApp
             SetValue(ConfirmButtonTextProperty, confirmButtonText);
             Canceled = true;
             DataContext = this;
+            Topmost = true;
         }
 
         public void Dispose()
