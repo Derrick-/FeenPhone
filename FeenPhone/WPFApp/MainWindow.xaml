@@ -13,8 +13,8 @@
                         <Setter Property="Margin" Value="10" />
                         <Setter Property="Padding" Value="100"/>
                     </Style>
+                    <DropShadowEffect x:Key="GoldGlow" Direction="0" ShadowDepth="0" BlurRadius="8" Color="Gold"/>
                 </DockPanel.Resources>
-                <ToggleButton Style="{DynamicResource TopToggles}" IsChecked="{Binding ShowAboutBox, Mode=TwoWay}">ABOUT</ToggleButton>
                 <ToggleButton 
                         Style="{DynamicResource TopToggles}"
                         HorizontalAlignment="Right" 
@@ -22,7 +22,11 @@
                         IsChecked="{Binding ShowAdvancedControls,Mode=TwoWay}"
                         ToolTip="Show Advanced Settings"
                         Height="20">
-                    <Image Height="12" Source="Resources/Images/Wizard_Sparkle.png"></Image>
+                    <Image Height="12" Source="Resources/Images/Wizard_Sparkle.png" Effect="{StaticResource GoldGlow}">
+                    </Image>
+                </ToggleButton>
+                <ToggleButton Style="{DynamicResource TopToggles}" IsChecked="{Binding ShowAboutBox, Mode=TwoWay}">
+                    <TextBlock Effect="{StaticResource GoldGlow}">ABOUT</TextBlock>
                 </ToggleButton>
             </DockPanel>
             <DockPanel>

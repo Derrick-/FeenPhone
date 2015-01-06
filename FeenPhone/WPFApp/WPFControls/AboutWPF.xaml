@@ -25,30 +25,44 @@
     </UserControl.Resources>
     <Grid Background="Black">
         <Image Source="/FeenPhone;component/WPFApp/Resources/logos/BirdCircle.png" Opacity="0.12"/>
-        <Button Click="AboutClose_Click" Height="24" VerticalAlignment="Top" HorizontalAlignment="Right" Background="{x:Null}" BorderBrush="{x:Null}">
+        <Button Click="AboutClose_Click" Panel.ZIndex="100" Height="24" VerticalAlignment="Top" HorizontalAlignment="Right" Background="{x:Null}" BorderBrush="{x:Null}">
             <Image Source="/FeenPhone;component/WPFApp/Resources/Images/305_Close_24x24_72.png" />
         </Button>
         <DockPanel Margin="0">
-            <Image MaxHeight="288" DockPanel.Dock="Top" HorizontalAlignment="Center" Margin="0 0 0 -20" Source="/FeenPhone;component/WPFApp/Resources/Images/Logo.png"/>
+            <Image MaxHeight="288" Panel.ZIndex="0" DockPanel.Dock="Top" HorizontalAlignment="Center" Margin="0 0 0 -20" Source="/FeenPhone;component/WPFApp/Resources/Images/Logo.png"/>
             <DockPanel HorizontalAlignment="Stretch">
                 <DockPanel.Resources>
-                    <Style TargetType="TextBlock">
+                    <Style TargetType="{x:Type TextBlock}">
                         <Setter Property="Foreground" Value="White"/>
                         <Setter Property="HorizontalAlignment" Value="Left"/>
                         <Setter Property="FontSize" Value="10"/>
                         <Setter Property="Margin" Value="20 0 0 0"/>
                     </Style>
-                    <Style TargetType="Label">
+                    <Style TargetType="{x:Type Label}">
                         <Setter Property="Foreground" Value="#FFE8DC5C"/>
                         <Setter Property="HorizontalAlignment" Value="Center"/>
                         <Setter  Property="Padding" Value="0"/>
                     </Style>
                 </DockPanel.Resources>
-                <Label DockPanel.Dock="Top">Brought to you by The Beastlick Internet Policy Outreach Team</Label>
-                <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center">Michael W. Dean: CAO (Chief Anarchy Officer) audio engineer and cat herder</TextBlock>
-                <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center">Derrick Slopey: Programmer.</TextBlock>
-                <Label DockPanel.Dock="Top">And the following sponsors</Label>
+                <Label DockPanel.Dock="Top" Content="Brought to you by The Beastlick Internet Policy Outreach Team"/>
+                <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center"><Run Text="Michael W. Dean: CAO (Chief Anarchy Officer) audio engineer and cat herder"/></TextBlock>
+                <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center"><Run Text="Derrick Slopey: Programmer."/></TextBlock>
+                <Label DockPanel.Dock="Top" Content="And the following sponsors"/>
                 <Grid DockPanel.Dock="Bottom">
+
+                    <Grid.Resources>
+                        <Style TargetType="{x:Type Hyperlink}">
+                            <Setter Property="Foreground" Value="#FF5D5DFB"/>
+                        </Style>
+                        <Style TargetType="{x:Type Label}">
+                            <Setter Property="Foreground" Value="#FFE8DC5C"/>
+                            <Setter Property="HorizontalAlignment" Value="Left"/>
+                            <Setter Property="FontFamily" Value="Tahoma"/>
+                            <Setter Property="FontSize" Value="10"/>
+                            <Setter Property="Margin" Value="10 0 0 0"/>
+                            <Setter Property="Padding" Value="0 6 0 0"/>
+                        </Style>
+                    </Grid.Resources>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*"/>
                         <ColumnDefinition MinWidth="220" MaxWidth="300"/>
@@ -61,42 +75,27 @@
                         <RowDefinition Height="20"/>
                     </Grid.RowDefinitions>
 
-                    <Grid.Resources>
-                        <Style TargetType="Hyperlink">
-                            <Setter Property="Foreground" Value="#FF5D5DFB"/>
-                        </Style>
-                        <Style TargetType="Label">
-                            <Setter Property="Foreground" Value="#FFE8DC5C"/>
-                            <Setter Property="HorizontalAlignment" Value="Left"/>
-                            <Setter Property="FontFamily" Value="Tahoma"/>
-                            <Setter Property="FontSize" Value="10"/>
-                            <Setter Property="Margin" Value="10 0 0 0"/>
-                            <Setter Property="Padding" Value="0 6 0 0"/>
-                        </Style>
-                    </Grid.Resources>
                     <StackPanel Grid.Column="1">
-                        <Label>WEBSITE:</Label>
-                        <TextBlock><Hyperlink RequestNavigate="Hyperlink_RequestNavigate"  NavigateUri="http://feenphone.com">http://feenphone.com</Hyperlink></TextBlock>
+                        <Label Content="WEBSITE:"/>
+                        <TextBlock><Hyperlink RequestNavigate="Hyperlink_RequestNavigate"  NavigateUri="http://feenphone.com"><Run Text="http://feenphone.com"/></Hyperlink></TextBlock>
 
-                        <Label>QUICK-START GUIDE:</Label>
-                        <TextBlock><Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="http://feenphone.com/?page_id=308">http://feenphone.com/?page_id=308</Hyperlink></TextBlock>
+                        <Label Content="QUICK-START GUIDE:"/>
+                        <TextBlock><Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="http://feenphone.com/?page_id=308"><Run Text="http://feenphone.com/?page_id=308"/></Hyperlink></TextBlock>
 
-                        <Label>HOW TO GET GREAT AUDIO WITH FeenPhone:</Label>
-                        <TextBlock><Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="http://feenphone.com/?page_id=1123">http://feenphone.com/?page_id=1123</Hyperlink></TextBlock>
+                        <Label Content="HOW TO GET GREAT AUDIO WITH FeenPhone:"/>
+                        <TextBlock><Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="http://feenphone.com/?page_id=1123"><Run Text="http://feenphone.com/?page_id=1123"/></Hyperlink></TextBlock>
                     </StackPanel>
 
                     <StackPanel Grid.Column="3">
-                        <Label>DONATE LINK:</Label>
-                        <TextBlock><Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="http://feenphone.com/?page_id=18">http://feenphone.com/?page_id=18</Hyperlink></TextBlock>
+                        <Label Content="DONATE LINK:"/>
+                        <TextBlock><Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="http://feenphone.com/?page_id=18"><Run Text="http://feenphone.com/?page_id=18"/></Hyperlink></TextBlock>
 
-                        <Label>BTC address for donations:</Label>
-                        <TextBlock><Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="bitcoin:1Q3QxoXcX5HYpkqRZ4uHXJXrmZzHehBZVP">1Q3QxoXcX5HYpkqRZ4uHXJXrmZzHehBZVP</Hyperlink></TextBlock>
+                        <Label Content="BTC address for donations:"/>
+                        <TextBlock><Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="bitcoin:1Q3QxoXcX5HYpkqRZ4uHXJXrmZzHehBZVP"><Run Text="1Q3QxoXcX5HYpkqRZ4uHXJXrmZzHehBZVP"/></Hyperlink></TextBlock>
 
-                        <Label>Software License:</Label>
-                        <TextBlock>Covered by 
-                            <Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="http://opensource.org/licenses/BSD-3-Clause">BSD 3-Clause License</Hyperlink>, 
-                            <Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="http://www.opus-codec.org/license/">OPUS CODEC LICENSE</Hyperlink></TextBlock>
-                        <TextBlock>And <Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="https://naudio.codeplex.com/license">Microsoft Public License (Ms-PL)</Hyperlink></TextBlock>
+                        <Label Content="Software License:"/>
+                        <TextBlock><Run Text="Covered by "/><Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="http://opensource.org/licenses/BSD-3-Clause"><Run Text="BSD 3-Clause License"/></Hyperlink><Run Text=", "/><Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="http://www.opus-codec.org/license/"><Run Text="OPUS CODEC LICENSE"/></Hyperlink></TextBlock>
+                        <TextBlock><Run Text="And "/><Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="https://naudio.codeplex.com/license"><Run Text="Microsoft Public License (Ms-PL)"/></Hyperlink></TextBlock>
                     </StackPanel>
                 </Grid>
                 <Border x:Name="border" BorderThickness="1" Margin="20 0">
@@ -115,17 +114,17 @@
                         </LinearGradientBrush>
                     </Border.Background>
                     <Canvas
-                        HorizontalAlignment="Stretch"
-                        ClipToBounds="True"
-                        x:Name="scrollerCanvas">
+        				HorizontalAlignment="Stretch"
+        				ClipToBounds="True"
+        				x:Name="scrollerCanvas">
                         <StackPanel
-                                HorizontalAlignment="Center"
-                                Style="{DynamicResource CanvasScroller}"
-                                x:Name="scroller"
-                                Canvas.Top="10"
-                                Width="{Binding ActualWidth}">
+        					HorizontalAlignment="Center"
+        					Style="{DynamicResource CanvasScroller}"
+        					x:Name="scroller"
+        					Canvas.Top="10"
+        					Width="{Binding ActualWidth}">
                             <StackPanel.Resources>
-                                <Style TargetType="Label">
+                                <Style TargetType="{x:Type Label}">
                                     <Setter Property="Foreground" Value="#FFE8DC5C"/>
                                     <Setter Property="HorizontalAlignment" Value="Center"/>
                                     <Setter Property="FontFamily" Value="Tahoma"/>
@@ -133,49 +132,49 @@
                                     <Setter Property="Margin" Value="0 0 0 0"/>
                                     <Setter Property="Padding" Value="0 6 0 0"/>
                                 </Style>
-                                <Style TargetType="TextBlock">
+                                <Style TargetType="{x:Type TextBlock}">
                                     <Setter Property="HorizontalAlignment" Value="Center"/>
                                     <Setter Property="Foreground" Value="White"/>
                                 </Style>
                             </StackPanel.Resources>
-                            <Label>LIST OF DONATORS FROM FIRST ROUND OF INDIEGOGO FUNDING:</Label>
-                            <Label>Thanks again for your help!</Label>
-                            <TextBlock>Ian Freeman</TextBlock>
-                            <TextBlock>Vaclav Navratil</TextBlock>
-                            <TextBlock>Stephan Kinsella</TextBlock>
-                            <TextBlock>Mark Schisler</TextBlock>
-                            <TextBlock>Tobias Kaatz</TextBlock>
-                            <TextBlock>Ryan Gilbert</TextBlock>
-                            <TextBlock>Anders Hass</TextBlock>
-                            <TextBlock>Dianna Keiler</TextBlock>
-                            <TextBlock>Christian Saucier</TextBlock>
-                            <TextBlock>Randy England</TextBlock>
-                            <TextBlock>Per Sjöborg</TextBlock>
-                            <TextBlock>teo524</TextBlock>
-                            <TextBlock>Jacob Tothe</TextBlock>
-                            <TextBlock>Travis McQuivey</TextBlock>
-                            <TextBlock>Tobias Kaatz</TextBlock>
-                            <TextBlock>Mark Harris</TextBlock>
-                            <TextBlock>Gavin Carolan</TextBlock>
-                            <TextBlock>Anonymous Contributor</TextBlock>
+                            <Label Content="LIST OF DONATORS FROM FIRST ROUND OF INDIEGOGO FUNDING:"/>
+                            <Label Content="Thanks again for your help!"/>
+                            <TextBlock><Run Text="Ian Freeman"/></TextBlock>
+                            <TextBlock><Run Text="Vaclav Navratil"/></TextBlock>
+                            <TextBlock><Run Text="Stephan Kinsella"/></TextBlock>
+                            <TextBlock><Run Text="Mark Schisler"/></TextBlock>
+                            <TextBlock><Run Text="Tobias Kaatz"/></TextBlock>
+                            <TextBlock><Run Text="Ryan Gilbert"/></TextBlock>
+                            <TextBlock><Run Text="Anders Hass"/></TextBlock>
+                            <TextBlock><Run Text="Dianna Keiler"/></TextBlock>
+                            <TextBlock><Run Text="Christian Saucier"/></TextBlock>
+                            <TextBlock><Run Text="Randy England"/></TextBlock>
+                            <TextBlock><Run Text="Per Sjöborg"/></TextBlock>
+                            <TextBlock><Run Text="teo524"/></TextBlock>
+                            <TextBlock><Run Text="Jacob Tothe"/></TextBlock>
+                            <TextBlock><Run Text="Travis McQuivey"/></TextBlock>
+                            <TextBlock><Run Text="Tobias Kaatz"/></TextBlock>
+                            <TextBlock><Run Text="Mark Harris"/></TextBlock>
+                            <TextBlock><Run Text="Gavin Carolan"/></TextBlock>
+                            <TextBlock><Run Text="Anonymous Contributor"/></TextBlock>
 
-                            <Label>alpha testers and beta testers:</Label>
-                            <TextBlock>Lousander Feen</TextBlock>
-                            <TextBlock>Davi Barker</TextBlock>
-                            <TextBlock>Dianna Keiler</TextBlock>
-                            <TextBlock>Randy England</TextBlock>
-                            <TextBlock>Ian Freeman</TextBlock>
-                            <TextBlock>Ben Stone</TextBlock>
-                            <TextBlock>MK Lords</TextBlock>
-                            <TextBlock>Václav Navrátil</TextBlock>
-                            <TextBlock>Nikki Darling</TextBlock>
-                            <TextBlock>Derrick Slopey</TextBlock>
-                            <TextBlock>Michael W. Dean</TextBlock>
+                            <Label Content="alpha testers and beta testers:"/>
+                            <TextBlock><Run Text="Lousander Feen"/></TextBlock>
+                            <TextBlock><Run Text="Davi Barker"/></TextBlock>
+                            <TextBlock><Run Text="Dianna Keiler"/></TextBlock>
+                            <TextBlock><Run Text="Randy England"/></TextBlock>
+                            <TextBlock><Run Text="Ian Freeman"/></TextBlock>
+                            <TextBlock><Run Text="Ben Stone"/></TextBlock>
+                            <TextBlock><Run Text="MK Lords"/></TextBlock>
+                            <TextBlock><Run Text="Václav Navrátil"/></TextBlock>
+                            <TextBlock><Run Text="Nikki Darling"/></TextBlock>
+                            <TextBlock><Run Text="Derrick Slopey"/></TextBlock>
+                            <TextBlock><Run Text="Michael W. Dean"/></TextBlock>
 
-                            <TextBlock Margin="0 20 0 0">Leaping Kitty FeenPhone logo poster (also adopted into funding video) by Crazy Rich.</TextBlock>
-                            <TextBlock Margin="0 0 0 20">Feenphone logos and Artwork: Michael W. Dean and Davi Barker</TextBlock>
+                            <TextBlock Margin="0 20 0 0"><Run Text="Leaping Kitty FeenPhone logo poster (also adopted into funding video) by Crazy Rich."/></TextBlock>
+                            <TextBlock Margin="0 0 0 20"><Run Text="Feenphone logos and Artwork: Michael W. Dean and Davi Barker"/></TextBlock>
 
-                            <TextBlock>Special thanks: Darryl W. Perry, Phil Abatecola.</TextBlock>
+                            <TextBlock><Run Text="Special thanks: Darryl W. Perry, Phil Abatecola."/></TextBlock>
 
                         </StackPanel>
                     </Canvas>
