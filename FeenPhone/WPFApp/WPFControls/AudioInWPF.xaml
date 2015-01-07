@@ -74,7 +74,7 @@
                     DockPanel.Dock="left"
                     ItemsSource="{Binding Source={StaticResource InputsView}, Path=Groups}"
                     DisplayMemberPath="Name" />
-                <Grid DockPanel.Dock="Right" Visibility="{Binding ShowAdvancedControls, Converter={StaticResource BoolToVisConverter}}">
+                <Grid DockPanel.Dock="Right" Visibility="Collapsed">
                     <ToggleButton Width="16" 
                               IsChecked="{Binding UseWaveEvent}" 
                               Visibility="{Binding SelectedInputSource.IsWaveDevice, Converter={StaticResource BoolToVisConverter}}"

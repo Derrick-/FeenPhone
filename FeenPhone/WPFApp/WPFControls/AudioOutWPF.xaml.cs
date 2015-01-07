@@ -48,8 +48,8 @@ namespace FeenPhone.WPFApp.Controls
             }
             else
             {
-                target.UseWaveEvent = true;
-                target.SetValue(ShouldRampUnderrunsProperty, true);
+                target.UseWaveEvent = false;
+                target.SetValue(ShouldRampUnderrunsProperty, false);
 
                 var selected=target.SelectedOutput;
                 var toRemove = OutputList.Where(m => m.MMDevice == null && m != selected).ToList();
@@ -62,7 +62,7 @@ namespace FeenPhone.WPFApp.Controls
 
         }
 
-        public static bool shouldRampUnderruns = true;
+        public static bool shouldRampUnderruns = false;
         public static DependencyProperty ShouldRampUnderrunsProperty = DependencyProperty.Register("ShouldRampUnderruns", typeof(bool), typeof(AudioOutWPF), new PropertyMetadata(shouldRampUnderruns, OnShouldRampUnderrunsChanged));
         private static void OnShouldRampUnderrunsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {

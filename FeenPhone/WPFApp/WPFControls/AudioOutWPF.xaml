@@ -35,7 +35,7 @@
                     <StackPanel>
                         <Label HorizontalAlignment="Left">Output Device</Label>
                         <DockPanel>
-                            <WrapPanel DockPanel.Dock="Right" Visibility="{Binding ShowAdvancedControls, Converter={StaticResource BoolToVisConverter}}" >
+                            <WrapPanel DockPanel.Dock="Right" Visibility="Collapsed" >
                                 <ToggleButton Width="16" 
                                       IsChecked="{Binding UseWaveEvent}" 
                                       Visibility="{Binding SelectedOutput.IsWaveDevice, Converter={StaticResource BoolToVisConverter}}"

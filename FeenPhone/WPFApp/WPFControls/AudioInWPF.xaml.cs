@@ -305,7 +305,7 @@ namespace FeenPhone.WPFApp.Controls
             AudioInWPF target = (AudioInWPF)d;
             if (((bool)e.NewValue) == false)
             {
-                target.UseWaveEvent = true;
+                target.UseWaveEvent = false;
                 if (target.comboInputGroups.Items != null && target.comboInputGroups.Items.Count > 0)
                     target.comboInputGroups.SelectedIndex = 0;
                 if (target.comboBoxCodecs.Items != null && target.comboBoxCodecs.Items.Count > 0)
@@ -313,7 +313,7 @@ namespace FeenPhone.WPFApp.Controls
             }
         }
 
-        public static DependencyProperty UseWaveEventProperty = DependencyProperty.Register("UseWaveEvent", typeof(bool), typeof(AudioInWPF), new PropertyMetadata(true, OnUseWaveEventChanged));
+        public static DependencyProperty UseWaveEventProperty = DependencyProperty.Register("UseWaveEvent", typeof(bool), typeof(AudioInWPF), new PropertyMetadata(false, OnUseWaveEventChanged));
         public bool UseWaveEvent
         {
             get { return (bool)GetValue(UseWaveEventProperty); }
