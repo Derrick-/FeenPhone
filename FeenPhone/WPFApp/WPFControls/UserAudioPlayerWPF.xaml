@@ -64,6 +64,7 @@
                                   Height="{Binding ElementName=modelValueContainer, Path=ActualHeight}" 
                                   Width="{Binding ElementName=modelValueContainer, Path=ActualWidth}" 
                                   Value="{Binding Path=BufferedDurationMs}"
+                                  Minimum="{Binding Path=MinBufferedDurationMs}"
                                   Maximum="{Binding Path=MaxBufferedDurationMs}" />
                     <TextBlock Text="{Binding Path=BufferedDurationMs, StringFormat={}{0}ms}" Foreground="{StaticResource clrDumpButtonBorder}" VerticalAlignment="Center"></TextBlock>
                 </Grid>
@@ -73,7 +74,7 @@
                 <Label ToolTip="Target buffer size in milliseconds">Buffer Target</Label>
                     <TextBlock TextAlignment="Right" Text="{Binding Path=BufferTarget, StringFormat={}{0}ms}"></TextBlock>
                 </Grid>
-                <Slider Minimum="0" Maximum="{Binding Path=MaxBufferedDurationMs}" 
+                <Slider Minimum="{Binding Path=MinBufferedDurationMs}" Maximum="{Binding Path=MaxBufferedDurationMs}" 
                         TickFrequency="10"
                         TickPlacement="TopLeft"
                         IsSnapToTickEnabled="True"

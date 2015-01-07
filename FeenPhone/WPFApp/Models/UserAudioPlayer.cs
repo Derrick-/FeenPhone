@@ -70,11 +70,11 @@ namespace FeenPhone.WPFApp.Models
         }
 
         static int DefaultMaxBufferedDurationMs = 500;
-        TimeSpan FrameDropThresholdMs { get { return _MaxBufferedDuration.Add(_MaxBufferedDuration); } }
+        TimeSpan FrameDropThresholdMs { get { return MaxBufferedDuration.Add(MaxBufferedDuration); } }
         static ushort DefaultSilenceAggression = 1;
 
-        static int DefaultBufferTargetMs = 50;
-        static int BufferTargetMarginMs = 20;
+        static int DefaultBufferTargetMs = 100;
+        static int BufferTargetMarginMs = 50;
 
         static int BufferWarningDurationMs = 150;
         static int BufferCriticalDurationMs = 300;
@@ -130,7 +130,9 @@ namespace FeenPhone.WPFApp.Models
             }
         }
 
-        public static DependencyProperty MaxBufferedDurationDurationProperty = DependencyProperty.Register("MaxBufferedDurationMs", typeof(int), typeof(UserAudioPlayer), new PropertyMetadata(DefaultMaxBufferedDurationMs));
+        public int MinBufferedDurationMs { get { return 50; } }
+
+        public static DependencyProperty MaxBufferedDurationMsProperty = DependencyProperty.Register("MaxBufferedDurationMs", typeof(int), typeof(UserAudioPlayer), new PropertyMetadata(DefaultMaxBufferedDurationMs));
         TimeSpan _MaxBufferedDuration = TimeSpan.FromMilliseconds(DefaultMaxBufferedDurationMs);
         public TimeSpan MaxBufferedDuration
         {
@@ -138,7 +140,7 @@ namespace FeenPhone.WPFApp.Models
             set
             {
                 _MaxBufferedDuration = value;
-                SetValue(MaxBufferedDurationDurationProperty, (int)value.TotalMilliseconds);
+                SetValue(MaxBufferedDurationMsProperty, (int)value.TotalMilliseconds);
             }
         }
 
@@ -164,17 +166,21 @@ namespace FeenPhone.WPFApp.Models
         }
 
         public static DependencyProperty BufferTargetProperty = DependencyProperty.Register("BufferTarget", typeof(int), typeof(UserAudioPlayer), new PropertyMetadata(DefaultBufferTargetMs, OnBufferTargetPropertyUpdated));
-        int bufferTarget = DefaultBufferTargetMs;
         public int BufferTarget
         {
-            get { return bufferTarget; }
-            set { bufferTarget = value; SetValue(BufferTargetProperty, value); }
+            get { return (int)GetValue(BufferTargetProperty); }
+            set { SetValue(BufferTargetProperty, value); }
         }
+
+        int bufferTarget = DefaultBufferTargetMs;
         private static void OnBufferTargetPropertyUpdated(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var target = d as UserAudioPlayer;
-            if (d != null)
+            if (target != null)
+            {
                 target.bufferTarget = (int)e.NewValue;
+                target.TryUpdateLatency();
+            }
         }
 
         public static DependencyProperty SilenceAggressionProperty = DependencyProperty.Register("SilenceAggression", typeof(ushort), typeof(UserAudioPlayer), new PropertyMetadata(DefaultSilenceAggression, OnSilenceAggressionUpdated));
@@ -197,6 +203,12 @@ namespace FeenPhone.WPFApp.Models
             shouldUpdateDuration = true;
         }
 
+        volatile bool ShouldTryRestartOutput = false;
+        private void TryUpdateLatency()
+        {
+            ShouldTryRestartOutput = (waveOut != null && waveOut.PlaybackState == PlaybackState.Playing);
+        }
+
         public void HandleAudio(Audio.Codecs.CodecID codecid, byte[] encoded)
         {
             if (isDisposed) return;
@@ -213,16 +225,17 @@ namespace FeenPhone.WPFApp.Models
                 CodecName = remoteCodec.Name();
             }
 
-            if (waveOut != null && waveProvider.WaveFormat != remoteCodec.RecordFormat)
-                Stop();
-
-            if (waveOut == null)
-                Start(remoteCodec);
-
-            TimeSpan buffered = waveProvider.BufferedDuration;
-
+            TimeSpan buffered = waveOut == null ? TimeSpan.Zero : waveProvider.BufferedDuration;
             bool isPlaying = buffered != TimeSpan.Zero;
-            if (!isPlaying) UnderRuns++;
+
+            if (waveOut == null || waveProvider.WaveFormat != remoteCodec.RecordFormat || (!isPlaying && ShouldTryRestartOutput))
+            {
+                Start(remoteCodec);
+            }
+            else if (!isPlaying)
+            {
+                UnderRuns++;
+            }
 
             if (buffered <= FrameDropThresholdMs)
             {
@@ -333,6 +346,8 @@ namespace FeenPhone.WPFApp.Models
 
         private void Start(Audio.Codecs.INetworkChatCodec codec)
         {
+            ShouldTryRestartOutput = false;
+
             Stop();
 
             waveOut = GetWavePlayer();
@@ -350,15 +365,17 @@ namespace FeenPhone.WPFApp.Models
             OutputFormat = codec.RecordFormat.ToString();
         }
 
-        int desiredLatency = 150;
-
         private bool useEventSync = true;
         public AudioClientShareMode shareMode = AudioClientShareMode.Shared;
 
         private IWavePlayer GetWavePlayer()
         {
+            int desiredLatency = Math.Max(MinBufferedDurationMs, Math.Min((int)MaxBufferedDuration.TotalMilliseconds, BufferTarget));
 
             var SelectedOutput = Parent.SelectedOutput;
+
+            Console.WriteLine("Initializing Output for {0} using {1}{2} with latency of {3}ms", User.Nickname ?? User.ID.ToString(), SelectedOutput.Provider, SelectedOutput.Provider == DeviceProvider.Wave && UseWaveEvent ? "Event" : "", desiredLatency);
+
             switch (SelectedOutput.Provider)
             {
                 case DeviceProvider.Wave:

@@ -163,6 +163,8 @@ namespace FeenPhone.WPFApp.Controls
 
             if (RequireAuth)
                 settings.RequireServerPass = FeenPhone.Accounting.PasswordOnlyRepo.RequirePassword;
+            else
+                settings.RequireServerPass = null;
         }
 
         void EventSource_OnLoginStatus(object sender, LoginStatusEventArgs e)
