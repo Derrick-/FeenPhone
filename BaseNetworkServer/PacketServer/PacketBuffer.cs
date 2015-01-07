@@ -5,34 +5,58 @@ using System.Text;
 
 namespace Alienseed.BaseNetworkServer.PacketServer
 {
-    public class PacketBuffer : IDisposable
+    public interface IPacketBuffer : IDisposable
     {
-        private int BytesLength = 0;
+        int BytesLength { get; }
+        byte[] GetData();
+        void Write(bool value);
+        void Write(byte value);
+        void Write(byte[] data, int? optLength = null);
+        void Write(ushort value);
+    }
+
+    public abstract class PacketBuffer<T> : IPacketBuffer where T : PacketBuffer<T>, new()
+    {
+        public static List<T> Buffers = new List<T>();
+
+        public static T Acquire(int? initialSize = null)
+        {
+            int minSize = initialSize.HasValue ? initialSize.Value : 0;
+            T buffer = default(T);
+            buffer = Buffers.Where(m => m.Bytes.Length >= minSize).FirstOrDefault();
+            if (buffer == null)
+                buffer = new T() { WasAcquired = true };
+            buffer.isDisposed = false;
+            Buffers.Remove(buffer);
+            return buffer;
+        }
+
+        protected bool WasAcquired { get; set; }
+
+        public int BytesLength { get; private set; }
         private byte[] Bytes;
 
         protected virtual int DefaultSize { get { return 1024; } }
         protected virtual int MaxLength { get { return int.MaxValue; } }
 
-        public PacketBuffer(int? initialSize = null)
+        protected PacketBuffer(int? initialSize = null)
         {
             if (initialSize.HasValue)
                 Bytes = new byte[initialSize.Value];
             else
                 Bytes = new byte[DefaultSize];
+            WasAcquired = false;
         }
 
-        byte[] data = null;
-        private void Invalidate() { data = null; }
         public byte[] GetData()
         {
-            return data ?? (data = Bytes.Take(BytesLength).ToArray());
+            return Bytes;
         }
 
         public void Write(byte value)
         {
             EnsureCapacity(BytesLength + 1);
             Bytes[BytesLength++] = value;
-            Invalidate();
         }
 
         private void EnsureCapacity(int requiredLength)
@@ -75,10 +99,17 @@ namespace Alienseed.BaseNetworkServer.PacketServer
             BytesLength = newLength;
         }
 
+        protected bool isDisposed = false;
         public void Dispose()
         {
-            Bytes = null;
-            data = null;
+            if (!isDisposed && Bytes!=null && WasAcquired)
+            {
+                BytesLength = 0;
+                Buffers.Add(this as T);
+            }
+            else
+                Bytes = null;
+            isDisposed = true;
         }
     }
 }

@@ -1,15 +1,21 @@
-﻿using System;
+﻿using Alienseed.BaseNetworkServer.PacketServer;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace FeenPhone.Packets
 {
-    class FeenPacketBuffer : Alienseed.BaseNetworkServer.PacketServer.PacketBuffer
+    class FeenPacketBuffer : PacketBuffer<FeenPacketBuffer>
     {
         protected override int MaxLength { get { return ushort.MaxValue; } }
 
-        public FeenPacketBuffer(int? initialSize = null) : base(initialSize) { }
+        [Obsolete ("FeenPacketBuffer should be Acquired, not instanciated.")]
+        public FeenPacketBuffer() : base(null) { }
+        public new static FeenPacketBuffer Acquire(int? initialSize = null)
+        {
+            return PacketBuffer<FeenPacketBuffer>.Acquire(initialSize);
+        }
 
         public FeenPacketBuffer(PacketID packetID, byte[] payload)
         {

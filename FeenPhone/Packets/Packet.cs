@@ -28,7 +28,7 @@ namespace FeenPhone
             byte[] dataText = message == null || message.Length == 0 ? null : Encoding.ASCII.GetBytes(message);
             int dataTextLen = dataText == null ? 0 : dataText.Length;
 
-            using (var buffer = new FeenPacketBuffer(1))
+            using (var buffer = FeenPacketBuffer.Acquire())
             {
                 buffer.Write(PacketID.LoginStatus);
                 buffer.WriteLength(3 + dataTextLen);
@@ -80,7 +80,7 @@ namespace FeenPhone
         {
             byte[] dataText = Encoding.ASCII.GetBytes(text);
 
-            using (var buffer = new FeenPacketBuffer())
+            using (var buffer = FeenPacketBuffer.Acquire())
             {
                 byte[] dataUser = UserData(user);
                 var len = dataUser.Length + dataText.Length;
@@ -108,7 +108,7 @@ namespace FeenPhone
             foreach (var user in users)
                 usersDatas.Add(UserData(user));
 
-            using (var buffer = new FeenPacketBuffer())
+            using (var buffer = FeenPacketBuffer.Acquire())
             {
                 buffer.Write(PacketID.UserList);
                 buffer.WriteLength(usersDatas.Sum(m => m.Length) + 1);
@@ -122,7 +122,7 @@ namespace FeenPhone
 
         internal static void WriteAudioData(IPacketWriter Writer, Guid userID, Audio.Codecs.CodecID Codec, byte[] AudioData, int AudioDataLen)
         {
-            using (var buffer = new FeenPacketBuffer())
+            using (var buffer = FeenPacketBuffer.Acquire())
             {
                 buffer.Write(PacketID.Audio);
                 buffer.WriteLength(AudioDataLen + (userID == Guid.Empty ? 1 : 17) + 1);

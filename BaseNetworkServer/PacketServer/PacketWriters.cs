@@ -8,22 +8,22 @@ namespace Alienseed.BaseNetworkServer.PacketServer
 {
     public interface IPacketWriter : INetworkWriter
     {
-        void Write(PacketBuffer buffer);
+        void Write(IPacketBuffer buffer);
     }
 
     public class TCPPacketWriter : BaseStreamWriter, IPacketWriter
     {
-        public void Write(PacketBuffer buffer)
+        public void Write(IPacketBuffer buffer)
         {
-            Write(buffer.GetData());
+            Write(buffer.GetData(), buffer.BytesLength);
         }
     }
 
     public class UDPPacketWriter : BaseUDPWriter, IPacketWriter
     {
-        public void Write(PacketBuffer buffer)
+        public void Write(IPacketBuffer buffer)
         {
-            Write(buffer.GetData());
+            Write(buffer.GetData(), buffer.BytesLength);
         }
     }
 }

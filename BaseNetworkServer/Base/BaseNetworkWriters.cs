@@ -9,7 +9,8 @@ namespace Alienseed.BaseNetworkServer
     {
         public abstract void Dispose();
 
-        public abstract void Write(byte[] bytes);
+        public void Write(byte[] bytes) { Write(bytes, bytes.Length); }
+        public abstract void Write(byte[] bytes, int numbytes);
     }
 
     public class BaseUDPWriter : BaseNetworkWriter
@@ -23,7 +24,7 @@ namespace Alienseed.BaseNetworkServer
             this.client = client;
         }
 
-        public override void Write(byte[] bytes)
+        public override void Write(byte[] bytes, int numbytes)
         {
             if (client != null)
             {
@@ -34,9 +35,9 @@ namespace Alienseed.BaseNetworkServer
                 else
                 {
                     if (client.Client.Connected)
-                        client.Send(bytes, bytes.Length);
+                        client.Send(bytes, numbytes);
                     else
-                        client.BeginSend(bytes, bytes.Length, new AsyncCallback(EndSend), null);
+                        client.BeginSend(bytes, numbytes, new AsyncCallback(EndSend), null);
                 }
             }
         }
@@ -67,12 +68,7 @@ namespace Alienseed.BaseNetworkServer
             Stream = stream;
         }
 
-        public override void Write(byte[] bytes)
-        {
-            Write(bytes, bytes.Length);
-        }
-
-        internal void Write(byte[] bytes, int numbytes)
+        public override void Write(byte[] bytes, int numbytes)
         {
             try
             {
