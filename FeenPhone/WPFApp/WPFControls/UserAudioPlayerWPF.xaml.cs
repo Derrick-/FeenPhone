@@ -31,12 +31,13 @@ namespace FeenPhone.WPFApp.Controls
         private static void OnAdvancedControlsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var target = (UserAudioPlayerWPF)d;
-            bool newValue=(bool)e.NewValue;
+            bool newValue = (bool)e.NewValue;
             if (newValue)
-                target.Player.SilenceAggression = 1;
+                target.Player.BufferRecoveryEnabled = true;
         }
 
-        internal UserAudioPlayerWPF(Guid userID, AudioOutWPF parent, bool useWaveEvent = true) : this()
+        internal UserAudioPlayerWPF(Guid userID, AudioOutWPF parent, bool useWaveEvent = true)
+            : this()
         {
             Player = new UserAudioPlayer(userID, parent, useWaveEvent);
             DataContext = Player;

@@ -86,13 +86,8 @@
                 </Slider>
             </WrapPanel>
             <WrapPanel Visibility="{Binding Parent.ShowAdvancedControls, Converter={StaticResource BoolToVisConverter}}">
-                <Label ToolTip="The speed at which buffer overruns are recovered by skipping silence">Buffer Recovery</Label>
-                <Slider Minimum="0" Maximum="10" 
-                        Value="{Binding Path=SilenceAggression}" 
-                        ToolTip="{Binding Path=SilenceAggression}" 
-                        Height="{Binding ElementName=modelValueContainer, Path=ActualHeight}" 
-                        Width="{Binding ElementName=modelValueContainer, Path=ActualWidth}">
-                </Slider>
+                <Label ToolTip="Enable buffer overruns to be recovered automatically by skipping silence">Buffer Recovery</Label>
+                <CheckBox IsChecked="{Binding BufferRecoveryEnabled}">Enabled</CheckBox>
             </WrapPanel>
             <Grid>
                 <Grid.Resources>

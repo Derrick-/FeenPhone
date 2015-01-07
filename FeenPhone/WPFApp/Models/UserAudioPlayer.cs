@@ -183,18 +183,21 @@ namespace FeenPhone.WPFApp.Models
             }
         }
 
-        public static DependencyProperty SilenceAggressionProperty = DependencyProperty.Register("SilenceAggression", typeof(ushort), typeof(UserAudioPlayer), new PropertyMetadata(DefaultSilenceAggression, OnSilenceAggressionUpdated));
         ushort silenceAggression = DefaultSilenceAggression;
-        public ushort SilenceAggression
+        public static DependencyProperty BufferRecoveryEnabledProperty = DependencyProperty.Register("BufferRecoveryEnabled", typeof(bool), typeof(UserAudioPlayer), new PropertyMetadata(DefaultSilenceAggression != 0, OnBufferRecoveryEnabledChanged));
+        public bool BufferRecoveryEnabled
         {
-            get { return silenceAggression; }
-            set { silenceAggression = value; SetValue(SilenceAggressionProperty, value); }
+            get { return (bool)GetValue(BufferRecoveryEnabledProperty); }
+            set { SetValue(BufferRecoveryEnabledProperty, value); }
         }
-        private static void OnSilenceAggressionUpdated(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnBufferRecoveryEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var target = d as UserAudioPlayer;
-            if (d != null)
-                target.silenceAggression = (ushort)e.NewValue;
+            if (target != null)
+            {
+                bool newValue = (bool)e.NewValue;
+                target.silenceAggression = newValue ? DefaultSilenceAggression : (ushort)0;
+            }
         }
 
         private bool shouldUpdateDuration = false;
