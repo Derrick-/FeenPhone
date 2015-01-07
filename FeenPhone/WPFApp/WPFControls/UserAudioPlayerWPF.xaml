@@ -28,7 +28,7 @@
         <StackPanel>
             <StackPanel.Resources>
                 <Style TargetType="{x:Type Label}">
-                    <Setter Property="Width" Value="100"/>
+                    <Setter Property="Width" Value="110"/>
                     <Setter Property="Height" Value="18"/>
                     <Setter Property="VerticalAlignment" Value="Top"/>
                     <Setter Property="Padding" Value="0"/>
