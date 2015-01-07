@@ -97,7 +97,7 @@
                     <TextBlock DockPanel.Dock="Left" Text="{Binding BufferTargetMs}" IsEnabled="{Binding ControlsEnabled}"/>
                     <TextBlock>ms</TextBlock>
                 </WrapPanel>
-                <Slider Height="20" ValueChanged="inBuffer_ValueChanged" TickFrequency="10" TickPlacement="TopLeft" Minimum="{Binding BufferMinMs}" Maximum="{Binding BufferMaxMs}" Value="{Binding BufferTargetMs}"/>
+                <Slider Height="20" ValueChanged="inBuffer_ValueChanged" TickFrequency="10" TickPlacement="TopLeft" LostMouseCapture="inBuffer_LostMouseCapture" Minimum="{Binding BufferMinMs}" Maximum="{Binding BufferMaxMs}" Value="{Binding BufferTargetMs}"/>
             </DockPanel>
             <DockPanel>
                 <Label>CODEC:</Label>

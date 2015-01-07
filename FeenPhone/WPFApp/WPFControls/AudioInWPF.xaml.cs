@@ -128,7 +128,7 @@ namespace FeenPhone.WPFApp.Controls
             var existing = InputList.ToList();
             if (!existing.Any(m => m.Guid == guid))
             {
-                if (IsRecording != true)
+                if (!IsRecording)
                     RefreshInputDevices(guid);
                 else
                 {
@@ -152,7 +152,7 @@ namespace FeenPhone.WPFApp.Controls
             if (SelectedInputSource != null && SelectedInputSource.Guid == guid)
                 StopRecording();
 
-            if (IsRecording != true)
+            if (!IsRecording)
                 RefreshInputDevices(guid);
             else
             {
@@ -326,7 +326,7 @@ namespace FeenPhone.WPFApp.Controls
 
         public static DependencyProperty LevelManagerProperty = DependencyProperty.Register("LevelManager", typeof(AudioLevelManager), typeof(AudioInWPF), new PropertyMetadata(null));
 
-        public static DependencyProperty IsRecordingProperty = DependencyProperty.Register("IsRecording", typeof(bool?), typeof(AudioInWPF), new PropertyMetadata(false, OnIsRecordingChanged));
+        public static DependencyProperty IsRecordingProperty = DependencyProperty.Register("IsRecording", typeof(bool), typeof(AudioInWPF), new PropertyMetadata(false, OnIsRecordingChanged));
         public static DependencyProperty InputSourceListProperty = DependencyProperty.Register("InputSourceList", typeof(ObservableCollection<InputDeviceModel>), typeof(AudioInWPF), new PropertyMetadata(InputList));
         public static DependencyProperty SelectedInputSourceProperty = DependencyProperty.Register("SelectedInputSource", typeof(InputDeviceModel), typeof(AudioInWPF), new PropertyMetadata(null, OnSelectedInputSourceChanged));
         public static DependencyProperty SelectedCodecProperty = DependencyProperty.Register("SelectedCodec", typeof(CodecModel), typeof(AudioInWPF), new PropertyMetadata(null));
@@ -359,9 +359,9 @@ namespace FeenPhone.WPFApp.Controls
             set { this.SetValue(ControlsEnabledProperty, value); }
         }
 
-        public bool? IsRecording
+        public bool IsRecording
         {
-            get { return (bool?)this.GetValue(IsRecordingProperty); }
+            get { return (bool)this.GetValue(IsRecordingProperty); }
             set
             {
                 this.SetValue(IsRecordingProperty, value);
@@ -404,26 +404,28 @@ namespace FeenPhone.WPFApp.Controls
             RestartRecording();
         }
 
+        volatile bool inBufferNeedsUpdate = false;
         private void inBuffer_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (waveIn != null)
+            if (IsRecording)
+                inBufferNeedsUpdate = true;
+            else
+                inBufferNeedsUpdate = false;
+        }
+
+        private void inBuffer_LostMouseCapture(object sender, MouseEventArgs e)
+        {
+            if (IsRecording && inBufferNeedsUpdate)
             {
-                if (waveIn is WaveIn)
-                {
-                    var wave = (WaveIn)waveIn;
-                    wave.BufferMilliseconds = Math.Max(BufferMinMs, Math.Min(BufferMaxMs, (int)e.NewValue));
-                }
-                else
-                {
-                    StopRecording();
-                    StartRecording();
-                }
+                StopRecording();
+                StartRecording();
             }
+
         }
 
         private void RestartRecording()
         {
-            if (IsRecording == true)
+            if (IsRecording)
             {
                 StopRecording();
                 StartRecording();
@@ -562,6 +564,7 @@ namespace FeenPhone.WPFApp.Controls
                 }
                 else
                 {
+                    Console.WriteLine("Initializing WaveIn{0}. Buffer:{1}ms Device:{2} Format:{3}", UseWaveEvent ? "Event" : "", BufferTargetMs, SelectedInputSource.WavDeviceNumber, deviceFormat);
                     if (UseWaveEvent)
                     {
                         var w = new WaveInEvent();
@@ -669,7 +672,7 @@ namespace FeenPhone.WPFApp.Controls
 
         private void HandleAudio(WaveInEventArgs args)
         {
-            if (IsRecording == true && !isDisposed)
+            if (IsRecording && !isDisposed)
             {
                 byte[] toEncode = args.Buffer;
 
