@@ -29,30 +29,30 @@
   <Fragment>
     <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
 
-      <Component Id="FeenPhone.exe">
+      <Component Id="FeenPhone.exe" Guid="{C61A8B9D-18A3-4B81-A444-9A2C6F297A09}">
         <File Source="$(var.FeenPhone.TargetPath)" />
       </Component>
-      <Component Id="BaseNetworkServer.dll">
+      <Component Id="BaseNetworkServer.dll" Guid="{E0366DDC-2D01-40C6-942C-E17B6828B921}">
         <File Source="$(var.FeenPhone.TargetDir)/BaseNetworkServer.dll" />
       </Component>
-      <Component Id="System.ComponentModel.Composition.dll">
+      <Component Id="System.ComponentModel.Composition.dll" Guid="{28497921-C8C0-4501-8478-7527711D8E8B}">
         <File Source="$(var.FeenPhone.TargetDir)/System.ComponentModel.Composition.dll" />
       </Component>
-      <Component Id="opus.dll">
+      <Component Id="opus.dll" Guid="{F0E92779-B7DF-4FBE-B369-1B9962CB8E87}">
         <File Source="$(var.FeenPhone.TargetDir)/opus.dll" />
       </Component>
-      <Component Id="FeenPhone.exe.config">
+      <Component Id="FeenPhone.exe.config" Guid="{C55C38E3-52D8-4EB3-A02A-5A60F8FF36B7}">
         <File Source="$(var.FeenPhone.TargetDir)/FeenPhone.exe.config" />
       </Component>
 
-      <Component Id="FeenPhone.pdb">
+      <Component Id="FeenPhone.pdb" Guid="{38F8F101-2D61-4756-97A2-BBC4735C148E}">
         <File Source="$(var.FeenPhone.TargetDir)/FeenPhone.pdb" />
       </Component>
-      <Component Id="BaseNetworkServer.pdb">
+      <Component Id="BaseNetworkServer.pdb" Guid="{047E07D2-901B-4B70-8D72-05ACDAF83074}">
         <File Source="$(var.FeenPhone.TargetDir)/BaseNetworkServer.pdb" />
       </Component>
 
-      <Component Id="LICENSE.rtf">
+      <Component Id="LICENSE.rtf" Guid="{CDA6CC30-D1A9-4E37-823E-DC663FB34D4D}">
         <File Source="$(var.FeenPhone.ProjectDir)/LICENSE.rtf" />
       </Component>
 
@@ -60,8 +60,9 @@
   </Fragment>
 
   <Fragment>
-    <ComponentGroup Id="StartMenu" Directory="ProgramMenuFolder">
-      <Component Id="ApplicationShortcut">
+    <ComponentGroup Id="StartMenu" Directory="ApplicationProgramsFolder">
+
+      <Component Id="ApplicationShortcut" Guid="{4BFEF4FF-B6CE-4151-A0C8-B25FEB538550}">
         <Shortcut Id="ApplicationStartMenuShortcut"
                   Name="FeenPhone"
                   Description="Free open-source software for real-time high-quality remote podcasting, radio and voiceover"
@@ -71,9 +72,19 @@
                   IconIndex="0"
                   Target="[#FeenPhone.exe]"
                   WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
-        <RemoveFolder Id="RemoveProgramMenuFolder" Directory="ApplicationProgramsFolder" On="uninstall"/>
+        <RemoveFolder Id="RemoveProgramMenuFolder1" Directory="ApplicationProgramsFolder" On="uninstall"/>
         <RegistryValue Root="HKCU" Key="Software\FeenPhone" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
       </Component>
+
+      <Component Id="LicenseShortcut" Guid="{B26ADC6C-38E8-4873-BB5E-085367333C44}">
+        <Shortcut Id="LicenseStartMenuShortcut"
+                  Name="FeenPhone License"
+                  Target="[#LICENSE.rtf]"
+                  WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
+        <RemoveFolder Id="RemoveProgramMenuFolder2" Directory="ApplicationProgramsFolder" On="uninstall"/>
+        <RegistryValue Root="HKCU" Key="Software\FeenPhone" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+      </Component>
+
     </ComponentGroup>
 
   </Fragment>
