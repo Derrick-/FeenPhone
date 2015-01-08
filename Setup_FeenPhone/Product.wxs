@@ -3,6 +3,10 @@
   <Product Id="*" Name="FeenPhone" Language="1033" Version="0.1.0.0" Manufacturer="Beastlick Internet Policy Commission" UpgradeCode="3c57aad0-12b6-4f96-864a-d25b2a3abd01">
     <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
 
+    <Condition Message="This application is only supported on Windows Vista, Windows Server 2008, or higher.">
+      <![CDATA[Installed OR (VersionNT >= 600)]]>
+    </Condition>
+    
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
     <MediaTemplate EmbedCab="yes" />
 
@@ -56,6 +60,14 @@
         <File Source="$(var.FeenPhone.ProjectDir)/LICENSE.rtf" />
       </Component>
 
+      <Component Id="UninstallProductShortcut" Guid="{99CF0515-373A-4A93-A19B-D7B8894D9CBD}">
+        <Shortcut Id="UninstallProduct"
+          Name="Uninstall FeenPhone"
+          Target="[SystemFolder]msiexec.exe"
+          Arguments="/x [ProductCode]"
+          Description="Uninstalls FeenPhone" />
+      </Component>
+      
     </ComponentGroup>
   </Fragment>
 
