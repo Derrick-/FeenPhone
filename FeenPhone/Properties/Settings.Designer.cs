@@ -97,7 +97,7 @@ namespace FeenPhone.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("50")]
+        [global::System.Configuration.DefaultSettingValueAttribute("70")]
         public int InputLatency {
             get {
                 return ((int)(this["InputLatency"]));
