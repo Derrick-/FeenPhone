@@ -19,16 +19,26 @@ namespace Alienseed.BaseNetworkServer.PacketServer
     {
         public static List<T> Buffers = new List<T>();
 
+        private static object bufferLock = new object();
         public static T Acquire(int? initialSize = null)
         {
             int minSize = initialSize.HasValue ? initialSize.Value : 0;
             T buffer = default(T);
-            buffer = Buffers.Where(m => m.Bytes.Length >= minSize).FirstOrDefault();
-            if (buffer == null)
-                buffer = new T() { WasAcquired = true };
-            buffer.isDisposed = false;
-            Buffers.Remove(buffer);
+            lock (bufferLock)
+            {
+                buffer = Buffers.Where(m => m.Bytes.Length >= minSize).FirstOrDefault();
+                if (buffer == null)
+                    buffer = new T() { WasAcquired = true };
+                buffer.isDisposed = false;
+                Buffers.Remove(buffer);
+            }
             return buffer;
+        }
+
+        private static void ReturnBufffer(T buffer)
+        {
+            lock (bufferLock)
+                Buffers.Add(buffer);
         }
 
         protected bool WasAcquired { get; set; }
@@ -102,10 +112,10 @@ namespace Alienseed.BaseNetworkServer.PacketServer
         protected bool isDisposed = false;
         public void Dispose()
         {
-            if (!isDisposed && Bytes!=null && WasAcquired)
+            if (!isDisposed && Bytes != null && WasAcquired)
             {
                 BytesLength = 0;
-                Buffers.Add(this as T);
+                ReturnBufffer(this as T);
             }
             else
                 Bytes = null;
