@@ -6,6 +6,7 @@ using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
@@ -54,6 +55,7 @@ namespace FeenPhone.WPFApp.Models
             UseWaveEvent = useWaveEvent;
 
             User = UserStatusRepo.FindUser(userID);
+            UserStatusRepo.Users.CollectionChanged += Users_CollectionChanged;
 
             aggregator = new FeenPhone.Audio.SampleAggregator() { PerformFFT = false };
             aggregator.NotificationCount = 882;
@@ -62,6 +64,23 @@ namespace FeenPhone.WPFApp.Models
             VisSource = new AudioVisualizationSource(aggregator);
 
             LastReceived = DateTime.UtcNow;
+        }
+
+        void Users_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            var found = false;
+            if (UserStatusRepo.Users != null)
+            {
+                foreach (var user in UserStatusRepo.Users)
+                    if (user.ID == UserID)
+                    {
+                        User = user;
+                        found = true;
+                        break;
+                    }
+            }
+            if (!found)
+                User = null;
         }
 
         public void UpdateLastReceived(DateTime now)
@@ -377,7 +396,7 @@ namespace FeenPhone.WPFApp.Models
 
             var SelectedOutput = Parent.SelectedOutput;
 
-            Console.WriteLine("Initializing Output for {0} using {1}{2} with latency of {3}ms", User==null ? "<NULL>" : User.Nickname ?? User.ID.ToString(), SelectedOutput.Provider, SelectedOutput.Provider == DeviceProvider.Wave && UseWaveEvent ? "Event" : "", desiredLatency);
+            Console.WriteLine("Initializing Output for {0} using {1}{2} with latency of {3}ms", User == null ? "<new user>" : User.Nickname ?? User.ID.ToString(), SelectedOutput.Provider, SelectedOutput.Provider == DeviceProvider.Wave && UseWaveEvent ? "Event" : "", desiredLatency);
 
             switch (SelectedOutput.Provider)
             {
