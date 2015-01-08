@@ -18,8 +18,8 @@
     <Property Id="INSTALLDESKTOPSHORTCUT" Value="1"/>
     <Property Id="INSTALLSTARTMENUFOLDER" Value="1"/>
 
-    <Feature Id="ProductFeature" Title="FeenPhone" Level="1" Description='The complete package.' Display='expand' ConfigurableDirectory='INSTALLFOLDER'>
-      <Feature Id='MainProgram' Title='Program' Description='Complete FeenPhone Install' Level='1'>
+    <Feature Id="ProductFeature" Title="FeenPhone" Level="1" Description='The complete package.' Display='expand' Absent='disallow' AllowAdvertise='no' ConfigurableDirectory='INSTALLFOLDER'>
+      <Feature Id='MainProgram' Title='Program' Description='Complete FeenPhone Install' Level='1' Absent='disallow' AllowAdvertise='no'>
         <ComponentGroupRef Id="ProductComponents" />
         <ComponentGroupRef Id="Desktop"/>
         <ComponentGroupRef Id="StartMenu" />
