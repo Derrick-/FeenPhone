@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FeenPhone.WPFApp.Models;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -22,11 +23,14 @@ namespace FeenPhone.WPFApp.Controls
     /// </summary>
     public partial class AboutWPF : UserControl
     {
+        public VersionInfoModel VersionInfo { get; private set; }
         public AboutWPF()
         {
             InitializeComponent();
 
             DataContext = this;
+
+            VersionInfo = new VersionInfoModel();
         }
 
         private void AboutClose_Click(object sender, RoutedEventArgs e)

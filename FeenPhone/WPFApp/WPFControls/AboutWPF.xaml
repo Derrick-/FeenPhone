@@ -35,6 +35,7 @@
                     <Style TargetType="{x:Type TextBlock}">
                         <Setter Property="Foreground" Value="White"/>
                         <Setter Property="HorizontalAlignment" Value="Left"/>
+                        <Setter Property="VerticalAlignment" Value="Bottom"/>
                         <Setter Property="FontSize" Value="10"/>
                         <Setter Property="Margin" Value="20 0 0 0"/>
                     </Style>
@@ -84,6 +85,10 @@
 
                         <Label Content="HOW TO GET GREAT AUDIO WITH FeenPhone:"/>
                         <TextBlock><Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="http://feenphone.com/?page_id=1123"><Run Text="http://feenphone.com/?page_id=1123"/></Hyperlink></TextBlock>
+                        <WrapPanel>
+                            <Label>FeenPhone Version</Label>
+                            <TextBlock Text="{Binding VersionInfo.VersionText}"/>
+                        </WrapPanel>
                     </StackPanel>
 
                     <StackPanel Grid.Column="3">

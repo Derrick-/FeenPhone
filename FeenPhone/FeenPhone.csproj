@@ -541,6 +541,7 @@
     <Compile Include="WPFApp\Models\UserAudioPlayer.cs" />
     <Compile Include="WPFApp\Models\UserStatusRepo.cs" />
     <Compile Include="WPFApp\Models\UserStatusModel.cs" />
+    <Compile Include="WPFApp\Models\VersionInfoModel.cs" />
     <Compile Include="WPFApp\Settings.cs" />
     <Compile Include="WPFApp\Utils\FormExtensions.cs" />
     <Compile Include="WPFApp\Utils\GlassHelper.cs" />
