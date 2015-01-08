@@ -3,24 +3,62 @@
   <Product Id="*" Name="FeenPhone" Language="1033" Version="0.1.0.0" Manufacturer="Beastlick Internet Policy Commission" UpgradeCode="3c57aad0-12b6-4f96-864a-d25b2a3abd01">
     <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
 
+    <UIRef Id="MyWixUI_Mondo"/>
+
     <Condition Message="This application is only supported on Windows Vista, Windows Server 2008, or higher.">
       <![CDATA[Installed OR (VersionNT >= 600)]]>
     </Condition>
-    
+
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
     <MediaTemplate EmbedCab="yes" />
 
     <Icon Id="FeenPhoneIcon" SourceFile="$(var.FeenPhone.TargetPath)"/>
     <Property Id="ARPPRODUCTICON" Value="FeenPhoneIcon" />
 
-    <Feature Id="ProductFeature" Title="FeenPhone" Level="1">
-      <ComponentGroupRef Id="ProductComponents" />
-      <ComponentGroupRef Id="StartMenu" />
+    <Property Id="INSTALLDESKTOPSHORTCUT" Value="1"/>
+    <Property Id="INSTALLSTARTMENUFOLDER" Value="1"/>
+
+    <Feature Id="ProductFeature" Title="FeenPhone" Level="1" Description='The complete package.' Display='expand' ConfigurableDirectory='INSTALLFOLDER'>
+      <Feature Id='MainProgram' Title='Program' Description='Complete FeenPhone Install' Level='1'>
+        <ComponentGroupRef Id="ProductComponents" />
+        <ComponentGroupRef Id="Desktop"/>
+        <ComponentGroupRef Id="StartMenu" />
+      </Feature>
     </Feature>
+
+
   </Product>
 
   <Fragment>
+    <UI Id="MyWixUI_Mondo">
+      <UIRef Id="WixUI_Mondo"/>
+      <UIRef Id="WixUI_ErrorProgressText" />
+      <Dialog Id="OptionsDlg" Width="370" Height="270" Title="[ProductName] Setup" NoMinimize="yes">
+        <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="WixUI_Bmp_Banner" />
+        <Control Id="DesktopShortcutCheckBox" Type="CheckBox"
+                        X="20" Y="160" Width="290" Height="17"
+                        Property="INSTALLDESKTOPSHORTCUT" CheckBoxValue="1"
+                        Text="Create a shortcut for this program on the desktop."/>
+        <Control Id="StartMenuCheckBox" Type="CheckBox"
+                        X="20" Y="140" Width="290" Height="17"
+                        Property="INSTALLSTARTMENUFOLDER" CheckBoxValue="1"
+                        Text="Create a group for FeenPhone in the Start Menu."/>
+        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="&amp;Back">
+          <Publish Event="NewDialog" Value="LicenseAgreementDlg">1</Publish>
+        </Control>
+        <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="&amp;Next">
+          <Publish Event="NewDialog" Value="SetupTypeDlg"></Publish>
+        </Control>
+      </Dialog>
+
+      <Publish Dialog="LicenseAgreementDlg" Control="Next" Event="NewDialog" Value="OptionsDlg" Order="3">LicenseAccepted = "1"</Publish>
+      <Publish Dialog="SetupTypeDlg" Control="Back" Event="NewDialog" Value="OptionsDlg" Order="4">1</Publish>
+    </UI>
+  </Fragment>
+
+  <Fragment>
     <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="DesktopFolder" Name="Desktop" />
       <Directory Id="ProgramFilesFolder">
         <Directory Id="INSTALLFOLDER" Name="FeenPhone" />
       </Directory>
@@ -66,20 +104,31 @@
           Target="[SystemFolder]msiexec.exe"
           Arguments="/x [ProductCode]"
           Description="Uninstalls FeenPhone" />
+        <CreateFolder/>
       </Component>
-      
+
     </ComponentGroup>
-  </Fragment>
 
-  <Fragment>
+    <ComponentGroup Id="Desktop" Directory="DesktopFolder">
+      <Component Id="DesktopShortcuts" Guid="{C0D23138-23F7-468D-BD97-353DCDE39924}">
+        <Condition>INSTALLDESKTOPSHORTCUT</Condition>
+        <Shortcut Id="ApplicationDesktopShortcut"
+                  Name="FeenPhone"
+                  Description="Free open-source software for real-time high-quality remote podcasting, radio and voiceover"
+                  Icon="FeenPhoneIcon"
+                  IconIndex="0"
+                  Target="[#FeenPhone.exe]"
+                  WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
+        <RegistryValue Root="HKCU" Key="Software\FeenPhone" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+      </Component>
+    </ComponentGroup>
+
     <ComponentGroup Id="StartMenu" Directory="ApplicationProgramsFolder">
-
-      <Component Id="ApplicationShortcut" Guid="{4BFEF4FF-B6CE-4151-A0C8-B25FEB538550}">
+      <Component Id="ApplicationShortcuts" Guid="{4BFEF4FF-B6CE-4151-A0C8-B25FEB538550}">
+        <Condition>INSTALLSTARTMENUFOLDER</Condition>
         <Shortcut Id="ApplicationStartMenuShortcut"
                   Name="FeenPhone"
                   Description="Free open-source software for real-time high-quality remote podcasting, radio and voiceover"
-                  DescriptionResourceDll="[#FeenPhone.exe]"
-                  DescriptionResourceId="0"
                   Icon="FeenPhoneIcon"
                   IconIndex="0"
                   Target="[#FeenPhone.exe]"
@@ -89,6 +138,7 @@
       </Component>
 
       <Component Id="LicenseShortcut" Guid="{B26ADC6C-38E8-4873-BB5E-085367333C44}">
+        <Condition>INSTALLSTARTMENUFOLDER</Condition>
         <Shortcut Id="LicenseStartMenuShortcut"
                   Name="FeenPhone License"
                   Target="[#LICENSE.rtf]"
