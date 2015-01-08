@@ -377,7 +377,7 @@ namespace FeenPhone.WPFApp.Models
 
             var SelectedOutput = Parent.SelectedOutput;
 
-            Console.WriteLine("Initializing Output for {0} using {1}{2} with latency of {3}ms", User.Nickname ?? User.ID.ToString(), SelectedOutput.Provider, SelectedOutput.Provider == DeviceProvider.Wave && UseWaveEvent ? "Event" : "", desiredLatency);
+            Console.WriteLine("Initializing Output for {0} using {1}{2} with latency of {3}ms", User==null ? "<NULL>" : User.Nickname ?? User.ID.ToString(), SelectedOutput.Provider, SelectedOutput.Provider == DeviceProvider.Wave && UseWaveEvent ? "Event" : "", desiredLatency);
 
             switch (SelectedOutput.Provider)
             {
