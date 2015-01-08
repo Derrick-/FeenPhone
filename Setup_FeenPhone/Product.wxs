@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" Name="FeenPhone" Language="1033" Version="0.1.0.0" Manufacturer="Beastlick Internet Policy Commission" UpgradeCode="3c57aad0-12b6-4f96-864a-d25b2a3abd01">
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <Icon Id="FeenPhoneIcon" SourceFile="$(var.FeenPhone.TargetPath)"/>
+    <Property Id="ARPPRODUCTICON" Value="FeenPhoneIcon" />
+
+    <Feature Id="ProductFeature" Title="FeenPhone" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+      <ComponentGroupRef Id="StartMenu" />
+    </Feature>
+  </Product>
+
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLFOLDER" Name="FeenPhone" />
+      </Directory>
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ApplicationProgramsFolder" Name="FeenPhone"/>
+      </Directory>
+    </Directory>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+
+      <Component Id="FeenPhone.exe">
+        <File Source="$(var.FeenPhone.TargetPath)" />
+      </Component>
+      <Component Id="BaseNetworkServer.dll">
+        <File Source="$(var.FeenPhone.TargetDir)/BaseNetworkServer.dll" />
+      </Component>
+      <Component Id="System.ComponentModel.Composition.dll">
+        <File Source="$(var.FeenPhone.TargetDir)/System.ComponentModel.Composition.dll" />
+      </Component>
+      <Component Id="opus.dll">
+        <File Source="$(var.FeenPhone.TargetDir)/opus.dll" />
+      </Component>
+      <Component Id="FeenPhone.exe.config">
+        <File Source="$(var.FeenPhone.TargetDir)/FeenPhone.exe.config" />
+      </Component>
+
+      <Component Id="FeenPhone.pdb">
+        <File Source="$(var.FeenPhone.TargetDir)/FeenPhone.pdb" />
+      </Component>
+      <Component Id="BaseNetworkServer.pdb">
+        <File Source="$(var.FeenPhone.TargetDir)/BaseNetworkServer.pdb" />
+      </Component>
+
+      <Component Id="LICENSE.rtf">
+        <File Source="$(var.FeenPhone.ProjectDir)/LICENSE.rtf" />
+      </Component>
+
+    </ComponentGroup>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="StartMenu" Directory="ProgramMenuFolder">
+      <Component Id="ApplicationShortcut">
+        <Shortcut Id="ApplicationStartMenuShortcut"
+                  Name="FeenPhone"
+                  Description="Free open-source software for real-time high-quality remote podcasting, radio and voiceover"
+                  DescriptionResourceDll="[#FeenPhone.exe]"
+                  DescriptionResourceId="0"
+                  Icon="FeenPhoneIcon"
+                  IconIndex="0"
+                  Target="[#FeenPhone.exe]"
+                  WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
+        <RemoveFolder Id="RemoveProgramMenuFolder" Directory="ApplicationProgramsFolder" On="uninstall"/>
+        <RegistryValue Root="HKCU" Key="Software\FeenPhone" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+      </Component>
+    </ComponentGroup>
+
+  </Fragment>
+
+</Wix>
