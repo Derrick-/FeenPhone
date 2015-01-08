@@ -47,12 +47,12 @@
           <Publish Event="NewDialog" Value="LicenseAgreementDlg">1</Publish>
         </Control>
         <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="&amp;Next">
-          <Publish Event="NewDialog" Value="SetupTypeDlg"></Publish>
+          <Publish Event="NewDialog" Value="CustomizeDlg"></Publish>
         </Control>
       </Dialog>
 
       <Publish Dialog="LicenseAgreementDlg" Control="Next" Event="NewDialog" Value="OptionsDlg" Order="3">LicenseAccepted = "1"</Publish>
-      <Publish Dialog="SetupTypeDlg" Control="Back" Event="NewDialog" Value="OptionsDlg" Order="4">1</Publish>
+      <Publish Dialog="CustomizeDlg" Control="Back" Event="NewDialog" Value="OptionsDlg" Order="4">1</Publish>
     </UI>
   </Fragment>
 
