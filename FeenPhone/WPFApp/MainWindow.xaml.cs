@@ -24,6 +24,12 @@ namespace FeenPhone.WPFApp
     {
         public MainWindow()
         {
+            if (Properties.Settings.Default.NeedsUpgrade)
+            {
+                Properties.Settings.Default.Upgrade();
+                Properties.Settings.Default.NeedsUpgrade = false;
+            }
+
             InitializeComponent();
 
             LoadSettings();
