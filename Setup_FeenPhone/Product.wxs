@@ -30,7 +30,7 @@
     <WixVariable Id="WixUILicenseRtf" Value="$(var.FeenPhone.ProjectDir)/LICENSE.rtf" />
     <WixVariable Id="WixUIBannerBmp" Value="WixUIBannerBmp_FeenPhone.bmp" />
     <WixVariable Id="WixUIDialogBmp" Value="WixUIDialogBmp_FeenPhone.bmp" />
-    <Binary Id="IconBmp" SourceFile="Icon.bmp" />
+    <Binary Id="IconBmp" SourceFile="BirdCircle.png" />
 
   </Product>
 
@@ -45,7 +45,7 @@
         <Control Id="Description" Type="Text" X="25" Y="23" Width="340" Height="15" Transparent="yes" NoPrefix="yes" Text="Choose where FeenPhone shortcuts will be created." />
         <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes" Text="Install Shortcuts" />
 
-        <Control Id="IconBitmap" Type="Bitmap" X="150" Y="60" Width="72" Height="72" TabSkip="yes" Text="IconBmp" />
+        <Control Id="IconBitmap" Type="Bitmap" X="150" Y="60" Width="64" Height="64" TabSkip="yes" Text="IconBmp" />
 
         <Control Id="DesktopShortcutCheckBox" Type="CheckBox"
                               X="90" Y="180" Width="290" Height="17"

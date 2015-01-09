@@ -49,7 +49,7 @@
     </WixExtension>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Icon.bmp" />
+    <Content Include="BirdCircle.png" />
     <Content Include="WixUIBannerBmp_FeenPhone.bmp" />
     <Content Include="WixUIDialogBmp_FeenPhone.bmp" />
   </ItemGroup>
