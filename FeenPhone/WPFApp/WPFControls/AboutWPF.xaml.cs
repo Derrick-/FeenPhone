@@ -40,9 +40,9 @@ namespace FeenPhone.WPFApp.Controls
 
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
-
             Uri uri = e.Uri;
-            Process.Start(new ProcessStartInfo(uri.AbsoluteUri));
+            try { Process.Start(new ProcessStartInfo(uri.AbsoluteUri)); }
+            catch { }
             e.Handled = true;
         }
     }
