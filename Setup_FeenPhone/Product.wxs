@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="{BE4571C6-F733-29BB-B3A5-EBF993056E8A}" Name="FeenPhone" Language="1033" Version="0.1.0.0" Manufacturer="Beastlick Internet Policy Commission" UpgradeCode="3c57aad0-12b6-4f96-864a-d25b2a3abd01">
+  <Product Id="{BE4571C6-F733-29BB-B3A5-EBF993056E8A}" Name="FeenPhone" Language="1033" Version="$(var.BuildVersion)" Manufacturer="Beastlick Internet Policy Commission" UpgradeCode="3c57aad0-12b6-4f96-864a-d25b2a3abd01">
     <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
 
     <UIRef Id="MyWixUI_Mondo"/>

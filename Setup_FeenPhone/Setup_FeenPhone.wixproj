@@ -62,4 +62,12 @@
 	<Target Name="AfterBuild">
 	</Target>
 	-->
+  <Target Name="BeforeBuild">
+    <GetAssemblyIdentity AssemblyFiles="..\FeenPhone\bin\$(Configuration)\FeenPhone.exe">
+      <Output TaskParameter="Assemblies" ItemName="AssemblyVersion" />
+    </GetAssemblyIdentity>
+    <PropertyGroup>
+      <DefineConstants>BuildVersion=%(AssemblyVersion.Version)</DefineConstants>
+    </PropertyGroup>
+  </Target>
 </Project>
