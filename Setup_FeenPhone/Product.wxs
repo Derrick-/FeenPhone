@@ -163,6 +163,17 @@
         <RegistryValue Root="HKCU" Key="Software\FeenPhone" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
       </Component>
 
+      <Component Id="UninstallProductShortcutStartMenu" Guid="{46F9E2B9-21AD-4345-BF06-1C3DE3E1BCE0}">
+        <Condition>INSTALLSTARTMENUFOLDER</Condition>
+        <Shortcut Id="UninstallProductStartMenu"
+          Name="Uninstall FeenPhone"
+          Target="[SystemFolder]msiexec.exe"
+          Arguments="/x [ProductCode]"
+          Description="Uninstalls FeenPhone" />
+        <RemoveFolder Id="RemoveProgramMenuFolder3" Directory="ApplicationProgramsFolder" On="uninstall"/>
+        <RegistryValue Root="HKCU" Key="Software\FeenPhone" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+      </Component>
+
     </ComponentGroup>
 
   </Fragment>
