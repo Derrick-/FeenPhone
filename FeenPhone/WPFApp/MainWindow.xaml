@@ -7,28 +7,34 @@
         Title="FeenPhone" Height="505" Width="682.5" Icon="Resources/logos/FeenPhone.ico">
     <Grid>
         <DockPanel>
-            <DockPanel x:Name="TitleBar" DockPanel.Dock="Top" Height="20" VerticalAlignment="Center" HorizontalAlignment="Right">
-                <DockPanel.Resources>
-                    <Style TargetType="ToggleButton">
-                        <Setter Property="Margin" Value="10" />
-                        <Setter Property="Padding" Value="100"/>
-                    </Style>
+            <Grid HorizontalAlignment="Stretch" x:Name="TitleBar" DockPanel.Dock="Top" Height="20" VerticalAlignment="Center">
+                <Grid.Resources>
                     <DropShadowEffect x:Key="GoldGlow" Direction="0" ShadowDepth="0" BlurRadius="8" Color="Gold"/>
-                </DockPanel.Resources>
-                <ToggleButton 
+                </Grid.Resources>
+                <TextBlock HorizontalAlignment="Center"
+                           Effect="{StaticResource GoldGlow}"
+                           Text="{Binding ElementName=about, Path=VersionInfo.VersionText, StringFormat=beta v{0}}"/>
+                <DockPanel HorizontalAlignment="Stretch">
+                    <DockPanel.Resources>
+                        <Style TargetType="ToggleButton">
+                            <Setter Property="Margin" Value="10" />
+                            <Setter Property="Padding" Value="100"/>
+                        </Style>
+                    </DockPanel.Resources>
+                    <ToggleButton DockPanel.Dock="Right" Style="{DynamicResource TopToggles}" IsChecked="{Binding ShowAboutBox, Mode=TwoWay}">
+                        <TextBlock Effect="{StaticResource GoldGlow}">ABOUT</TextBlock>
+                    </ToggleButton>
+                    <ToggleButton DockPanel.Dock="Right"
                         Style="{DynamicResource TopToggles}"
                         HorizontalAlignment="Right" 
                         VerticalAlignment="Top" 
                         IsChecked="{Binding ShowAdvancedControls,Mode=TwoWay}"
                         ToolTip="Show Advanced Settings"
                         Height="20">
-                    <Image Height="16" Source="Resources/Images/BlueCrow_16.png">
-                    </Image>
-                </ToggleButton>
-                <ToggleButton Style="{DynamicResource TopToggles}" IsChecked="{Binding ShowAboutBox, Mode=TwoWay}">
-                    <TextBlock Effect="{StaticResource GoldGlow}">ABOUT</TextBlock>
-                </ToggleButton>
-            </DockPanel>
+                        <Image Height="16" Source="Resources/Images/BlueCrow_16.png"/>
+                    </ToggleButton>
+                </DockPanel>
+            </Grid>
             <DockPanel>
                 <Grid DockPanel.Dock="Right" MinWidth="200">
                     <Grid.ColumnDefinitions>
@@ -61,6 +67,6 @@
                 <WPFControls:LogWPF DockPanel.Dock="Top" />
             </DockPanel>
         </DockPanel>
-        <WPFControls:AboutWPF Visibility="{Binding ElementName=thisWindow, Path=ShowAboutBox, Mode=TwoWay, Converter={StaticResource BoolToVisConverter}}"/>
+        <WPFControls:AboutWPF x:Name="about" Visibility="{Binding ElementName=thisWindow, Path=ShowAboutBox, Mode=TwoWay, Converter={StaticResource BoolToVisConverter}}"/>
     </Grid>
 </Window>
