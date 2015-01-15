@@ -48,7 +48,7 @@
       <Value Profile="(Default)">23</Value>
     </Setting>
     <Setting Name="DefaultInputLevel" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">50</Value>
+      <Value Profile="(Default)">0</Value>
     </Setting>
     <Setting Name="UseWaveOutEvent" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>

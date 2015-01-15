@@ -205,7 +205,7 @@ namespace FeenPhone.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("50")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
         public double DefaultInputLevel {
             get {
                 return ((double)(this["DefaultInputLevel"]));

@@ -25,9 +25,9 @@
                     <Grid IsEnabled="{Binding LevelManager, Converter={StaticResource NullToBoolConverter}}">
                         <Slider 
                         Orientation="Vertical"
-                        Minimum="0" 
-                        Maximum="100" 
-                        Value="{Binding LevelManager.LevelPercent, Mode=TwoWay}" 
+                        Minimum="{Binding LevelManager.Min}" 
+                        Maximum="{Binding LevelManager.Max}" 
+                        Value="{Binding LevelManager.Level, Mode=TwoWay}" 
                         IsEnabled="{Binding LevelManager.IsAttached}" 
                     />
                     </Grid>

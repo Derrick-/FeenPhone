@@ -88,9 +88,9 @@ namespace FeenPhone.WPFApp.Models
         public static DependencyProperty IsAttachedProperty = DependencyProperty.Register("IsAttached", typeof(bool), typeof(AudioLevelManager), new PropertyMetadata(false));
 
         public static DependencyProperty MinProperty = DependencyProperty.Register("Min", typeof(double), typeof(AudioLevelManager), new PropertyMetadata((double)0, OnLevelChanged));
-        public static DependencyProperty MaxProperty = DependencyProperty.Register("Max", typeof(double), typeof(AudioLevelManager), new PropertyMetadata((double)100, OnLevelChanged));
-        public static DependencyProperty LevelProperty = DependencyProperty.Register("Level", typeof(double), typeof(AudioLevelManager), new PropertyMetadata((double)50, OnLevelChanged));
-        public static DependencyProperty LevelPercentProperty = DependencyProperty.Register("LevelPercent", typeof(double), typeof(AudioLevelManager), new PropertyMetadata(50.0, OnLevelPercentChanged));
+        public static DependencyProperty MaxProperty = DependencyProperty.Register("Max", typeof(double), typeof(AudioLevelManager), new PropertyMetadata((double)1000, OnLevelChanged));
+        public static DependencyProperty LevelProperty = DependencyProperty.Register("Level", typeof(double), typeof(AudioLevelManager), new PropertyMetadata((double)1000, OnLevelChanged));
+        public static DependencyProperty LevelPercentProperty = DependencyProperty.Register("LevelPercent", typeof(double), typeof(AudioLevelManager), new PropertyMetadata(100.0, OnLevelPercentChanged));
 
         protected AudioLevelManager()
         {
