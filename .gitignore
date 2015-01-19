@@ -1,0 +1,61 @@
+
+# /
+/*.suo
+/*.ncb
+/*.sdf
+/*.opensdf
+/ipch
+/*.user
+/_ReSharper.*
+/TestResults
+/packages
+/*.psess
+/*.vspx
+
+# /BaseNetworkServer/
+/BaseNetworkServer/[Bb]in
+/BaseNetworkServer/obj
+/BaseNetworkServer/[Dd]ebug
+/BaseNetworkServer/[Rr]elease
+/BaseNetworkServer/*.user
+/BaseNetworkServer/*.aps
+/BaseNetworkServer/*.eto
+/BaseNetworkServer/ClientBin
+/BaseNetworkServer/GeneratedArtifacts
+/BaseNetworkServer/_Pvt_Extensions
+
+# /FeenPhone/
+/FeenPhone/[Bb]in
+/FeenPhone/obj
+/FeenPhone/[Dd]ebug
+/FeenPhone/[Rr]elease
+/FeenPhone/*.user
+/FeenPhone/*.aps
+/FeenPhone/*.eto
+/FeenPhone/ClientBin
+/FeenPhone/GeneratedArtifacts
+/FeenPhone/_Pvt_Extensions
+
+# /FeenPhoneTest/
+/FeenPhoneTest/[Bb]in
+/FeenPhoneTest/obj
+/FeenPhoneTest/[Dd]ebug
+/FeenPhoneTest/[Rr]elease
+/FeenPhoneTest/*.user
+/FeenPhoneTest/*.aps
+/FeenPhoneTest/*.eto
+/FeenPhoneTest/ClientBin
+/FeenPhoneTest/GeneratedArtifacts
+/FeenPhoneTest/_Pvt_Extensions
+
+# /Setup_FeenPhone/
+/Setup_FeenPhone/[Bb]in
+/Setup_FeenPhone/obj
+/Setup_FeenPhone/[Dd]ebug
+/Setup_FeenPhone/[Rr]elease
+/Setup_FeenPhone/*.user
+/Setup_FeenPhone/*.aps
+/Setup_FeenPhone/*.eto
+/Setup_FeenPhone/ClientBin
+/Setup_FeenPhone/GeneratedArtifacts
+/Setup_FeenPhone/_Pvt_Extensions
