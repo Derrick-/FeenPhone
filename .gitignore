@@ -11,6 +11,13 @@
 /packages
 /*.psess
 /*.vspx
+/.svn
+/images
+/*.mp3
+
+# /Libs/
+/Libs/NAudio
+/Libs/Opus.NET
 
 # /BaseNetworkServer/
 /BaseNetworkServer/[Bb]in
