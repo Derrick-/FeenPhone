@@ -54,7 +54,12 @@
                         <ColumnDefinition Width="2*"/>
                         <ColumnDefinition Width="4*" />
                     </Grid.ColumnDefinitions>
-                    <Label Grid.Row="0" Grid.Column="0">Server</Label>
+                    <DockPanel Grid.Row="0" Grid.Column="0">
+                        <Button Click="AddressBook_Button_Click" Background="{x:Null}" BorderBrush="{x:Null}">
+                            <Image Source="/FeenPhone;component/WPFApp/Resources/Images/bookmark-26.png"></Image>
+                        </Button>
+                        <Label Padding="3 1 3 0">Server</Label>
+                    </DockPanel>
                     <TextBox Grid.Row="0" Grid.Column="1" Name="txtServer" IsEnabled="{Binding ControlsEnabled}">localhost</TextBox>
                     <Label Grid.Row="0" Grid.Column="2">Port</Label>
                     <TextBox Grid.Row="0" Grid.Column="3" Name="txtPort" IsEnabled="{Binding ControlsEnabled}" >5150</TextBox>
@@ -84,7 +89,7 @@
                         <ColumnDefinition Width="105*" />
                     </Grid.ColumnDefinitions>
                     <Label Grid.Row="0" Grid.Column="1"></Label>
-                    <ToggleButton Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" ClickMode="Release" FontSize="10" IsChecked="{Binding Path=IsServer, Mode=TwoWay}" ToolTip="Run as server" Margin="10 0 0 0" Padding="2"  VerticalAlignment="Center">Run Server</ToggleButton>
+                    <CheckBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" ClickMode="Release" FontSize="10" IsChecked="{Binding Path=IsServer, Mode=TwoWay}" ToolTip="Run as server" Margin="10 0 0 0" Padding="2"  VerticalAlignment="Center">Run Server</CheckBox>
                     <CheckBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" ClickMode="Release" IsChecked="{Binding Path=RequireAuth, Mode=TwoWay}" ToolTip="Require incoming clients to authenticate" Margin="10,2">Require Auth</CheckBox>
                     <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" ClickMode="Release" Click="ManageAuth_Click" FontSize="9" Visibility="{Binding Path=RequireAuth, Converter={StaticResource BoolToVisConverter}}" ToolTip="Run as server" Margin="10,2">Manage Authentication</Button>
                     <Label Grid.Row="0" Grid.Column="2">Ports</Label>

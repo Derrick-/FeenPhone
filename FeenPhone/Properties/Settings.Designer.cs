@@ -274,5 +274,16 @@ namespace FeenPhone.Properties {
                 this["NeedsUpgrade"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Specialized.StringCollection AddressBook {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["AddressBook"]));
+            }
+            set {
+                this["AddressBook"] = value;
+            }
+        }
     }
 }

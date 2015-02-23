@@ -23,6 +23,8 @@ namespace FeenPhone.WPFApp.Controls
     public partial class NetworkWPF : UserControl
     {
 
+        public const int DefaultPort = 5150;
+
         System.Timers.Timer UIUpdateTimer;
         public NetworkWPF()
         {
@@ -628,6 +630,17 @@ namespace FeenPhone.WPFApp.Controls
             RequireAuth = false;
             FeenPhone.Accounting.PasswordOnlyRepo.RequirePassword = null;
             Console.WriteLine("Server password cleared.");
+        }
+
+        private void AddressBook_Button_Click(object sender, RoutedEventArgs e)
+        {
+            var addrWindow = new AddressBookWindow();
+            addrWindow.ShowDialog();
+            if (addrWindow.Selected != null && addrWindow.Selected.IP != null)
+            {
+                txtServer.Text = addrWindow.Selected.IP.ToString();
+                txtPort.Text = addrWindow.Selected.Port.ToString();
+            }
         }
     }
 }

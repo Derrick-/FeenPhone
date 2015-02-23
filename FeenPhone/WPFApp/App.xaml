@@ -16,6 +16,10 @@
         <SolidColorBrush x:Key="clrDumpButtonBack_Hover" Color="#FFFFD208" />
         <SolidColorBrush x:Key="clrDumpButtonFore_Hover" Color="Black" />
 
+        <SolidColorBrush x:Key="validationErrorBrush" Color="Red" Opacity="0.10" />
+        <SolidColorBrush x:Key="validationOkBrush" Color="Green" Opacity="0" />
+        <SolidColorBrush x:Key="validationNullBrush" Color="White" Opacity="0" />
+
         <local:BoolToVisiblityConverter x:Key="BoolToVisConverter" Collapse="True" />
         <local:BoolToVisiblityConverter x:Key="InverseBoolToVisConverter" Inverse="True" Collapse="True" />
         <local:NullToVisiblityConverter x:Key="NullToVisConverter" />
@@ -23,6 +27,8 @@
         <local:InverseBoolConverter x:Key="InverseBoolConverter" />
         <local:NullToBoolConverter x:Key="NullToBoolConverter" />
         <local:NullToBoolConverter x:Key="InverseNullToBoolConverter" Inverse="True" />
+
+        <local:BoolToColorConverter x:Key="ValidationColorConverter" NullColor="{x:Null}" TrueColor="{x:Null}" FalseColor="{StaticResource validationErrorBrush}" />
 
         <Style TargetType="{x:Type ToggleButton}" x:Key="TopToggles">
             <Setter Property="Background" Value="{x:Null}"/>

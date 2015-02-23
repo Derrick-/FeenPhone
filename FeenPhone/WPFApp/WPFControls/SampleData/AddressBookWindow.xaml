@@ -1,0 +1,4 @@
+﻿<sysCol:ArrayList xmlns:sysCol="clr-namespace:System.Collections;assembly=mscorlib">
+    <m:AddressBookEntry xmlns:m="clr-namespace:FeenPhone.WPFApp.Models" Name="Localhost" Address="127.0.0.1:5150" />
+    <m:AddressBookEntry xmlns:m="clr-namespace:FeenPhone.WPFApp.Models" Name="Google" Address="8.8.8.8:5150" />
+</sysCol:ArrayList>

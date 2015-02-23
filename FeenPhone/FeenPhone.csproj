@@ -531,9 +531,13 @@
     <Compile Include="Server\Telnet\TelnetServer.cs" />
     <Compile Include="Server\Telnet\TelNetState.cs" />
     <Compile Include="Utils\Timekeeper.cs" />
+    <Compile Include="WPFApp\AddressBookWindow.xaml.cs">
+      <DependentUpon>AddressBookWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WPFApp\LoginPassWindow.xaml.cs">
       <DependentUpon>LoginPassWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="WPFApp\Models\AddressBookEntry.cs" />
     <Compile Include="WPFApp\Models\AudioVisualizationSource.cs" />
     <Compile Include="WPFApp\Models\CodecModel.cs" />
     <Compile Include="WPFApp\Models\DeviceModels.cs" />
@@ -543,6 +547,7 @@
     <Compile Include="WPFApp\Models\UserStatusModel.cs" />
     <Compile Include="WPFApp\Models\VersionInfoModel.cs" />
     <Compile Include="WPFApp\Settings.cs" />
+    <Compile Include="WPFApp\Utils\BoolToColorConverter.cs" />
     <Compile Include="WPFApp\Utils\FormExtensions.cs" />
     <Compile Include="WPFApp\Utils\GlassHelper.cs" />
     <Compile Include="WPFApp\Utils\VisibilityConverters.cs" />
@@ -571,6 +576,10 @@
     <Compile Include="WPFApp\WPFControls\UserListWPF.xaml.cs">
       <DependentUpon>UserListWPF.xaml</DependentUpon>
     </Compile>
+    <Page Include="WPFApp\AddressBookWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="WPFApp\LoginPassWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -614,6 +623,10 @@
     <Page Include="WPFApp\WPFControls\SampleData\UserAudioPlayer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WPFApp\WPFControls\SampleData\AddressBookWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="WPFApp\WPFControls\SampleData\UserAudioPlayerList.xaml">
       <SubType>Designer</SubType>
@@ -688,6 +701,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="WPFApp\Resources\Images\edit-26.png" />
+    <Resource Include="WPFApp\Resources\Images\trash-26.png" />
+    <Resource Include="WPFApp\Resources\Images\bookmark-26.png" />
     <Resource Include="WPFApp\Resources\Images\BlueCrow_16.png" />
     <Resource Include="WPFApp\Resources\Images\Logo.png" />
     <Resource Include="WPFApp\Resources\Images\305_Close_24x24_72.png" />
@@ -708,6 +724,8 @@
     <Resource Include="WPFApp\Resources\logos\FeenPhone3Button.jpg" />
     <Resource Include="Audio\NAudio\Changes.xml" />
     <Resource Include="feen3_64_2.ico" />
+    <None Include="Audio\NAudio\license.txt" />
+    <None Include="Audio\NAudio\readme.txt" />
     <Content Include="opus.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
