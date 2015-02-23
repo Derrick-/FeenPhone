@@ -10,18 +10,18 @@ namespace FeenPhone.WPFApp.Models
     public class AddressBookEntry
     {
         public string Name { get; set; }
-        public string IP { get; set; }
+        public string Host { get; set; }
         public int Port { get; set; }
         public string Address
         {
-            get { return string.Format("{0}:{1}", IP, Port); }
+            get { return string.Format("{0}:{1}", Host, Port); }
             set
             {
-                string ip;
+                string host;
                 int port;
-                if (!TryGetAddressAndPort(value, out ip, out port))
+                if (!TryGetAddressAndPort(value, out host, out port))
                     throw new ArgumentException("Address must be in the format X.X.X.X[:port]", "Address");
-                IP = ip;
+                Host = host;
                 Port = port;
 
             }
@@ -31,15 +31,15 @@ namespace FeenPhone.WPFApp.Models
 
         public AddressBookEntry(string IpAndPortString, string name = null)
         {
-            if(name!=null)
-            this.Name = name.Trim();
+            if (name != null)
+                this.Name = name.Trim();
             Address = IpAndPortString;
         }
 
         public AddressBookEntry(IPAddress ip, int port, string name = null)
         {
             this.Name = name;
-            this.IP = ip.ToString();
+            this.Host = ip.ToString();
             this.Port = port;
         }
 
@@ -59,11 +59,20 @@ namespace FeenPhone.WPFApp.Models
             if (parts.Length < 1 || parts.Length > 2)
                 return false;
 
-            IPAddress ip;
-            if (IPAddress.TryParse(parts[0].Trim(), out ip))
+            var host = parts[0].Trim();
+            if (Validation.IsValidIPAddress(host))
+            {
+                IPAddress ip;
+                if (!IPAddress.TryParse(host, out ip))
+                    return false;
                 address = ip.ToString();
+            }
             else
-                return false;
+            {
+                if (!Validation.IsValidHostnameOrIPAddress(host))
+                    return false;
+                address = host;
+            }
 
             if (parts.Length > 1)
             {

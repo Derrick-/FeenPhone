@@ -27,7 +27,7 @@ namespace FeenPhone.WPFApp
             get { return _Entries; }
         }
 
-        static  AddressBookWindow()
+        static AddressBookWindow()
         {
             LoadSettings();
             Settings.AppClosing += Settings_SaveSettings;
@@ -42,6 +42,7 @@ namespace FeenPhone.WPFApp
             set { this.SetValue(ServerIsValidProperty, value); }
         }
 
+
         public AddressBookWindow()
         {
             InitializeComponent();
@@ -49,13 +50,34 @@ namespace FeenPhone.WPFApp
             listView.ItemsSource = Entries;
 
             Selected = null;
+        }
 
+        public AddressBookWindow(string currentServer, string currentPort)
+            : this()
+        {
+            if (!string.IsNullOrWhiteSpace(currentServer) && !string.IsNullOrWhiteSpace(currentPort))
+            {
+                string toCheck = string.Format("{0}:{1}", currentServer, currentPort);
+                if (AddressBookEntry.IsValidServerEntry(toCheck))
+                {
+                    var existing = FindMatchingEntry(toCheck);
+                    if (existing != null)
+                    {
+                        txtName.Text = existing.Name;
+                        txtServer.Text = existing.Address;
+                    }
+                    else
+                        txtServer.Text = toCheck;
+
+                    txtName.Focus();
+                }
+            }
         }
 
         private static void Settings_SaveSettings(object sender, EventArgs e)
         {
             var settings = Settings.Container;
-            
+
             var items = new System.Collections.Specialized.StringCollection();
             foreach (var item in Entries)
                 items.Add(string.Join(";", item.Name, item.Address));
@@ -106,14 +128,24 @@ namespace FeenPhone.WPFApp
 
         private void MenuItem_Delete_Click(object sender, RoutedEventArgs e)
         {
-                var entry = listView.SelectedItem as AddressBookEntry;
-                if (entry != null && Entries.Contains(entry))
-                    Entries.Remove(entry);
+            var entry = listView.SelectedItem as AddressBookEntry;
+            if (entry != null && Entries.Contains(entry))
+                Entries.Remove(entry);
         }
 
         private void MenuItem_Edit_Click(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException("Edit Not Implmented");
+            var entry = listView.SelectedItem as AddressBookEntry;
+            if (entry != null && Entries.Contains(entry))
+            {
+                txtName.Text = entry.Name;
+                txtServer.Text = entry.Address;
+                txtName.Focus();
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    txtName.SelectAll();
+                }));
+            }
         }
 
         private void Item_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -126,7 +158,18 @@ namespace FeenPhone.WPFApp
             Close();
         }
 
-        private void Server_TextBox_LostFocus(object sender, RoutedEventArgs e)
+        private void txtServer_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtServer.Text))
+                txtServer.Text = string.Empty;
+            else
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    txtServer.SelectAll();
+                }));
+        }
+
+        private void txtServer_LostFocus(object sender, RoutedEventArgs e)
         {
             ValidateServerBox();
         }
@@ -152,10 +195,52 @@ namespace FeenPhone.WPFApp
 
         private void Add_Button_Click(object sender, RoutedEventArgs e)
         {
-            if (ValidateServerBox())
-                Entries.Add(new AddressBookEntry(txtServer.Text, txtName.Text));
+            AddOrUpdateFromTextBoxes();
         }
 
+        private void textBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+                AddOrUpdateFromTextBoxes();
+        }
+
+        private void AddOrUpdateFromTextBoxes()
+        {
+            if (ValidateServerBox())
+            {
+                string name = txtName.Text.Trim();
+                string host = txtServer.Text.Trim();
+
+                var entry = FindMatchingEntry(txtServer.Text);
+                if (entry == null)
+                {
+                    entry = new AddressBookEntry(host, name);
+                    Entries.Add(entry);
+                }
+                else
+                    entry.Name = name;
+
+                listView.Items.Refresh();
+                listView.ScrollIntoView(entry);
+                listView.SelectedItem = entry;
+                txtName.Text = txtServer.Text = string.Empty;
+            }
+        }
+
+        private void txtServer_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var existing = FindMatchingEntry(txtServer.Text);
+            if (existing != null)
+                btnAdd.Content = "Update";
+            else
+                btnAdd.Content = "Add";
+        }
+
+        private static AddressBookEntry FindMatchingEntry(string host)
+        {
+            var existing = Entries.Where(m => m.Address.Trim().Equals(host.Trim(), StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+            return existing;
+        }
 
     }
 }

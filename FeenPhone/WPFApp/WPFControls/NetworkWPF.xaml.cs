@@ -634,11 +634,11 @@ namespace FeenPhone.WPFApp.Controls
 
         private void AddressBook_Button_Click(object sender, RoutedEventArgs e)
         {
-            var addrWindow = new AddressBookWindow();
+            var addrWindow = new AddressBookWindow(txtServer.Text, txtPort.Text);
             addrWindow.ShowDialog();
-            if (addrWindow.Selected != null && addrWindow.Selected.IP != null)
+            if (addrWindow.Selected != null && addrWindow.Selected.Host != null)
             {
-                txtServer.Text = addrWindow.Selected.IP.ToString();
+                txtServer.Text = addrWindow.Selected.Host.ToString();
                 txtPort.Text = addrWindow.Selected.Port.ToString();
             }
         }

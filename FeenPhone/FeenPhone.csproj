@@ -531,6 +531,7 @@
     <Compile Include="Server\Telnet\TelnetServer.cs" />
     <Compile Include="Server\Telnet\TelNetState.cs" />
     <Compile Include="Utils\Timekeeper.cs" />
+    <Compile Include="Utils\Validation.cs" />
     <Compile Include="WPFApp\AddressBookWindow.xaml.cs">
       <DependentUpon>AddressBookWindow.xaml</DependentUpon>
     </Compile>

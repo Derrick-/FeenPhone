@@ -4,7 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
         mc:Ignorable="d"
-        Title="Address Book" Height="300" Width="400" Name="thisWindow">
+        Title="Feen Book" Height="300" Width="400" Name="thisWindow">
     <Window.Resources>
         <CollectionViewSource x:Key="designView"
             d:DesignSource="{d:DesignData Source=WPFControls/SampleData/AddressBookWindow.xaml}" 
@@ -18,15 +18,18 @@
                 <ColumnDefinition/>
                 <ColumnDefinition Width="50"/>
                 <ColumnDefinition/>
-                <ColumnDefinition Width="28"/>
+                <ColumnDefinition Width="48"/>
             </Grid.ColumnDefinitions>
             <Label Grid.Column="0">Name:</Label>
-            <TextBox Name="txtName" Grid.Column="1"/>
+            <TextBox Name="txtName" Grid.Column="1" KeyDown="textBox_KeyDown" />
             <Label Grid.Column="2">Addr:</Label>
             <TextBox Name="txtServer" Grid.Column="3" 
                      Background="{Binding ElementName=thisWindow, Path=ServerIsValid, Converter={StaticResource ValidationColorConverter}}" 
-                     LostFocus="Server_TextBox_LostFocus"/>
-            <Button Grid.Column="4" Click="Add_Button_Click">Add</Button>
+                     GotFocus="txtServer_GotFocus"
+                     TextChanged="txtServer_TextChanged"
+                     KeyDown="textBox_KeyDown"
+                     LostFocus="txtServer_LostFocus"/>
+            <Button Name="btnAdd" Grid.Column="4" Click="Add_Button_Click">Add</Button>
         </Grid>
         <Border DockPanel.Dock="Bottom" Background="{DynamicResource clrSectionDivider}" Height="2" BorderThickness="0 0 0 0"></Border>
         <ListView
@@ -41,11 +44,11 @@
                             <Image Source="Resources/Images/trash-26.png" />
                         </MenuItem.Icon>
                     </MenuItem>
-                    <!--<MenuItem Header="Edit" Click="MenuItem_Edit_Click">
+                    <MenuItem Header="Edit Name" Click="MenuItem_Edit_Click">
                         <MenuItem.Icon>
                             <Image Source="Resources/Images/edit-26.png" />
                         </MenuItem.Icon>
-                    </MenuItem>-->
+                    </MenuItem>
                 </ContextMenu>
             </ListView.Resources>
 
