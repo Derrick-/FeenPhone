@@ -51,13 +51,13 @@ namespace FeenPhone.WPFApp.Controls
                 target.UseWaveEvent = false;
                 target.SetValue(ShouldRampUnderrunsProperty, false);
 
-                var selected=target.SelectedOutput;
+                var selected = target.SelectedOutput;
                 var toRemove = OutputList.Where(m => m.MMDevice == null && m != selected).ToList();
                 foreach (var item in toRemove)
                     OutputList.Remove(item);
             }
 
-            foreach(UserAudioPlayerWPF player in AudioPlayers)
+            foreach (UserAudioPlayerWPF player in AudioPlayers)
                 player.SetValue(UserAudioPlayerWPF.ShowAdvancedControlsProperty, newValue);
 
         }
@@ -160,6 +160,53 @@ namespace FeenPhone.WPFApp.Controls
             AudioEvents.OnAudioDeviceRemoved += AudioEvents_OnAudioDeviceRemoved;
 
             UserAudioPlayerWPF.AnyLevelDbChanged += OnAnyLevelDbChanged;
+
+            FeenPhone.Client.EventSource.OnPlaySoundEffect += EventSource_OnPlaySoundEffect;
+        }
+
+        private void EventSource_OnPlaySoundEffect(object sender, Client.PlaySoundEffectEventArgs e)
+        {
+            if (SelectedOutput != null)
+            {
+                IWavePlayer waveOut = null;
+                BufferedWaveProvider provider;
+                SampleChannel sampleChannel;
+                try
+                {
+                    waveOut = InstanciateWavePlayerForOutput(SelectedOutput, 150, AudioClientShareMode.Shared, false);
+
+                    provider = new BufferedWaveProvider(e.Format);
+                    sampleChannel = new SampleChannel(provider, false);
+                    waveOut.Init(sampleChannel);
+                    provider.AddSamples(e.Data, 0, e.Data.Length);
+                    waveOut.PlaybackStopped += waveOut_PlaybackStopped;
+                }
+                catch
+                {
+                    if (waveOut != null)
+                        waveOut.Dispose();
+                    return;
+                }
+
+                new Action<IWavePlayer, BufferedWaveProvider>((player, buffer) =>
+                {
+                    waveOut.Play();
+                    while (waveOut.PlaybackState == PlaybackState.Playing && buffer.BufferedDuration > TimeSpan.Zero)
+                    {
+                        System.Threading.Thread.Sleep(100);
+                    }
+                }).BeginInvoke(waveOut, provider, new AsyncCallback(PlaybackDone), waveOut);
+            }
+        }
+
+        private void PlaybackDone(IAsyncResult ar)
+        {
+            ((IWavePlayer)ar.AsyncState).Stop();
+        }
+
+        void waveOut_PlaybackStopped(object sender, StoppedEventArgs e)
+        {
+            ((IWavePlayer)sender).Dispose();
         }
 
         private void OnAnyLevelDbChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -236,6 +283,26 @@ namespace FeenPhone.WPFApp.Controls
 
         }
 
+        private static bool useEventSync = true;
+        public static IWavePlayer InstanciateWavePlayerForOutput(OutputDeviceModel SelectedOutput, int desiredLatency, AudioClientShareMode shareMode, bool useWaveEvent)
+        {
+            switch (SelectedOutput.Provider)
+            {
+                case DeviceProvider.Wave:
+                    {
+                        if (useWaveEvent)
+                            return new WaveOutEvent() { DeviceNumber = SelectedOutput.WavDeviceNumber, DesiredLatency = desiredLatency };
+                        else
+                            return new WaveOut() { DeviceNumber = SelectedOutput.WavDeviceNumber, DesiredLatency = desiredLatency };
+                    }
+                case DeviceProvider.DirectSound:
+                    return new DirectSoundOut(SelectedOutput.DirectSoundDeviceInfo.Guid, desiredLatency);
+                case DeviceProvider.Wasapi:
+                    return new WasapiOut(SelectedOutput.MMDevice, shareMode, useEventSync, desiredLatency);
+            }
+            return new DirectSoundOut(DirectSoundOut.DSDEVID_DefaultVoicePlayback, desiredLatency);
+        }
+        
         private void LoadSettings()
         {
             var settings = Settings.Container;

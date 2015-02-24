@@ -83,6 +83,20 @@ namespace FeenPhone.Client
         }
     }
 
+    public class PlaySoundEffectEventArgs : EventArgs
+    {
+        public bool Handled { get; set; }
+     
+        public NAudio.Wave.WaveFormat Format { get; private set; }
+        public byte[] Data { get; private set; }
+
+        public PlaySoundEffectEventArgs(NAudio.Wave.WaveFormat format, byte[] data)
+        {
+            this.Format = format;
+            this.Data = data;
+        }
+    }
+
     internal static class EventSource
     {
         public static event EventHandler<OnUserEventArgs> OnUserConnected;
@@ -93,6 +107,8 @@ namespace FeenPhone.Client
         public static event EventHandler<AudioDataEventArgs> OnAudioData;
         public static event EventHandler<PingEventArgs> OnPingReq;
         public static event EventHandler<PingEventArgs> OnPingResp;
+
+        public static event EventHandler<PlaySoundEffectEventArgs> OnPlaySoundEffect;
 
         public static void InvokeOnUserConnected(object sender, IUser user)
         {
@@ -140,6 +156,13 @@ namespace FeenPhone.Client
         {
             if (OnPingResp != null)
                 OnPingResp(sender, new PingEventArgs(timestamp));
+        }
+
+
+        internal static void InvokePlaySoundEffect(object sender, NAudio.Wave.WaveFormat format, byte[] data)
+        {
+            if (OnPlaySoundEffect != null)
+                OnPlaySoundEffect(sender, new PlaySoundEffectEventArgs(format, data));
         }
     }
 }

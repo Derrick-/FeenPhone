@@ -4,10 +4,14 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-            Background="{StaticResource clrBackgroundPrimary}"
-            d:DesignHeight="300" d:DesignWidth="150">
+             Name="thisWindow"
+             Background="{StaticResource clrBackgroundPrimary}"
+             d:DesignHeight="300" d:DesignWidth="150">
     <DockPanel>
         <TextBlock Background="{StaticResource clrBackgroundHeaders}" DockPanel.Dock="Top" TextAlignment="Center">USERS</TextBlock>
+        <Grid DockPanel.Dock="Bottom" HorizontalAlignment="Center">
+            <CheckBox IsChecked="{Binding ElementName=thisWindow, Path=NotifyOnConnect}">Audio Notifications</CheckBox>
+        </Grid>
         <ListBox Name="UsersList" d:DataContext="{d:DesignData Source=SampleData/UserListSampleData.xaml}" ItemsSource="{Binding}" HorizontalContentAlignment="Stretch">
             <ListBox.ItemTemplate>
                 <DataTemplate>

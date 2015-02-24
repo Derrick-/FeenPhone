@@ -702,6 +702,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="WPFApp\Resources\audio\FeenPhoneDJAlert.wav" />
     <Resource Include="WPFApp\Resources\Images\Cough_Button.jpg" />
     <Resource Include="WPFApp\Resources\Images\Cough_Button_pressed.jpg" />
     <Resource Include="WPFApp\Resources\Images\edit-26.png" />

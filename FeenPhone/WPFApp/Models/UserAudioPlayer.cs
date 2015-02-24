@@ -387,7 +387,6 @@ namespace FeenPhone.WPFApp.Models
             OutputFormat = codec.RecordFormat.ToString();
         }
 
-        private bool useEventSync = true;
         public AudioClientShareMode shareMode = AudioClientShareMode.Shared;
 
         private IWavePlayer GetWavePlayer()
@@ -398,21 +397,7 @@ namespace FeenPhone.WPFApp.Models
 
             Console.WriteLine("Initializing Output for {0} using {1}{2} with latency of {3}ms", User == null ? "<new user>" : User.Nickname ?? User.ID.ToString(), SelectedOutput.Provider, SelectedOutput.Provider == DeviceProvider.Wave && UseWaveEvent ? "Event" : "", desiredLatency);
 
-            switch (SelectedOutput.Provider)
-            {
-                case DeviceProvider.Wave:
-                    {
-                        if (UseWaveEvent)
-                            return new WaveOutEvent() { DeviceNumber = SelectedOutput.WavDeviceNumber, DesiredLatency = desiredLatency };
-                        else
-                            return new WaveOut() { DeviceNumber = SelectedOutput.WavDeviceNumber, DesiredLatency = desiredLatency };
-                    }
-                case DeviceProvider.DirectSound:
-                    return new DirectSoundOut(SelectedOutput.DirectSoundDeviceInfo.Guid, desiredLatency);
-                case DeviceProvider.Wasapi:
-                    return new WasapiOut(SelectedOutput.MMDevice, shareMode, useEventSync, desiredLatency);
-            }
-            return new DirectSoundOut(DirectSoundOut.DSDEVID_DefaultVoicePlayback, desiredLatency);
+            return AudioOutWPF.InstanciateWavePlayerForOutput(SelectedOutput, desiredLatency, shareMode, UseWaveEvent);
         }
 
         internal void Stop()
