@@ -8,13 +8,27 @@
             d:DesignHeight="300" d:DesignWidth="150">
     <DockPanel>
         <TextBlock Background="{StaticResource clrBackgroundHeaders}" DockPanel.Dock="Top" TextAlignment="Center">USERS</TextBlock>
-        <ListBox Name="UsersList" d:DataContext="{d:DesignData Source=SampleData/UserListSampleData.xaml}" ItemsSource="{Binding}">
+        <ListBox Name="UsersList" d:DataContext="{d:DesignData Source=SampleData/UserListSampleData.xaml}" ItemsSource="{Binding}" HorizontalContentAlignment="Stretch">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <WrapPanel>
-                        <TextBlock Text="{Binding Path=Nickname}" />
-                        <TextBlock Margin="10 0" Text="{Binding Path=LastPing}" />
-                    </WrapPanel>
+                        <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="8*"/>
+                            <ColumnDefinition Width="4*" />
+                            <ColumnDefinition Width="6*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{Binding Path=Nickname}" Grid.Column="0"/>
+                            <TextBlock Margin="10 0" Text="{Binding Path=LastPing}" Grid.Column="1" ToolTip="User ping in Milliseconds" />
+                            <TextBlock Margin="10 0" Grid.Column="2" ToolTip="User call time">
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="{}{0:D2}:{1:D2}:{2:D2}">
+                                        <Binding Path="CallTime.Hours" />
+                                        <Binding Path="CallTime.Minutes" />
+                                        <Binding Path="CallTime.Seconds" />
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                        </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>

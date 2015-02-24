@@ -727,6 +727,7 @@
     <Resource Include="feen3_64_2.ico" />
     <None Include="Audio\NAudio\license.txt" />
     <None Include="Audio\NAudio\readme.txt" />
+    <Resource Include="LICENSE.txt" />
     <Content Include="opus.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

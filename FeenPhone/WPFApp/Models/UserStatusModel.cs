@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows;
 
 namespace FeenPhone.WPFApp.Models
@@ -14,6 +15,8 @@ namespace FeenPhone.WPFApp.Models
     {
         private readonly IUser User;
         private readonly IFeenPhoneNetstate State;
+
+        private DateTime CallStartTime;
 
         public UserStatusModel(IUser user)
         {
@@ -28,6 +31,25 @@ namespace FeenPhone.WPFApp.Models
                     this.State = client;
                 }
             }
+
+            ResetCallTime();
+
+            Timer UpdateTimer = new Timer(200.0);
+            UpdateTimer.Elapsed += UpdateTimer_Elapsed;
+            UpdateTimer.Start();
+        }
+
+        void UpdateTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                CallTime = DateTime.UtcNow - CallStartTime;
+            }));
+        }
+
+        public void ResetCallTime()
+        {
+            CallStartTime = DateTime.UtcNow;
         }
 
         void client_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -48,6 +70,13 @@ namespace FeenPhone.WPFApp.Models
         {
             get { return (int)this.GetValue(LastPingProperty); }
             set { this.SetValue(LastPingProperty, value); }
+        }
+
+        public static DependencyProperty CallTimeProperty = DependencyProperty.Register("CallTime", typeof(TimeSpan?), typeof(UserStatusModel), new PropertyMetadata(null));
+        public TimeSpan? CallTime
+        {
+            get { return (TimeSpan?)this.GetValue(CallTimeProperty); }
+            set { this.SetValue(CallTimeProperty, value); }
         }
 
         public Guid ID { get { return User.ID; } }

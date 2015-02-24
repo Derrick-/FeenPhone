@@ -32,6 +32,8 @@ namespace FeenPhone.WPFApp.Controls
     /// </summary>
     public partial class AudioInWPF : UserControl, INotifyPropertyChanged, IDisposable
     {
+        static readonly bool ENABLEWASAPI_IN = false;
+
         static ObservableCollection<InputDeviceModel> InputList = new ObservableCollection<InputDeviceModel>();
 
         public AudioVisualizationSource VisSource { get; private set; }
@@ -111,6 +113,18 @@ namespace FeenPhone.WPFApp.Controls
             {
                 Dispatcher.Invoke(new Action<Guid>(AddInput), guid);
             }
+
+            Dispatcher.Invoke(new Action(() =>
+            {
+                if (InputList != null && InputList.Count > 0)
+                {
+                    if (SelectedInputSource == null)
+                    {
+                        SelectedInputSource = InputList[0];
+                    }
+                    SelectActiveInputGroup();
+                }
+            }));
         }
 
         private void AudioEvents_OnAudioDeviceRemoved(object sender, AudioEvents.MMDeviceAddedRemovedArgs e)
@@ -245,11 +259,14 @@ namespace FeenPhone.WPFApp.Controls
                 InputList.Add(new InputDeviceModel(n, capabilities));
             }
 
-            var devices = MMDevices.deviceEnum.EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active).ToList();
-
-            foreach (var device in devices)
+            if (ENABLEWASAPI_IN)
             {
-                InputList.Add(new InputDeviceModel(device));
+                var devices = MMDevices.deviceEnum.EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active).ToList();
+
+                foreach (var device in devices)
+                {
+                    InputList.Add(new InputDeviceModel(device));
+                }
             }
 
         }

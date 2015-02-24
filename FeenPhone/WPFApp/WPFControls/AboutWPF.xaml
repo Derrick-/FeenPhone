@@ -12,10 +12,10 @@
                     <BeginStoryboard>
                         <Storyboard RepeatBehavior="Forever">
                             <DoubleAnimation
-                                BeginTime="0:0:15"
-                                Duration="0:01:00"
+                                BeginTime="0:0:10"
+                                Duration="0:01:30"
                                 From="10"
-                                To="-600"
+                                To="-1050"
                                 Storyboard.TargetProperty="(Canvas.Top)" />
                         </Storyboard>
                     </BeginStoryboard>
@@ -45,7 +45,7 @@
                         <Setter  Property="Padding" Value="0"/>
                     </Style>
                 </DockPanel.Resources>
-                <Label DockPanel.Dock="Top" Content="Brought to you by The Beastlick Internet Policy Outreach Team"/>
+                <Label DockPanel.Dock="Top" Content="Brought to you by The Beastlick Internet Policy Commission Outreach Team"/>
                 <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center"><Run Text="Michael W. Dean: CAO (Chief Anarchy Officer) audio engineer and cat herder"/></TextBlock>
                 <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center"><Run Text="Derrick Slopey: Programmer."/></TextBlock>
                 <Label DockPanel.Dock="Top" Content="And the following sponsors"/>
@@ -81,7 +81,7 @@
                         <TextBlock><Hyperlink RequestNavigate="Hyperlink_RequestNavigate"  NavigateUri="http://feenphone.com"><Run Text="http://feenphone.com"/></Hyperlink></TextBlock>
 
                         <Label Content="QUICK-START GUIDE:"/>
-                        <TextBlock><Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="http://feenphone.com/?page_id=308"><Run Text="http://feenphone.com/?page_id=308"/></Hyperlink></TextBlock>
+                        <TextBlock><Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="http://feenphone.com/?page_id=2167"><Run Text="http://feenphone.com/?page_id=2167"/></Hyperlink></TextBlock>
 
                         <Label Content="HOW TO GET GREAT AUDIO WITH FeenPhone:"/>
                         <TextBlock><Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="http://feenphone.com/?page_id=1123"><Run Text="http://feenphone.com/?page_id=1123"/></Hyperlink></TextBlock>
@@ -99,7 +99,7 @@
                         <TextBlock><Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="bitcoin:1Q3QxoXcX5HYpkqRZ4uHXJXrmZzHehBZVP"><Run Text="1Q3QxoXcX5HYpkqRZ4uHXJXrmZzHehBZVP"/></Hyperlink></TextBlock>
 
                         <Label Content="Software License:"/>
-                        <TextBlock><Run Text="Covered by "/><Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="http://opensource.org/licenses/BSD-3-Clause"><Run Text="BSD 3-Clause License"/></Hyperlink><Run Text=", "/><Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="http://www.opus-codec.org/license/"><Run Text="OPUS CODEC LICENSE"/></Hyperlink></TextBlock>
+                        <TextBlock><Run Text="Covered by "/><Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="http://bipcot.org/ "><Run Text="BipCot No-Gov License"/></Hyperlink><Run Text=", "/><Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="http://www.opus-codec.org/license/"><Run Text="OPUS CODEC LICENSE"/></Hyperlink></TextBlock>
                         <TextBlock><Run Text="And "/><Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="https://naudio.codeplex.com/license"><Run Text="Microsoft Public License (Ms-PL)"/></Hyperlink></TextBlock>
                     </StackPanel>
                 </Grid>
@@ -164,6 +164,31 @@
                             <TextBlock><Run Text="Gavin Carolan"/></TextBlock>
                             <TextBlock><Run Text="Anonymous Contributor"/></TextBlock>
 
+                            <Label Content="LIST OF DONATORS FROM SECOND ROUND OF INDIEGOGO FUNDING:"/>
+                            <Label Content="Thanks again for your help!"/>
+                            <TextBlock><Run Text="Roger Ver"/></TextBlock>
+                            <TextBlock><Run Text="Jim Jesus"/></TextBlock>
+                            <TextBlock><Run Text="Terence Gillespie"/></TextBlock>
+                            <TextBlock><Run Text="Matthew C Bowler"/></TextBlock>
+                            <TextBlock><Run Text="David Johnson"/></TextBlock>
+                            <TextBlock><Run Text="Sam Killen"/></TextBlock>
+                            <TextBlock><Run Text="anon"/></TextBlock>
+                            <TextBlock><Run Text="Brandon Phillips"/></TextBlock>
+                            <TextBlock><Run Text="Joshua Horowitz"/></TextBlock>
+                            <TextBlock><Run Text="Adam Allpow"/></TextBlock>
+                            <TextBlock><Run Text="Charles Hlady"/></TextBlock>
+                            <TextBlock><Run Text="Martin Hunsinger"/></TextBlock>
+                            <TextBlock><Run Text="M&amp;A Online"/></TextBlock>
+                            <TextBlock><Run Text="Dennis Heerema"/></TextBlock>
+                            <TextBlock><Run Text="Greening Out Podcast"/></TextBlock>
+                            <TextBlock><Run Text="Rick Shoup"/></TextBlock>
+                            <TextBlock><Run Text="Tim Frey"/></TextBlock>
+                            <TextBlock><Run Text="Kevin McKernan"/></TextBlock>
+                            <TextBlock><Run Text="Mav Feenman"/></TextBlock>
+                            <TextBlock><Run Text="Carl Lehar-Mikes"/></TextBlock>
+                            <TextBlock><Run Text="Anthony Lopez-Vito "/></TextBlock>
+                            <TextBlock><Run Text="Anders Heile Hass"/></TextBlock>
+
                             <Label Content="alpha testers and beta testers:"/>
                             <TextBlock><Run Text="Lousander Feen"/></TextBlock>
                             <TextBlock><Run Text="Davi Barker"/></TextBlock>
@@ -181,7 +206,8 @@
                             <TextBlock Margin="0 20 0 0"><Run Text="Leaping Kitty FeenPhone logo poster (also adopted into funding video) by Crazy Rich."/></TextBlock>
                             <TextBlock Margin="0 0 0 20"><Run Text="FeenPhone logos and Artwork: Michael W. Dean and Davi Barker"/></TextBlock>
 
-                            <TextBlock><Run Text="Special thanks: Darryl W. Perry, Phil Abatecola."/></TextBlock>
+                            <TextBlock><Run Text="Special thanks: Debra Dean, Neema Vedadi, Darryl W. Perry, Phil Abatecola, Drew Phillips,"/></TextBlock>
+                            <TextBlock><Run Text=" Anthony Lopez-Vito, Crabington Von Crabistan, Link Porterfield, Jeff L., Sean DuVally."/></TextBlock>
 
                         </StackPanel>
                     </Canvas>
