@@ -24,6 +24,7 @@ using NAudio.Wave.SampleProviders;
 using NAudio.Wave.Compression;
 using System.Diagnostics;
 using FeenPhone.Client;
+using System.Timers;
 
 namespace FeenPhone.WPFApp.Controls
 {
@@ -344,6 +345,7 @@ namespace FeenPhone.WPFApp.Controls
         public static DependencyProperty LevelManagerProperty = DependencyProperty.Register("LevelManager", typeof(AudioLevelManager), typeof(AudioInWPF), new PropertyMetadata(null));
 
         public static DependencyProperty IsRecordingProperty = DependencyProperty.Register("IsRecording", typeof(bool), typeof(AudioInWPF), new PropertyMetadata(false, OnIsRecordingChanged));
+        public static DependencyProperty CoughProperty = DependencyProperty.Register("Cough", typeof(bool), typeof(AudioInWPF), new PropertyMetadata(false, OnCoughChanged));
         public static DependencyProperty InputSourceListProperty = DependencyProperty.Register("InputSourceList", typeof(ObservableCollection<InputDeviceModel>), typeof(AudioInWPF), new PropertyMetadata(InputList));
         public static DependencyProperty SelectedInputSourceProperty = DependencyProperty.Register("SelectedInputSource", typeof(InputDeviceModel), typeof(AudioInWPF), new PropertyMetadata(null, OnSelectedInputSourceChanged));
         public static DependencyProperty SelectedCodecProperty = DependencyProperty.Register("SelectedCodec", typeof(CodecModel), typeof(AudioInWPF), new PropertyMetadata(null));
@@ -384,6 +386,76 @@ namespace FeenPhone.WPFApp.Controls
                 this.SetValue(IsRecordingProperty, value);
                 OnPropertyChanged("IsRecording");
             }
+        }
+
+        public bool Cough
+        {
+            get { return (bool)this.GetValue(CoughProperty); }
+            set
+            {
+                this.SetValue(CoughProperty, value);
+                OnPropertyChanged("Cough");
+            }
+        }
+
+        private static void OnCoughChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Trace.WriteLine(string.Format("Cough changed to {0}", e.NewValue));
+            var target = (AudioInWPF)d;
+            target.HandleCoughButton();
+        }
+
+        private Timer CoughTimer = null;
+        private object lockCoughTimer = new object();
+
+        private void HandleCoughButton()
+        {
+            lock (lockCoughTimer)
+            {
+                if (CoughTimer == null)
+                {
+                    CoughTimer = new Timer(coughTimerIntervalMs);
+                    CoughTimer.Elapsed += CoughTimer_Elapsed;
+                    CoughTimer.Start();
+                }
+            }
+        }
+
+        const double coughDecayMs = 125.0;
+        const double coughRecoverMs = 250.0;
+
+        const double coughTimerIntervalMs = 15.0;
+        const double coughScalarDecPerInterval = coughTimerIntervalMs / coughDecayMs;
+        const double coughScalarIncPerInterval = coughTimerIntervalMs / coughRecoverMs;
+
+        private double CoughScalar = 1.0;
+        void CoughTimer_Elapsed(object s, ElapsedEventArgs e)
+        {
+            Dispatcher.Invoke(new Action<object>((sender) =>
+            {
+                lock (lockCoughTimer)
+                {
+                    if (sender == CoughTimer)
+                    {
+                        var on = (bool)btnCough.IsChecked;
+                        if ((on && CoughScalar <= 0.0) || (!on && CoughScalar >= 1.0))
+                        {
+                            CoughTimer.Stop();
+                            CoughTimer.Dispose();
+                            CoughTimer = null;
+                        }
+                        else if (on)
+                            CoughScalar -= coughScalarDecPerInterval;
+                        else
+                            CoughScalar += coughScalarIncPerInterval;
+                    }
+                }
+            }), s);
+        }
+
+        private void ToggleButton_LostMouseCapture(object sender, MouseEventArgs e)
+        {
+            Cough = false;
         }
 
         public CodecModel SelectedCodec
@@ -720,6 +792,9 @@ namespace FeenPhone.WPFApp.Controls
                     }
                     else
                     {
+                        if (CoughScalar < 1.0)
+                            InputResampler.ScalePCM16Volume(ref toEncode, length, CoughScalar);
+
                         byte[] encoded = codec.Encode(toEncode, length);
 
                         if (encoded.Length > 0 && NetworkWPF.Client != null)

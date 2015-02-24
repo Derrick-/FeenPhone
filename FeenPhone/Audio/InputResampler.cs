@@ -256,7 +256,7 @@ namespace FeenPhone.Audio
         unsafe private static void ApplyVolumeScalar(double volumeScalar, byte* p, int sampleIndex)
         {
             short sample = *((short*)p + sampleIndex);
-            double result = sample * volumeScalar;
+            double result = volumeScalar <= 0.0 ? 0 : sample * volumeScalar;
             (*((short*)p + sampleIndex)) = (short)result;
         }
 

@@ -702,6 +702,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="WPFApp\Resources\Images\Cough_Button.jpg" />
+    <Resource Include="WPFApp\Resources\Images\Cough_Button_pressed.jpg" />
     <Resource Include="WPFApp\Resources\Images\edit-26.png" />
     <Resource Include="WPFApp\Resources\Images\trash-26.png" />
     <Resource Include="WPFApp\Resources\Images\bookmark-26.png" />

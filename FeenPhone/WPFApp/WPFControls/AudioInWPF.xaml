@@ -67,7 +67,58 @@
                 </ToggleButton.Template>
             </ToggleButton>
         </StackPanel>
-        <StackPanel Name="modelValueContainer" DockPanel.Dock="Right">
+        <StackPanel DockPanel.Dock="Right">
+            <ToggleButton
+                Name="btnCough"
+                MaxWidth="48"
+                MaxHeight="48"
+                Width="{Binding ElementName=modelValueContainer, Path=ActualHeight}" 
+                Height="{Binding ElementName=modelValueContainer, Path=ActualHeight}" 
+                ClickMode="Press"
+                LostMouseCapture="ToggleButton_LostMouseCapture"
+                IsChecked="{Binding Path=Cough, Mode=TwoWay}" 
+                ToolTip="Enable sound recording">
+                <ToggleButton.Template>
+                    <ControlTemplate TargetType="{x:Type ToggleButton}">
+                        <Border >
+                            <Border.BorderBrush>
+                                <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
+                                    <GradientStop Color="#FFE2CF10" Offset="0"/>
+                                    <GradientStop Color="Black" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.BorderBrush>
+                            <Border.Style>
+                                <Style>
+                                    <Setter Property="Border.BorderThickness" Value="0" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsChecked,RelativeSource={RelativeSource AncestorType={x:Type ToggleButton}}}" Value="True">
+                                            <Setter Property="Border.Margin" Value="-1 -1 -1 -1" />
+                                            <Setter Property="Border.BorderThickness" Value="2" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <StackPanel Orientation="Horizontal">
+                                <Image>
+                                    <Image.Style>
+                                        <Style>
+                                            <Setter Property="Image.Source" Value="/FeenPhone;component/WPFApp/Resources/Images/Cough_Button.jpg" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsChecked,RelativeSource={RelativeSource AncestorType={x:Type ToggleButton}}}" Value="True">
+                                                    <Setter Property="Image.Source" Value="/FeenPhone;component/WPFApp/Resources/Images/Cough_Button_pressed.jpg" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Image.Style>
+                                </Image>
+                                <ContentPresenter Content="{TemplateBinding Content}" Margin="5,0,0,0" />
+                            </StackPanel>
+                        </Border>
+                    </ControlTemplate>
+                </ToggleButton.Template>
+            </ToggleButton>
+        </StackPanel>
+        <StackPanel Name="modelValueContainer">
             <DockPanel>
                 <ComboBox Name="comboInputGroups" 
                     Visibility="{Binding ShowAdvancedControls, Converter={StaticResource BoolToVisConverter}}"
