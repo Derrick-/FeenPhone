@@ -13,7 +13,7 @@ namespace FeenPhone.Audio.Codecs
     class G722ChatCodec : INetworkChatCodec
     {
         public CodecID CodecID { get { return CodecID.G722ChatCodec; } }
-        public bool IsAvailable { get { return true; } }
+        public bool IsAvailable { get { return false; } }
         public virtual int SortOrder { get { return 50; } }
 
         private int bitrate;

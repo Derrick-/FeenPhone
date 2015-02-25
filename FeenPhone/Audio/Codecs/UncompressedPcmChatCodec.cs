@@ -41,7 +41,7 @@ namespace FeenPhone.Audio.Codecs
 
     abstract class BaseUncompressedPcmChatCodec : INetworkChatCodec
     {
-        public virtual bool IsAvailable { get { return true; } }
+        public virtual bool IsAvailable { get { return false; } }
         public virtual int SortOrder { get { return 100; } }
 
         int Channels;
