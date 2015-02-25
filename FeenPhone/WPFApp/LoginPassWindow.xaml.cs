@@ -28,7 +28,7 @@ namespace FeenPhone.WPFApp
         public LoginPassWindow(string initialPassword, string messsage = null, string confirmButtonText = "Login")
         {
             InitializeComponent();
-            input.Password = initialPassword;
+            input.Text = initialPassword;
             SetValue(ServerMessageProperty, messsage);
             SetValue(ConfirmButtonTextProperty, confirmButtonText);
             Canceled = true;
@@ -38,7 +38,7 @@ namespace FeenPhone.WPFApp
 
         public void Dispose()
         {
-            input.Password = null;
+            input.Text = null;
         }
 
         private void Login_Click(object sender, RoutedEventArgs e)
@@ -55,7 +55,7 @@ namespace FeenPhone.WPFApp
 
         internal string GetInput()
         {
-            return input.Password;
+            return input.Text.Trim();
         }
     }
 }

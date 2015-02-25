@@ -65,7 +65,10 @@ namespace FeenPhone.Client
         protected override void Disconnect()
         {
             base.Disconnect();
-            _writer.SetStream(null);
+
+            if (_writer != null)
+                _writer.SetStream(null);
+            
             if (Stream != null)
                 Stream.Dispose();
 

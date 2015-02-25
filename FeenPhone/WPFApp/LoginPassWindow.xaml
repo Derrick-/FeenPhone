@@ -10,7 +10,7 @@
             <DockPanel>
                 <TextBlock DockPanel.Dock="Top" MinHeight="20" VerticalAlignment="Bottom" Text="{Binding ServerMessage}"></TextBlock>
                 <Label>Password</Label>
-                <PasswordBox x:Name="input"></PasswordBox>
+                <TextBox x:Name="input"></TextBox>
             </DockPanel>
             <Grid Margin="0 10 0 0">
                 <Grid.ColumnDefinitions>
