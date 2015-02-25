@@ -77,7 +77,7 @@
                 ClickMode="Press"
                 LostMouseCapture="ToggleButton_LostMouseCapture"
                 IsChecked="{Binding Path=Cough, Mode=TwoWay}" 
-                ToolTip="Enable sound recording">
+                ToolTip="ACK!!!">
                 <ToggleButton.Template>
                     <ControlTemplate TargetType="{x:Type ToggleButton}">
                         <Border >
