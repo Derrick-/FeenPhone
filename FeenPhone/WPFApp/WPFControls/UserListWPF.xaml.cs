@@ -25,8 +25,9 @@ namespace FeenPhone.WPFApp.Controls
     /// </summary>
     public partial class UserListWPF : UserControl
     {
-        public static DependencyProperty NotifyOnConnectProperty = DependencyProperty.Register("NotifyOnConnect", typeof(bool), typeof(UserListWPF), new PropertyMetadata(false));
+        private static DateTime nextAudioAlertPlay = DateTime.MinValue;
 
+        public static DependencyProperty NotifyOnConnectProperty = DependencyProperty.Register("NotifyOnConnect", typeof(bool), typeof(UserListWPF), new PropertyMetadata(false));
         public bool NotifyOnConnect
         {
             get { return (bool)this.GetValue(NotifyOnConnectProperty); }
@@ -58,9 +59,14 @@ namespace FeenPhone.WPFApp.Controls
             settings.NotifyOnConnect = NotifyOnConnect;
         }
 
+        public static void DisableAudioAlertForDuration(double seconds = 2)
+        {
+            nextAudioAlertPlay = DateTime.UtcNow.Add(TimeSpan.FromSeconds(seconds));
+        }
+
         void Users_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            if (e.Action == NotifyCollectionChangedAction.Add && NotifyOnConnect )
+            if (e.Action == NotifyCollectionChangedAction.Add && NotifyOnConnect)
             {
                 Dispatcher.BeginInvoke(new Action(PlayNotificationSound));
             }
@@ -68,26 +74,30 @@ namespace FeenPhone.WPFApp.Controls
 
         private void PlayNotificationSound()
         {
-            try
+            if (DateTime.UtcNow >= nextAudioAlertPlay)
             {
-                System.Windows.Resources.StreamResourceInfo sri = Application.GetResourceStream(new Uri("WPFApp/Resources/audio/FeenPhoneDJAlert.wav", UriKind.Relative));
-
-                using (WaveStream ws =
-                   new BlockAlignReductionStream(
-                       WaveFormatConversionStream.CreatePcmStream(
-                           new WaveFileReader(sri.Stream))))
+                DisableAudioAlertForDuration();
+                try
                 {
-                    var length = ws.Length;
-                    if (length < int.MaxValue)
+                    System.Windows.Resources.StreamResourceInfo sri = Application.GetResourceStream(new Uri("WPFApp/Resources/audio/FeenPhoneDJAlert.wav", UriKind.Relative));
+
+                    using (WaveStream ws =
+                       new BlockAlignReductionStream(
+                           WaveFormatConversionStream.CreatePcmStream(
+                               new WaveFileReader(sri.Stream))))
                     {
-                        byte[] data = new byte[length];
-                        var format = ws.WaveFormat;
-                        int read = ws.Read(data, 0, (int)length);
-                        EventSource.InvokePlaySoundEffect(this, format, data);
+                        var length = ws.Length;
+                        if (length < int.MaxValue)
+                        {
+                            byte[] data = new byte[length];
+                            var format = ws.WaveFormat;
+                            int read = ws.Read(data, 0, (int)length);
+                            EventSource.InvokePlaySoundEffect(this, format, data);
+                        }
                     }
                 }
+                catch { }
             }
-            catch { }
         }
 
     }

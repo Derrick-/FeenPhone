@@ -178,6 +178,8 @@ namespace FeenPhone.WPFApp.Controls
         private string Password = null;
         private void InvokeLoginEvent(LoginStatusEventArgs e)
         {
+            UserListWPF.DisableAudioAlertForDuration(5.0);
+            
             bool isLoggedIn = e.isLoggedIn;
             int version = e.version;
             string message = e.message;
