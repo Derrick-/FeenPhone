@@ -69,10 +69,7 @@ namespace NAudio.Wave
                 device.Guid = new Guid(guidBytes);
             }
             device.Description =  Marshal.PtrToStringAnsi(lpcstrDescription);
-            if (lpcstrModule != null)
-            {
-                device.ModuleName = Marshal.PtrToStringAnsi(lpcstrModule);
-            }
+            device.ModuleName = Marshal.PtrToStringAnsi(lpcstrModule);
             devices.Add(device);
             return true;
         }

@@ -185,7 +185,7 @@ namespace FeenPhone.WPFApp.Controls
         {
             Guid selected = SelectedInputSource == null ? Guid.Empty : SelectedInputSource.Guid;
             InitializeInputDevices();
-            if (selected == null || selected == Guid.Empty)
+            if (selected == Guid.Empty)
             {
                 selected = guid;
             }

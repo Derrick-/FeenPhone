@@ -69,10 +69,10 @@ namespace Alienseed.BaseNetworkServer
                     Host.Send(new byte[] { (byte)(clientPort >> 8), (byte)clientPort }, 2, endpoint);
                     base.AcceptClient(ns);
                 }
-                catch (SocketException ex)
+                catch (SocketException)
                 {
                 }
-                catch (ObjectDisposedException ex)
+                catch (ObjectDisposedException)
                 {
                     Stop();
                     return;
