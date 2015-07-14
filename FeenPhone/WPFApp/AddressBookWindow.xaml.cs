@@ -76,11 +76,16 @@ namespace FeenPhone.WPFApp
 
         private static void Settings_SaveSettings(object sender, EventArgs e)
         {
+            // Format: Name;[password@]address[:port]
+
             var settings = Settings.Container;
 
             var items = new System.Collections.Specialized.StringCollection();
             foreach (var item in Entries)
-                items.Add(string.Join(";", item.Name, item.Address));
+            {
+                string address = string.IsNullOrWhiteSpace(item.Password) ? item.Address : item.Password + "@" + item.Address;
+                items.Add(string.Join(";", item.Name, address));
+            }
             settings.AddressBook = items;
         }
 
@@ -100,9 +105,16 @@ namespace FeenPhone.WPFApp
                     {
                         var name = string.Join(";", parts.Take(parts.Length - 1));
                         var address = parts.Last();
+                        string password = null;
+                        if(address.Contains("@"))
+                        {
+                            var addrParts = address.Split('@');
+                            password = addrParts[0];
+                            address = addrParts[1];
+                        }
                         try
                         {
-                            var entry = new AddressBookEntry(address, name);
+                            var entry = new AddressBookEntry(address, name, password);
                             Entries.Add(entry);
                         }
                         catch (ArgumentException) { }
@@ -110,7 +122,7 @@ namespace FeenPhone.WPFApp
                 }
             }
             else
-                Entries.Add(new AddressBookEntry() { Name = "Localhost", Address = "127.0.0.1:5150" });
+                Entries.Add(new AddressBookEntry(IpAndPortString: "127.0.0.1:5150", name: "Localhost"));
         }
 
         private void ListView_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -119,11 +131,13 @@ namespace FeenPhone.WPFApp
             GridView gView = listView.View as GridView;
 
             var workingWidth = listView.ActualWidth - 35;
-            var col1 = 0.50;
-            var col2 = 0.50;
+            var col1 = 0.35;
+            var col2 = 0.45;
+            var col3 = 0.20;
 
             gView.Columns[0].Width = workingWidth * col1;
             gView.Columns[1].Width = workingWidth * col2;
+            gView.Columns[2].Width = workingWidth * col3;
         }
 
         private void MenuItem_Delete_Click(object sender, RoutedEventArgs e)
@@ -145,6 +159,22 @@ namespace FeenPhone.WPFApp
                 {
                     txtName.SelectAll();
                 }));
+            }
+        }
+
+        private void MenuItem_SetPass_Click(object sender, RoutedEventArgs e)
+        {
+            var entry = listView.SelectedItem as AddressBookEntry;
+            if (entry != null && Entries.Contains(entry))
+            {
+                string serverName = string.IsNullOrWhiteSpace(entry.Name) ? string.IsNullOrWhiteSpace(entry.Address) ? "[null]" : entry.Address.ToString() : entry.Name;
+                string message = string.Format("Enter new pass for {0}", serverName);
+                string pass = entry.Password;
+                if (LoginPassWindow.Prompt(ref pass, message, "Apply"))
+                {
+                    entry.Password = string.IsNullOrWhiteSpace(pass) ? null : pass;
+                    listView.Items.Refresh();
+                }
             }
         }
 

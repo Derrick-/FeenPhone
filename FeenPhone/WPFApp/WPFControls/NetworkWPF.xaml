@@ -92,7 +92,8 @@
                     <CheckBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" ClickMode="Release" FontSize="10" IsChecked="{Binding Path=IsServer, Mode=TwoWay}" ToolTip="Run as server" Margin="10 0 0 0" Padding="2"  VerticalAlignment="Center">Run Server</CheckBox>
                     <CheckBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" ClickMode="Release" IsChecked="{Binding Path=RequireAuth, Mode=TwoWay}" ToolTip="Require incoming clients to authenticate" Margin="10,2">Require Auth</CheckBox>
                     <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" ClickMode="Release" Click="ManageAuth_Click" FontSize="9" Visibility="{Binding Path=RequireAuth, Converter={StaticResource BoolToVisConverter}}" ToolTip="Run as server" Margin="10,2">Manage Authentication</Button>
-                    <Label Grid.Row="0" Grid.Column="2">Ports</Label>
+                    <Label Grid.Row="0" Grid.Column="2" Visibility="{Binding ShowAdvancedControls, Converter={StaticResource InverseBoolToVisConverter}}">Port</Label>
+                    <Label Grid.Row="0" Grid.Column="2" Visibility="{Binding ShowAdvancedControls, Converter={StaticResource BoolToVisConverter}}">Ports</Label>
                     <TextBox Grid.Row="0" Grid.Column="3" Margin="0,1" Text="{Binding Path=TCPPortText, Mode=TwoWay}" IsEnabled="{Binding Path=TCPPortEnabled}"></TextBox>
                     <TextBox Grid.Row="1" Grid.Column="3" Margin="0,1" Text="{Binding Path=UDPPortText, Mode=TwoWay}" Visibility="{Binding ShowAdvancedControls, Converter={StaticResource BoolToVisConverter}}" IsEnabled="{Binding Path=UDPPortEnabled}"></TextBox>
                     <TextBox Grid.Row="2" Grid.Column="3" Margin="0,1" Text="{Binding Path=TelnetPortText, Mode=TwoWay}" Visibility="{Binding ShowAdvancedControls, Converter={StaticResource BoolToVisConverter}}" IsEnabled="{Binding Path=TelnetPortEnabled}"></TextBox>

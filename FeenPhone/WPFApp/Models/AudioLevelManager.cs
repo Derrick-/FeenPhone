@@ -87,17 +87,17 @@ namespace FeenPhone.WPFApp.Models
 
         public static DependencyProperty IsAttachedProperty = DependencyProperty.Register("IsAttached", typeof(bool), typeof(AudioLevelManager), new PropertyMetadata(false));
 
-        public static DependencyProperty MinProperty = DependencyProperty.Register("Min", typeof(double), typeof(AudioLevelManager), new PropertyMetadata((double)0, OnLevelChanged));
-        public static DependencyProperty MaxProperty = DependencyProperty.Register("Max", typeof(double), typeof(AudioLevelManager), new PropertyMetadata((double)1000, OnLevelChanged));
-        public static DependencyProperty LevelProperty = DependencyProperty.Register("Level", typeof(double), typeof(AudioLevelManager), new PropertyMetadata((double)1000, OnLevelChanged));
-        public static DependencyProperty LevelPercentProperty = DependencyProperty.Register("LevelPercent", typeof(double), typeof(AudioLevelManager), new PropertyMetadata(100.0, OnLevelPercentChanged));
+        public static DependencyProperty MinProperty = DependencyProperty.Register("Min", typeof(float), typeof(AudioLevelManager), new PropertyMetadata(0f, OnLevelChanged));
+        public static DependencyProperty MaxProperty = DependencyProperty.Register("Max", typeof(float), typeof(AudioLevelManager), new PropertyMetadata(1000f, OnLevelChanged));
+        public static DependencyProperty LevelProperty = DependencyProperty.Register("Level", typeof(float), typeof(AudioLevelManager), new PropertyMetadata(1000f, OnLevelChanged));
+        public static DependencyProperty LevelPercentProperty = DependencyProperty.Register("LevelPercent", typeof(float), typeof(AudioLevelManager), new PropertyMetadata(100.0f, OnLevelPercentChanged));
 
         protected AudioLevelManager()
         {
             Provider = DeviceProvider.Unknown;
             DeviceDirection = DeviceType.Unknown;
-            Min = 0.0;
-            Level = Max = 1.0;
+            Min = 0.0f;
+            Level = Max = 1.0f;
         }
 
         public bool IsAttached
@@ -105,30 +105,30 @@ namespace FeenPhone.WPFApp.Models
             get { return (bool)this.GetValue(IsAttachedProperty); }
         }
 
-        public double Min
+        public float Min
         {
-            get { return (double)this.GetValue(MinProperty); }
+            get { return (float)this.GetValue(MinProperty); }
             set { SetValue(MinProperty, value); }
         }
-        public double Max
+        public float Max
         {
-            get { return (double)this.GetValue(MaxProperty); }
+            get { return (float)this.GetValue(MaxProperty); }
             set { SetValue(MaxProperty, value); }
         }
-        public double Level
+        public float Level
         {
-            get { return (double)this.GetValue(LevelProperty); }
+            get { return (float)this.GetValue(LevelProperty); }
             set { SetValue(LevelProperty, value); }
         }
 
-        double _LevelScalar;
-        public double LevelScalar
+        float _LevelScalar;
+        public float LevelScalar
         {
             get { return _LevelScalar; }
             set
             {
                 _LevelScalar = value;
-                SetValue(LevelPercentProperty, value * 100.0);
+                SetValue(LevelPercentProperty, value * 100.0f);
             }
         }
 
@@ -138,7 +138,7 @@ namespace FeenPhone.WPFApp.Models
             if (target != null)
             {
                 if (!target.SuppressLevelEvent)
-                    target.HandleLevelChange((double)(e.NewValue));
+                    target.HandleLevelChange((float)(e.NewValue));
             }
         }
 
@@ -151,16 +151,16 @@ namespace FeenPhone.WPFApp.Models
                 {
                     target.Dispatcher.BeginInvoke(new Action(() =>
                     {
-                        double newValue = ((double)e.NewValue) / 100.0;
-                        double delta = target.Max - target.Min;
-                        double offset = (delta * newValue);
+                        float newValue = ((float)e.NewValue) / 100.0f;
+                        float delta = target.Max - target.Min;
+                        float offset = (delta * newValue);
                         target.Level = target.Min + offset;
                     }));
                 }
             }
         }
 
-        private void HandleLevelChange(double newLevel)
+        private void HandleLevelChange(float newLevel)
         {
             if (newLevel >= Min && newLevel <= Max)
             {
@@ -197,8 +197,8 @@ namespace FeenPhone.WPFApp.Models
 
         private void UpdatePercent()
         {
-            double delta = Max - Min;
-            double offset = Level - Min;
+            float delta = Max - Min;
+            float offset = Level - Min;
             LevelScalar = offset / delta;
         }
 

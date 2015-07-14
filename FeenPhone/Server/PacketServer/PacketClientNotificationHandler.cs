@@ -23,11 +23,11 @@ namespace FeenPhone.Server.PacketServer
         {
             var user = FeenPhone.Accounting.AccountHandler.Instance.Login(Username, password);
 
-            State.LogLine("Login {0}: {1}", user != null ? "SUCCESS" : "FAILED", user != null ? user.Username : Username);
+            bool ok=user!=null &&  State.LoginSetUser(user, true);
 
-            if (user == null) return false;
+            State.LogLine("Login {0}: {1}", ok ? "SUCCESS" : "FAILED", user != null ? user.Username : Username);
 
-            return State.LoginSetUser(user, true);
+            return ok;
         }
 
         public void LoginSuccess()

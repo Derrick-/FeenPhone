@@ -38,9 +38,7 @@ namespace FeenPhone.Server.PacketServer
 
         protected override void OnAudio(Guid IGNOREDBYSERVER, Audio.Codecs.CodecID Codec, byte[] data, int dataLen)
         {
-            if (state.User == null)
-                state.Notifier.LoginFailed();
-            else
+            if (state.User != null)
                 EventSink.OnAudio(state, state.User.ID, Codec, data, dataLen);
         }
 

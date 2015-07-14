@@ -88,7 +88,7 @@ namespace FeenPhone.WPFApp.Controls
 
         public static DependencyProperty AudioPlayersProperty = DependencyProperty.Register("AudioPlayers", typeof(ObservableCollection<UserAudioPlayerWPF>), typeof(AudioOutWPF), new PropertyMetadata(AudioPlayers));
 
-        public static DependencyProperty TotalOutputLevelPercentProperty = DependencyProperty.Register("TotalOutputLevelPercent", typeof(double), typeof(AudioOutWPF), new PropertyMetadata(0.0));
+        public static DependencyProperty TotalOutputLevelPercentProperty = DependencyProperty.Register("TotalOutputLevelPercent", typeof(float), typeof(AudioOutWPF), new PropertyMetadata(60.0f));
         public static DependencyProperty LevelManagerProperty = DependencyProperty.Register("LevelManager", typeof(AudioLevelManager), typeof(AudioOutWPF), new PropertyMetadata(null));
 
         public OutputDeviceModel SelectedOutput
@@ -212,7 +212,7 @@ namespace FeenPhone.WPFApp.Controls
         private void OnAnyLevelDbChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             var total = AudioPlayers.Where(m => m.Player != null && m.Player.VisSource != null).Sum(m => m.Player.VisSource.LevelDbPercent);
-            SetValue(TotalOutputLevelPercentProperty, total);
+            SetValue(TotalOutputLevelPercentProperty, (float)total);
         }
 
         private void AudioEvents_OnAudioDeviceAdded(object sender, AudioEvents.MMDeviceAddedRemovedArgs e)

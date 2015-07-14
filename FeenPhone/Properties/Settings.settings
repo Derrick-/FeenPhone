@@ -47,7 +47,7 @@
     <Setting Name="TelnetPort" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">23</Value>
     </Setting>
-    <Setting Name="DefaultInputLevel" Type="System.Double" Scope="User">
+    <Setting Name="DefaultInputLevel" Type="System.Single" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
     <Setting Name="UseWaveOutEvent" Type="System.Boolean" Scope="User">

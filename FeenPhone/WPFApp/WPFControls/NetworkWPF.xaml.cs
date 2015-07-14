@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -179,7 +181,7 @@ namespace FeenPhone.WPFApp.Controls
         private void InvokeLoginEvent(LoginStatusEventArgs e)
         {
             UserListWPF.DisableAudioAlertForDuration(5.0);
-            
+
             bool isLoggedIn = e.isLoggedIn;
             int version = e.version;
             string message = e.message;
@@ -187,41 +189,47 @@ namespace FeenPhone.WPFApp.Controls
             if (message != null)
                 Console.WriteLine(message);
 
-            if (!isLoggedIn)
+            var client = Client;
+
+            if (!isLoggedIn && client != null && client.IsConnected)
             {
                 Console.WriteLine("Server requests login.");
                 if (invalidLoginAttempts == 0)
                 {
-                    Client.SendLoginInfo();
-                }
-                else if (version == 1 && invalidLoginAttempts < 3)
-                {
-                    using (LoginPassWindow pwWindow = new LoginPassWindow(initialPassword: Client.Password, messsage: message))
-                    {
-                        pwWindow.ShowDialog();
-                        string pass = pwWindow.GetInput();
-                        if (pwWindow.Canceled || string.IsNullOrWhiteSpace(pass))
-                        {
-                            Console.WriteLine("Server login canceled.");
-                            Client.Dispose();
-                            Client = null;
-                        }
-                        else
-                        {
-                            Password = Client.Password = pwWindow.GetInput();
-                            Client.SendLoginInfo();
-                        }
-                    }
+                    invalidLoginAttempts++;
+                    client.SendLoginInfo();
                 }
                 else
                 {
-                    Console.WriteLine("Server login rejected.");
-                    if (Client != null)
-                        Client.Dispose();
-                    Client = null;
+                    invalidLoginAttempts++;
+                    if (version >= 1)
+                    {
+                        var pass = client.Password;
+                        if (LoginPassWindow.Prompt(password: ref pass, message: message) && !string.IsNullOrWhiteSpace(pass))
+                        {
+                            Password = client.Password = pass;
+                            client.SendLoginInfo();
+                            invalidLoginAttempts = 0;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Server login canceled.");
+                            client.Dispose();
+                            if (Client == client)
+                                Client = null;
+                        }
+
+                    }
+                    else
+                    {
+                        Console.WriteLine("Server login rejected.");
+                        client.Dispose();
+                        if (Client == client)
+                            Client = null;
+                    }
                 }
-                invalidLoginAttempts++;
             }
+
             else
             {
                 Console.WriteLine("Server login accepted.");
@@ -592,25 +600,15 @@ namespace FeenPhone.WPFApp.Controls
 
         private void PromptSetServerPassword()
         {
-            var initialPassword = FeenPhone.Accounting.PasswordOnlyRepo.RequirePassword;
-            using (LoginPassWindow pwWindow = new LoginPassWindow(
-                initialPassword: initialPassword,
-                messsage: "Set Server Password.",
-                confirmButtonText: "Set Pass"))
+            var password = FeenPhone.Accounting.PasswordOnlyRepo.RequirePassword;
+            if (LoginPassWindow.Prompt(ref password, "Set Server Password.", "Set Pass"))
+                SetServerPassword(password);
+            else
             {
-                pwWindow.ShowDialog();
-                if (pwWindow.Canceled)
-                {
-                    if (initialPassword == null)
-                        RequireAuth = false;
-                    else
-                        Console.WriteLine("Server password unchanged.");
-                }
+                if (password == null)
+                    RequireAuth = false;
                 else
-                {
-                    string newPass = pwWindow.GetInput();
-                    SetServerPassword(newPass);
-                }
+                    Console.WriteLine("Server password unchanged.");
             }
         }
 
@@ -638,10 +636,13 @@ namespace FeenPhone.WPFApp.Controls
         {
             var addrWindow = new AddressBookWindow(txtServer.Text, txtPort.Text);
             addrWindow.ShowDialog();
-            if (addrWindow.Selected != null && addrWindow.Selected.Host != null)
+            var selected = addrWindow.Selected;
+            if (selected != null && selected.Host != null)
             {
-                txtServer.Text = addrWindow.Selected.Host.ToString();
-                txtPort.Text = addrWindow.Selected.Port.ToString();
+                txtServer.Text = selected.Host.ToString();
+                txtPort.Text = selected.Port.ToString();
+                if (!string.IsNullOrWhiteSpace(selected.Password))
+                    Password = selected.Password;
             }
         }
     }

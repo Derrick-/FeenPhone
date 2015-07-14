@@ -229,7 +229,13 @@ namespace FeenPhone.Audio
             return bufferF;
         }
 
-        unsafe public static void ScalePCM16Volume(ref byte[] pcm16Samples, int length, double volumeScalar)
+        public static void ScalePCM16VolumeDb(ref byte[] pcm16Samples, int length, float volume)
+        {
+            float volumeScalar = volume <= 0.0f ? 0.0f : volume >= 1.0f ? 1.0f : 2.0f - (float)Math.Log10(((1.0f - volume) * 90.0f) + 10.0f);
+            ScalePCM16Volume(ref pcm16Samples, length, volumeScalar);
+        }
+
+        unsafe public static void ScalePCM16Volume(ref byte[] pcm16Samples, int length, float volumeScalar)
         {
             int count = length / 2;
             fixed (byte* p = pcm16Samples)
@@ -245,19 +251,19 @@ namespace FeenPhone.Audio
             fixed (byte* p = pcm16Samples)
                 for (int sampleIndex = 1; sampleIndex < count; sampleIndex++)
                 {
-                    double volumeScalar;
-                    volumeScalar = sampleIndex / (double)count;
+                    float volumeScalar;
+                    volumeScalar = sampleIndex / (float)count;
                     if (direction == RampDirection.FullToZero)
-                        volumeScalar = 1.0 - volumeScalar;
+                        volumeScalar = 1.0f - volumeScalar;
                     ApplyVolumeScalar(volumeScalar, p, sampleIndex);
                 }
         }
 
-        unsafe private static void ApplyVolumeScalar(double volumeScalar, byte* p, int sampleIndex)
+        unsafe private static void ApplyVolumeScalar(float volumeScalar, byte* p, int sampleIndex)
         {
             short sample = *((short*)p + sampleIndex);
-            double result = volumeScalar <= 0.0 ? 0 : sample * volumeScalar;
-            (*((short*)p + sampleIndex)) = (short)result;
+            float result = sample * volumeScalar;
+            (*((short*)p + sampleIndex)) = result < short.MinValue ? short.MinValue : result > short.MaxValue ? short.MaxValue : (short)result;
         }
 
         private static void Settings_AppClosing(object sender, EventArgs e)

@@ -76,28 +76,21 @@ namespace Alienseed.BaseNetworkServer
 
         public bool LoginSetUser(IUserClient user, bool dcIfLoggedIn)
         {
-            if (User != null)
+            if (this.User != user && BaseServer.Users.Contains(user))
             {
-                if (user != null)
-                    return false;
-            }
-            else
-            {
-                if (this.User != user && BaseServer.Users.Contains(user))
+                if (dcIfLoggedIn)
                 {
-                    if (dcIfLoggedIn)
-                    {
-                        var onlineInstances = BaseServer.Clients.Where(m => m.User == user).ToList();
-                        foreach (var online in onlineInstances)
-                            online.Dispose();
-                    }
-                    else
-                    {
-                        LogLine("Login Rejected (online)");
-                        return false;
-                    }
+                    var onlineInstances = BaseServer.Clients.Where(m => m.User == user).ToList();
+                    foreach (var online in onlineInstances)
+                        online.Dispose();
+                }
+                else
+                {
+                    LogLine("Login Rejected (online)");
+                    return false;
                 }
             }
+
             User = user;
 
             if (User != null && OnLogin != null)

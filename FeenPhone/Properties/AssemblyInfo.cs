@@ -8,9 +8,9 @@ using System.Windows;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("FeenPhone")]
-[assembly: AssemblyDescription("Free open-source software for real-time high-quality remote podcasting, radio and voiceover")]
+[assembly: AssemblyDescription("Free NoGov software for real-time high-quality remote podcasting, radio and voiceover")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Beastlick Internet Policy Commission")]
+[assembly: AssemblyCompany("Beastlick Internet Policy Commission Outreach Team")]
 [assembly: AssemblyProduct("FeenPhone")]
 [assembly: AssemblyCopyright("Copyright © 2015")]
 [assembly: AssemblyTrademark("")]
@@ -51,7 +51,7 @@ using System.Windows;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.2.*")]
-[assembly: AssemblyFileVersion("0.2")]
+[assembly: AssemblyVersion("0.3.*")]
+[assembly: AssemblyFileVersion("0.3")]
 
 [assembly:InternalsVisibleTo("FeenPhoneTest")]

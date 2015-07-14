@@ -12,6 +12,8 @@ namespace FeenPhone.WPFApp.Models
         public string Name { get; set; }
         public string Host { get; set; }
         public int Port { get; set; }
+        public string Password { get; set; }
+
         public string Address
         {
             get { return string.Format("{0}:{1}", Host, Port); }
@@ -29,18 +31,20 @@ namespace FeenPhone.WPFApp.Models
 
         public AddressBookEntry() { }
 
-        public AddressBookEntry(string IpAndPortString, string name = null)
+        public AddressBookEntry(string IpAndPortString, string name = null, string password = null)
         {
             if (name != null)
                 this.Name = name.Trim();
             Address = IpAndPortString;
+            this.Password = password;
         }
 
-        public AddressBookEntry(IPAddress ip, int port, string name = null)
+        public AddressBookEntry(IPAddress ip, int port, string name = null, string password = null)
         {
             this.Name = name;
             this.Host = ip.ToString();
             this.Port = port;
+            this.Password = password;
         }
 
         public static bool IsValidServerEntry(string server)

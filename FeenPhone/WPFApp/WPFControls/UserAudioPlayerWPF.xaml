@@ -89,7 +89,7 @@
                 <Label ToolTip="Enable buffer overruns to be recovered automatically by skipping silence">Buffer Recovery</Label>
                 <CheckBox IsChecked="{Binding BufferRecoveryEnabled}">Enabled</CheckBox>
             </WrapPanel>
-            <Grid>
+            <Grid Visibility="{Binding Parent.ShowAdvancedControls, Converter={StaticResource BoolToVisConverter}}">
                 <Grid.Resources>
                     <Style TargetType="{x:Type Label}">
                         <Setter Property="Width" Value="60"/>

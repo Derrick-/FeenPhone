@@ -19,6 +19,30 @@ namespace FeenPhone.WPFApp
     /// </summary>
     public partial class LoginPassWindow : Window, IDisposable
     {
+        /// <summary>
+        /// Prompt for password entry in new modal window
+        /// </summary>
+        /// <param name="password">the initial password to show, and the resultant user response</param>
+        /// <param name="message">Message to display to user in window</param>
+        /// <param name="buttonText">Label for affirm/login button</param>
+        /// <returns>False if canceled</returns>
+        public static bool Prompt(ref string password, string message = null, string buttonText = "Login")
+        {
+            using (LoginPassWindow pwWindow = new LoginPassWindow(
+                initialPassword: password,
+                messsage: message,
+                confirmButtonText: buttonText))
+            {
+                pwWindow.ShowDialog();
+                if (!pwWindow.Canceled)
+                {
+                    password = pwWindow.GetInput();
+                    return true;
+                }
+            }
+            return false;
+        }
+        
         public static DependencyProperty ServerMessageProperty = DependencyProperty.Register("ServerMessage", typeof(string), typeof(LoginPassWindow), new PropertyMetadata(null));
         public static DependencyProperty ConfirmButtonTextProperty = DependencyProperty.Register("ConfirmButtonText", typeof(string), typeof(LoginPassWindow), new PropertyMetadata("Login"));
 

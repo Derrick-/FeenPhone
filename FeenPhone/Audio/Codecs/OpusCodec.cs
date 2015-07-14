@@ -23,7 +23,7 @@ namespace FeenPhone.Audio.Codecs
     class OpusCodec24kHzVoip16384 : OpusCodec
     {
         public override CodecID CodecID { get { return CodecID.OpusCodec24kHzVoip16384; } }
-        public override bool IsAvailable { get { return false; } }
+        public override bool IsAvailable { get { return base.IsAvailable; } }
 
         public OpusCodec24kHzVoip16384() : base(bitRate: 16384, outputSampleRate: 24000, opusMode: FragLabs.Audio.Codecs.Opus.Application.Voip) { }
     }

@@ -269,10 +269,10 @@ namespace FeenPhone.WPFApp.Models
                     InputResampler.RampPCM16Volume(ref decoded, length, InputResampler.RampDirection.ZeroToFull);
                 }
 
-                var volumeScalar = LevelManager.LevelScalar;
-                if (volumeScalar < 1.0)
+                var volume = LevelManager.LevelScalar;
+                if (volume < 1.0f)
                 {
-                    InputResampler.ScalePCM16Volume(ref decoded, length, volumeScalar);
+                    InputResampler.ScalePCM16VolumeDb(ref decoded, length, volume);
                 }
 
                 if (length > 0 && ShouldDropSilence)

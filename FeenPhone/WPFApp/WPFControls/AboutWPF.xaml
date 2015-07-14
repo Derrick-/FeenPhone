@@ -198,7 +198,6 @@
                             <TextBlock><Run Text="Ben Stone"/></TextBlock>
                             <TextBlock><Run Text="MK Lords"/></TextBlock>
                             <TextBlock><Run Text="Václav Navrátil"/></TextBlock>
-                            <TextBlock><Run Text="Nikki Darling"/></TextBlock>
                             <TextBlock><Run Text="Christian Saucier "/></TextBlock>
                             <TextBlock><Run Text="Derrick Slopey"/></TextBlock>
                             <TextBlock><Run Text="Michael W. Dean"/></TextBlock>
@@ -207,7 +206,8 @@
                             <TextBlock Margin="0 0 0 20"><Run Text="FeenPhone logos and Artwork: Michael W. Dean and Davi Barker"/></TextBlock>
 
                             <TextBlock><Run Text="Special thanks: Debra Dean, Neema Vedadi, Darryl W. Perry, Phil Abatecola, Drew Phillips,"/></TextBlock>
-                            <TextBlock><Run Text=" Anthony Lopez-Vito, Crabington Von Crabistan, Link Porterfield, Jeff L., Sean DuVally."/></TextBlock>
+                            <TextBlock><Run Text=" Anthony Lopez-Vito, Crabington Von Crabistan, Link Porterfield, Jeff L., Sean DuVally,"/></TextBlock>
+                            <TextBlock><Run Text=" Tim Frey, Ernest Hancock, Stephen Daves, Angela Keaton."/></TextBlock>
 
                         </StackPanel>
                     </Canvas>

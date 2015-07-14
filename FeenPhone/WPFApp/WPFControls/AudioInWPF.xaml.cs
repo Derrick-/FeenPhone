@@ -416,14 +416,14 @@ namespace FeenPhone.WPFApp.Controls
             }
         }
 
-        const double coughDecayMs = 125.0;
-        const double coughRecoverMs = 250.0;
+        const float coughDecayMs = 125.0f;
+        const float coughRecoverMs = 250.0f;
 
-        const double coughTimerIntervalMs = 15.0;
-        const double coughScalarDecPerInterval = coughTimerIntervalMs / coughDecayMs;
-        const double coughScalarIncPerInterval = coughTimerIntervalMs / coughRecoverMs;
+        const float coughTimerIntervalMs = 15.0f;
+        const float coughScalarDecPerInterval = coughTimerIntervalMs / coughDecayMs;
+        const float coughScalarIncPerInterval = coughTimerIntervalMs / coughRecoverMs;
 
-        private double CoughScalar = 1.0;
+        private float CoughScalar = 1.0f;
         void CoughTimer_Elapsed(object s, ElapsedEventArgs e)
         {
             Dispatcher.Invoke(new Action<object>((sender) =>
@@ -787,7 +787,7 @@ namespace FeenPhone.WPFApp.Controls
                     }
                     else
                     {
-                        if (CoughScalar < 1.0)
+                        if (CoughScalar < 1.0f)
                             InputResampler.ScalePCM16Volume(ref toEncode, length, CoughScalar);
 
                         byte[] encoded = codec.Encode(toEncode, length);
