@@ -16,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace FeenPhone.WPFApp.Controls
 {
@@ -26,6 +27,9 @@ namespace FeenPhone.WPFApp.Controls
     {
 
         public const int DefaultPort = 5150;
+
+        const int reconnectAttempts = 10;
+        static readonly TimeSpan ReconnectDelay = TimeSpan.FromSeconds(2.0);
 
         System.Timers.Timer UIUpdateTimer;
         public NetworkWPF()
@@ -117,6 +121,12 @@ namespace FeenPhone.WPFApp.Controls
         {
             ControlsEnabled = true;
             Disconnect();
+
+            if (!requestedDisconnect)
+                BeginReconnect();
+            else
+                btnConnect.Content = "Connect";
+
         }
 
         private void LoadSettings()
@@ -173,6 +183,7 @@ namespace FeenPhone.WPFApp.Controls
 
         void EventSource_OnLoginStatus(object sender, LoginStatusEventArgs e)
         {
+            requestedDisconnect = false;
             Dispatcher.Invoke(new Action<LoginStatusEventArgs>((args) => { InvokeLoginEvent(args); }), e);
         }
 
@@ -411,7 +422,7 @@ namespace FeenPhone.WPFApp.Controls
                 {
                     if (target.TCPEnabled || target.UDPEnabled || target.TelnetEnabled)
                     {
-                        target.Disconnect();
+                        target.DisconnectRequested();
                         Client = ServerHost.LocalClient = new LocalClient(target.User);
                         target.server = new FeenPhone.Server.ServerHost();
                         target.server.TCPServerPort = target.TCPPort;
@@ -488,11 +499,17 @@ namespace FeenPhone.WPFApp.Controls
             }
         }
 
+        private void DisconnectRequested()
+        {
+            requestedDisconnect = true;
+            btnConnect.Content = "Connect";
+            Disconnect();
+        }
+
         private void Disconnect()
         {
             if (Client != null)
                 Client.Dispose();
-            btnConnect.Content = "Connect";
             ControlsEnabled = true;
             Client = null;
         }
@@ -509,12 +526,59 @@ namespace FeenPhone.WPFApp.Controls
             }
         }
 
+        bool requestedDisconnect = true;
+        int reconnectsRemaining = reconnectAttempts;
+        DispatcherTimer reconTimer = null;
+        private void BeginReconnect()
+        {
+            if (reconTimer == null)
+                reconTimer = new DispatcherTimer(ReconnectDelay, DispatcherPriority.ContextIdle, new EventHandler(DoReconnect), this.Dispatcher);
+
+            if (!reconTimer.IsEnabled)
+            {
+                reconnectsRemaining = reconnectAttempts;
+                reconTimer.Start();
+            }
+        }
+
+        private void DoReconnect(object sender, EventArgs e)
+        {
+            reconnectsRemaining--;
+            if (reconnectsRemaining <= 0 || requestedDisconnect || Client != null || !TryConnect())
+            {
+                if (Client == null)
+                    btnConnect.Content = "Connect";
+                
+                requestedDisconnect = true;
+                reconTimer.Stop();
+            }
+            else if (Client == null || !Client.IsConnected)
+            {
+                btnConnect.Content = string.Format("Reconnecting ({0}/{1})", reconnectAttempts - reconnectsRemaining, reconnectAttempts);
+                requestedDisconnect = false;
+            }
+        }
+
+
         private void Connect_Click(object sender, RoutedEventArgs e)
         {
             if (Client != null)
+                DisconnectRequested();
+            else
+                TryConnect();
+        }
+
+        private bool TryConnect()
+        {
+            if (Client != null)
             {
-                Disconnect();
-                return;
+                if (Client.IsConnected)
+                    return false;
+                else
+                {
+                    Client.Dispose();
+                    Client = null;
+                }
             }
 
             IPAddress IP;
@@ -548,7 +612,7 @@ namespace FeenPhone.WPFApp.Controls
                 }
             }
 
-            if (!OK) return;
+            if (!OK) return false;
 
             string servername = txtServer.Text.Trim();
             if (!IPAddress.TryParse(servername, out IP))
@@ -561,7 +625,7 @@ namespace FeenPhone.WPFApp.Controls
                 catch (Exception ex)
                 {
                     Console.WriteLine("Could not resolve {0}: ", servername, ex.Message);
-                    return;
+                    return false;
                 }
 
                 //IP = ips.Where(m => m.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6).FirstOrDefault();
@@ -572,7 +636,7 @@ namespace FeenPhone.WPFApp.Controls
                 if (IP == null)
                 {
                     Console.WriteLine("No valid addresses for {0}", servername);
-                    return;
+                    return false;
                 }
             }
 
@@ -589,8 +653,10 @@ namespace FeenPhone.WPFApp.Controls
 
             EventSource.InvokeOnUserList(null, null);
             ControlsEnabled = false;
-            btnConnect.Content = "Disconnect";
             remClient.Connect();
+            btnConnect.Content = "Disconnect";
+
+            return true;
         }
 
         private void ManageAuth_Click(object sender, RoutedEventArgs e)
