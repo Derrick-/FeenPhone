@@ -30,7 +30,7 @@
 
         <local:BoolToColorConverter x:Key="ValidationColorConverter" NullColor="{x:Null}" TrueColor="{x:Null}" FalseColor="{StaticResource validationErrorBrush}" />
 
-        <Style TargetType="{x:Type ToggleButton}" x:Key="TopToggles">
+        <Style TargetType="{x:Type ButtonBase}" x:Key="TopToggles">
             <Setter Property="Background" Value="{x:Null}"/>
             <Setter Property="BorderBrush" Value="{x:Null}"/>
             <Setter Property="Margin" Value="0 0 10 0"/>

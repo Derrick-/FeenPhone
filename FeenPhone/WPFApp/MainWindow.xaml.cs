@@ -1,5 +1,6 @@
 ﻿using FeenPhone.WPFApp.Controls;
 using FeenPhone.WPFApp.Models;
+using FeenPhone.WPFApp.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,7 +52,7 @@ namespace FeenPhone.WPFApp
         {
             Properties.Settings settings = Settings.Container;
 
-            SetValue(ShowAdvancedControlsProperty, settings.ShowAdvancedControls);
+            SetValue(ShowAdvancedControlsProperty, CommandArgs.HasArg("StartUdpServer") || settings.ShowAdvancedControls);
         }
 
         private void Settings_SaveSettings(object sender, EventArgs e)
@@ -143,6 +144,18 @@ namespace FeenPhone.WPFApp
                 this.WindowState = WindowState.Maximized;
             }
 
+        }
+
+        private void Button_Help_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Command-line arguments:\n" +
+                "\t-StartTcpServer\tAuto-start TCP server\n" +
+                "\t-StartUdpServer\tAuto-start UDP server\n" +
+                "\t-ServerTcpPort=[port]\tSet TCP server port\n" +
+                "\t-ServerUdpPort=[port]\tSet UDP server port\n" +
+                "\t-pass=[password]\tSet server password"+
+                "\n\n"+
+                "Example:\n\tFeenPhone.exe -servertcpport=5150 -starttcpserver -pass=worms");
         }
     }
 }

@@ -21,6 +21,12 @@
                             <Setter Property="Padding" Value="100"/>
                         </Style>
                     </DockPanel.Resources>
+                    <Button DockPanel.Dock="Right" Style="{DynamicResource TopToggles}" 
+                            Click="Button_Help_Click"
+                            Width="14" HorizontalAlignment="Center" 
+                            ToolTip="Command-line arguments">
+                        <TextBlock Effect="{StaticResource GoldGlow}">?</TextBlock>
+                    </Button>
                     <ToggleButton DockPanel.Dock="Right" Style="{DynamicResource TopToggles}" IsChecked="{Binding ShowAboutBox, Mode=TwoWay}">
                         <TextBlock Effect="{StaticResource GoldGlow}">ABOUT</TextBlock>
                     </ToggleButton>

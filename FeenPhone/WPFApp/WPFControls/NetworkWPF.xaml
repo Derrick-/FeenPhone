@@ -33,7 +33,7 @@
             <TextBlock TextAlignment="Center" Background="{StaticResource clrBackgroundHeaders}" >NETWORK</TextBlock>
             <TextBlock TextAlignment="Center" Background="{StaticResource clrBackgroundHeaders}" Visibility="{Binding IsServer, Converter={StaticResource BoolToVisConverter}}" >NETWORK: RUNNING SERVER</TextBlock>
         </Grid>
-        <TabControl>
+        <TabControl Name="tcTabs">
             <TabControl.Resources>
                 <Style TargetType="TabItem">
                     <Setter Property="Padding" Value="25 0"/>

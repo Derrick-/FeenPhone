@@ -1,5 +1,6 @@
 ﻿using FeenPhone.Client;
 using FeenPhone.Server;
+using FeenPhone.WPFApp.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,6 +33,9 @@ namespace FeenPhone.WPFApp.Controls
         static readonly TimeSpan ReconnectDelay = TimeSpan.FromSeconds(2.0);
 
         System.Timers.Timer UIUpdateTimer;
+
+        bool DoServerAutostart = false;
+
         public NetworkWPF()
         {
             isInitializing = true;
@@ -52,11 +56,55 @@ namespace FeenPhone.WPFApp.Controls
             UIUpdateTimer.Start();
             UIUpdateTimer.Elapsed += UIUpdateTimer_Elapsed;
 
+            ProcessCommandLine();
+
             isInitializing = false;
+        }
+
+        private void ProcessCommandLine()
+        {
+            string pass = CommandArgs.GetArgValue("pass");
+            if (pass != null)
+            {
+                SetServerPassword(pass);
+                RequireAuth = true;
+            }
+
+            string strTcpPort = CommandArgs.GetArgValue("ServerTcpPort");
+            int tcpPort;
+            if (strTcpPort != null && int.TryParse(strTcpPort, out tcpPort))
+                TCPPort = tcpPort;
+
+            string strUdpPort = CommandArgs.GetArgValue("ServerUdpPort");
+            int udpPort;
+            if (strUdpPort != null && int.TryParse(strUdpPort, out udpPort))
+                UDPPort = udpPort;
+
+            if (CommandArgs.HasArg("StartTcpServer"))
+            {
+                TCPEnabled = true;
+                DoServerAutostart = true;
+            }
+
+            if (CommandArgs.HasArg("StartUdpServer"))
+            {
+                UDPEnabled = true;
+                DoServerAutostart = true;
+            }
         }
 
         void UIUpdateTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
+            if (DoServerAutostart)
+            {
+                DoServerAutostart = false;
+                Dispatcher.Invoke(() =>
+                {
+                    IsServer = true;
+                    tcTabs.SelectedIndex = 1;
+                });
+            }
+
             if (Client is RemoteClient)
                 Client.SendPingReq();
         }
@@ -548,7 +596,7 @@ namespace FeenPhone.WPFApp.Controls
             {
                 if (Client == null)
                     btnConnect.Content = "Connect";
-                
+
                 requestedDisconnect = true;
                 reconTimer.Stop();
             }

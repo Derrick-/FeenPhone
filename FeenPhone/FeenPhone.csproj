@@ -549,6 +549,7 @@
     <Compile Include="WPFApp\Models\VersionInfoModel.cs" />
     <Compile Include="WPFApp\Settings.cs" />
     <Compile Include="WPFApp\Utils\BoolToColorConverter.cs" />
+    <Compile Include="WPFApp\Utils\CommandArgs.cs" />
     <Compile Include="WPFApp\Utils\FormExtensions.cs" />
     <Compile Include="WPFApp\Utils\GlassHelper.cs" />
     <Compile Include="WPFApp\Utils\VisibilityConverters.cs" />
