@@ -813,9 +813,22 @@ namespace FeenPhone.WPFApp.Controls
         public void Dispose()
         {
             StopRecording();
-            foreach (var codec in Codecs)
-                codec.Dispose();
-            isDisposed = true;
+
+            if (!isDisposed)
+            {
+                foreach (var codec in Codecs)
+                    codec.Dispose();
+
+                Settings.AppClosing -= Settings_SaveSettings;
+
+                AudioEvents.OnAudioDeviceAdded -= AudioEvents_OnAudioDeviceAdded;
+                AudioEvents.OnAudioDeviceRemoved -= AudioEvents_OnAudioDeviceRemoved;
+
+                EventSource.OnLoginStatus -= EventSource_OnLoginStatus;
+                EventSource.OnUserConnected -= EventSource_InvokeOnUserConnected;
+
+                isDisposed = true;
+            }
         }
 
         private void comboInputs_Loaded(object sender, RoutedEventArgs e)

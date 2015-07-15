@@ -41,6 +41,12 @@ namespace FeenPhone.WPFApp
             UserStatusRepo.Users.CollectionChanged += Users_CollectionChanged;
 
             DataContext = this;
+
+            if (CommandArgs.HasArg("NoLocalAudio"))
+            {
+                AudioIn.Dispose();
+                AudioIn.Visibility = System.Windows.Visibility.Collapsed;
+            }
         }
         protected override void OnSourceInitialized(EventArgs e)
         {
@@ -67,8 +73,10 @@ namespace FeenPhone.WPFApp
             Settings.InvokeAppClosing(this);
             Settings.Container.Save();
 
-            AudioIn.Dispose();
-            AudioOut.Dispose();
+            if (AudioIn != null)
+                AudioIn.Dispose();
+            if (AudioOut != null)
+                AudioOut.Dispose();
         }
 
         private void EventSource_OnChat(object sender, Client.OnChatEventArgs e)
@@ -110,8 +118,10 @@ namespace FeenPhone.WPFApp
         private void SetAdvanced(bool showAdvanced)
         {
             Network.SetValue(NetworkWPF.ShowAdvancedControlsProperty, showAdvanced);
-            AudioIn.SetValue(AudioInWPF.ShowAdvancedControlsProperty, showAdvanced);
-            AudioOut.SetValue(AudioOutWPF.ShowAdvancedControlsProperty, showAdvanced);
+            if (AudioIn != null)
+                AudioIn.SetValue(AudioInWPF.ShowAdvancedControlsProperty, showAdvanced);
+            if (AudioOut != null)
+                AudioOut.SetValue(AudioOutWPF.ShowAdvancedControlsProperty, showAdvanced);
         }
 
         /// <summary>
@@ -153,9 +163,11 @@ namespace FeenPhone.WPFApp
                 "\t-StartUdpServer\tAuto-start UDP server\n" +
                 "\t-ServerTcpPort=[port]\tSet TCP server port\n" +
                 "\t-ServerUdpPort=[port]\tSet UDP server port\n" +
-                "\t-pass=[password]\tSet server password"+
-                "\n\n"+
-                "Example:\n\tFeenPhone.exe -servertcpport=5150 -starttcpserver -pass=worms");
+                "\t-pass=[password]\tSet server password" +
+                "\n\n" +
+                "\t-NoLocalAudio\tDisable local audio input devices" +
+                "\n\n" +
+                "Example for studio to tower link:\n   FeenPhone.exe -servertcpport=5150 -starttcpserver -pass=worms -nolocalaudio");
         }
     }
 }
