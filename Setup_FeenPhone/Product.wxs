@@ -130,7 +130,7 @@
         <Condition>INSTALLDESKTOPSHORTCUT</Condition>
         <Shortcut Id="ApplicationDesktopShortcut"
                   Name="FeenPhone"
-                  Description="Free open-source software for real-time high-quality remote podcasting, radio and voiceover"
+                  Description="Free NoGov software for real-time high-quality remote podcasting, radio and voiceover"
                   Icon="FeenPhoneIcon"
                   IconIndex="0"
                   Target="[#FeenPhone.exe]"
@@ -144,7 +144,7 @@
         <Condition>INSTALLSTARTMENUFOLDER</Condition>
         <Shortcut Id="ApplicationStartMenuShortcut"
                   Name="FeenPhone"
-                  Description="Free open-source software for real-time high-quality remote podcasting, radio and voiceover"
+                  Description="Free NoGov software for real-time high-quality remote podcasting, radio and voiceover"
                   Icon="FeenPhoneIcon"
                   IconIndex="0"
                   Target="[#FeenPhone.exe]"
