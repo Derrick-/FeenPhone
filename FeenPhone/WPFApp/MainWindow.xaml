@@ -22,10 +22,12 @@
                         </Style>
                     </DockPanel.Resources>
                     <Button DockPanel.Dock="Right" Style="{DynamicResource TopToggles}" 
+                            Background="Black"
                             Click="Button_Help_Click"
-                            Width="14" HorizontalAlignment="Center" 
+                            Width="24" 
+                            HorizontalAlignment="Center" 
                             ToolTip="Command-line arguments">
-                        <TextBlock Effect="{StaticResource GoldGlow}">?</TextBlock>
+                        <TextBlock Foreground="White" Effect="{StaticResource GoldGlow}">C:></TextBlock>
                     </Button>
                     <ToggleButton DockPanel.Dock="Right" Style="{DynamicResource TopToggles}" IsChecked="{Binding ShowAboutBox, Mode=TwoWay}">
                         <TextBlock Effect="{StaticResource GoldGlow}">ABOUT</TextBlock>

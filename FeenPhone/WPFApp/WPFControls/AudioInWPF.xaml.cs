@@ -433,7 +433,7 @@ namespace FeenPhone.WPFApp.Controls
                     if (sender == CoughTimer)
                     {
                         var on = (bool)btnCough.IsChecked;
-                        if ((on && CoughScalar <= 0.0) || (!on && CoughScalar >= 1.0))
+                        if ((on && CoughScalar <= 0.0f) || (!on && CoughScalar >= 1.0f))
                         {
                             CoughTimer.Stop();
                             CoughTimer.Dispose();
@@ -788,7 +788,7 @@ namespace FeenPhone.WPFApp.Controls
                     else
                     {
                         if (CoughScalar < 1.0f)
-                            InputResampler.ScalePCM16Volume(ref toEncode, length, CoughScalar);
+                            InputResampler.ScalePCM16VolumeDb(ref toEncode, length, CoughScalar);
 
                         byte[] encoded = codec.Encode(toEncode, length);
 

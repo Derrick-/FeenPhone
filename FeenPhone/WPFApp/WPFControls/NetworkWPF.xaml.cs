@@ -232,7 +232,10 @@ namespace FeenPhone.WPFApp.Controls
         void EventSource_OnLoginStatus(object sender, LoginStatusEventArgs e)
         {
             requestedDisconnect = false;
-            Dispatcher.Invoke(new Action<LoginStatusEventArgs>((args) => { InvokeLoginEvent(args); }), e);
+            Dispatcher.Invoke(new Action<LoginStatusEventArgs>((args) => { 
+                InvokeLoginEvent(args);
+                btnConnect.Content = "Disconnect"; 
+            }), e);
         }
 
         int invalidLoginAttempts = 0;

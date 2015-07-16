@@ -231,7 +231,7 @@ namespace FeenPhone.Audio
 
         public static void ScalePCM16VolumeDb(ref byte[] pcm16Samples, int length, float volume)
         {
-            float volumeScalar = volume <= 0.0f ? 0.0f : volume >= 1.0f ? 1.0f : 2.0f - (float)Math.Log10(((1.0f - volume) * 90.0f) + 10.0f);
+            float volumeScalar = volume <= 0.0f ? 0.0f : 2.0f - (float)Math.Log10(((1.0f - volume) * 90.0f) + 10.0f);
             ScalePCM16Volume(ref pcm16Samples, length, volumeScalar);
         }
 
@@ -241,7 +241,6 @@ namespace FeenPhone.Audio
             fixed (byte* p = pcm16Samples)
                 for (int sampleIndex = 0; sampleIndex < count; sampleIndex++)
                     ApplyVolumeScalar(volumeScalar, p, sampleIndex);
-
         }
 
         internal enum RampDirection { ZeroToFull, FullToZero }
@@ -261,9 +260,17 @@ namespace FeenPhone.Audio
 
         unsafe private static void ApplyVolumeScalar(float volumeScalar, byte* p, int sampleIndex)
         {
-            short sample = *((short*)p + sampleIndex);
-            float result = sample * volumeScalar;
-            (*((short*)p + sampleIndex)) = result < short.MinValue ? short.MinValue : result > short.MaxValue ? short.MaxValue : (short)result;
+            short sample;
+
+            if (volumeScalar <= 0.0)
+                sample = 0;
+            else
+            {
+                sample = *((short*)p + sampleIndex);
+                float result = sample * volumeScalar;
+                sample = result < short.MinValue ? short.MinValue : result > short.MaxValue ? short.MaxValue : (short)result;
+            }
+            (*((short*)p + sampleIndex)) = sample;
         }
 
         private static void Settings_AppClosing(object sender, EventArgs e)
