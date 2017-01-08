@@ -69,7 +69,17 @@ namespace Alienseed.BaseNetworkServer
             {
                 foreach (byte b in data)
                     InStream.Enqueue(b);
-                OnRead();
+
+                try
+                {
+                    OnRead();
+                }
+                catch (ArgumentException ex)
+                {
+                    Console.WriteLine("ArgumentException forced client disconnect: {0}", ex.Message);
+                    InvokeOnDisconnect();
+                    return;
+                }
             }
         }
 
@@ -165,7 +175,17 @@ namespace Alienseed.BaseNetworkServer
                 {
                     for (int i = 0; i < read; i++)
                         InStream.Enqueue(_buffer[i]);
-                    OnRead();
+
+                    try
+                    {
+                        OnRead();
+                    }
+                    catch (ArgumentException ex)
+                    {
+                        Console.WriteLine("ArgumentException forced client disconnect: {0}", ex.Message);
+                        InvokeOnDisconnect();
+                        return;
+                    }
                 }
 
                 BeginRead();
