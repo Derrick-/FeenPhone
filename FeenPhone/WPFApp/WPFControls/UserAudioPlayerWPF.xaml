@@ -23,8 +23,11 @@
             Minimum="{Binding LevelManager.Min}" 
             Maximum="{Binding LevelManager.Max}" 
             Value="{Binding LevelManager.Level, Mode=TwoWay}" 
-            IsEnabled="{Binding LevelManager.IsAttached}" 
-        />
+            IsEnabled="{Binding LevelManager.IsAttached}" >
+            <Slider.LayoutTransform>
+                <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
+            </Slider.LayoutTransform>
+        </Slider>
         <StackPanel>
             <StackPanel.Resources>
                 <Style TargetType="{x:Type Label}">

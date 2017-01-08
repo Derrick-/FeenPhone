@@ -736,6 +736,8 @@ namespace FeenPhone.WPFApp.Controls
             remClient.Connect();
             btnConnect.Content = "Disconnect";
 
+            reconnectsRemaining = reconnectAttempts;
+
             return true;
         }
 
