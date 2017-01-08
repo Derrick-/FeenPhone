@@ -12,6 +12,9 @@
         <Style TargetType="TextBlock">
             <Setter Property="VerticalAlignment" Value="Center"/>
         </Style>
+        <Style x:Key="ScrollBarStyle1" TargetType="{x:Type ScrollBar}">
+            
+        </Style>
         <CollectionViewSource x:Key="InputsView" Source="{Binding Path=InputSourceList}"  IsLiveFilteringRequested="True" >
             <CollectionViewSource.GroupDescriptions>
                 <dat:PropertyGroupDescription PropertyName="Provider" />
@@ -24,12 +27,15 @@
             <ProgressBar Orientation="Vertical" Width="20" Minimum="0" Maximum="100" Value="{Binding VisSource.LevelDbPercent}"></ProgressBar>
             <TextBlock Visibility="Collapsed" DockPanel.Dock="Bottom" Text="{Binding Path=LevelManager.LevelPercent, StringFormat={}{0:#}%}"/>
             <Slider 
-            Orientation="Vertical"
-            Minimum="0" 
-            Maximum="100" 
-            Value="{Binding LevelManager.LevelPercent, Mode=TwoWay}" 
-            IsEnabled="{Binding LevelManager.IsAttached}" 
-        />
+                Orientation="Vertical"
+                Minimum="0" 
+                Maximum="100" 
+                Value="{Binding LevelManager.LevelPercent, Mode=TwoWay}" 
+                IsEnabled="{Binding LevelManager.IsAttached}">
+                <Slider.LayoutTransform>
+                    <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
+                </Slider.LayoutTransform>
+            </Slider>
         </DockPanel>
         <StackPanel>
             <ToggleButton
