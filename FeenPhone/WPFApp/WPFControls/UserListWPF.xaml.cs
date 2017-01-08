@@ -79,22 +79,7 @@ namespace FeenPhone.WPFApp.Controls
                 DisableAudioAlertForDuration();
                 try
                 {
-                    System.Windows.Resources.StreamResourceInfo sri = Application.GetResourceStream(new Uri("WPFApp/Resources/audio/FeenPhoneDJAlert.wav", UriKind.Relative));
-
-                    using (WaveStream ws =
-                       new BlockAlignReductionStream(
-                           WaveFormatConversionStream.CreatePcmStream(
-                               new WaveFileReader(sri.Stream))))
-                    {
-                        var length = ws.Length;
-                        if (length < int.MaxValue)
-                        {
-                            byte[] data = new byte[length];
-                            var format = ws.WaveFormat;
-                            int read = ws.Read(data, 0, (int)length);
-                            EventSource.InvokePlaySoundEffect(this, format, data);
-                        }
-                    }
+                    FeenPhone.Utils.Sounds.PlaySound("WPFApp/Resources/audio/FeenPhoneDJAlert.wav");
                 }
                 catch { }
             }

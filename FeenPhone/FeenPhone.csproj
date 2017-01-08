@@ -530,6 +530,7 @@
     <Compile Include="Server\Telnet\Prompts\TextPrompt.cs" />
     <Compile Include="Server\Telnet\TelnetServer.cs" />
     <Compile Include="Server\Telnet\TelNetState.cs" />
+    <Compile Include="Utils\Sounds.cs" />
     <Compile Include="Utils\Timekeeper.cs" />
     <Compile Include="Utils\Validation.cs" />
     <Compile Include="WPFApp\AddressBookWindow.xaml.cs">
@@ -703,6 +704,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="WPFApp\Resources\audio\FeenPhoneDisconnectError.wav" />
     <Resource Include="WPFApp\Resources\Images\key-26.png" />
     <Resource Include="WPFApp\Resources\audio\FeenPhoneDJAlert.wav" />
     <Resource Include="WPFApp\Resources\Images\Cough_Button.jpg" />

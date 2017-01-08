@@ -177,11 +177,22 @@ namespace FeenPhone.WPFApp.Controls
                 if(!AutoReconnect)
                 {
                     EventSource.InvokeOnAlertUser(this);
+                    PlayDisconnectSound();
                 }
                 btnConnect.Content = "Connect";
             }
 
         }
+
+        private void PlayDisconnectSound()
+        {
+            try
+            {
+                FeenPhone.Utils.Sounds.PlaySound("WPFApp/Resources/audio/FeenPhoneDisconnectError.wav");
+            }
+            catch { }
+        }
+
 
         private void LoadSettings()
         {
