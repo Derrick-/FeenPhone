@@ -92,7 +92,7 @@ namespace FeenPhone.WPFApp.Models
         TimeSpan FrameDropThresholdMs { get { return MaxBufferedDuration.Add(MaxBufferedDuration); } }
         static ushort DefaultSilenceAggression = 1;
 
-        static int DefaultBufferTargetMs = 100;
+        static int DefaultBufferTargetMs = 150;
         static int BufferTargetMarginMs = 50;
 
         static int BufferWarningDurationMs = 150;

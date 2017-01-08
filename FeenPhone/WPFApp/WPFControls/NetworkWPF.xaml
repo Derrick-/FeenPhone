@@ -69,7 +69,8 @@
                         <ComboBoxItem IsSelected="True">TCP</ComboBoxItem>
                         <ComboBoxItem>UDP</ComboBoxItem>
                     </ComboBox>
-                    <Button Name="btnConnect" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Click="Connect_Click">Connect</Button>
+                    <Button Name="btnConnect" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="1" Click="Connect_Click">Connect</Button>
+                    <CheckBox Name="chkAutoReconnect" Grid.Row="2" Grid.Column="1" ToolTip="Auto reconnect"  Margin="10,2,0,2" IsChecked="{Binding Path=AutoReconnect, Mode=TwoWay}">Reconnect</CheckBox>
                     <Label Grid.Row="2" Grid.Column="2" Visibility="{Binding ControlsEnabled, Converter={StaticResource InverseBoolToVisConverter}}">Ping</Label>
                     <TextBlock Name="txtPing" Grid.Row="2" Grid.Column="3" Visibility="{Binding ControlsEnabled, Converter={StaticResource InverseBoolToVisConverter}}"></TextBlock>
                 </Grid>

@@ -58,16 +58,7 @@ A “contributor” is any person that distributes its contribution under this licen
 =-=-=-=-=-=-
 .
 License for WEBSITE / PROMO VIDEO / radio ads, and non-code original content in the FeenPhone software:
-All writing, original images and music are covered by Creative Commons Attribution 4.0 International license. (CC BY 4.0). https://creativecommons.org/licenses/by/4.0/
-.
-Bird silhouette adopted for use in header art and program icons in public domain, from here: http://www.pd4pic.com/raven-crow-silhouette-cartoon-bird-stand.html
 
-
-.
-
-
-
-
-1
-
-
+All writing, original images and music covered by The BipCot NoGov license 
+http://bipcot.org/
+This allows use and re-use by anyone except governments and government agents. There are no government guns for violators, only shame..

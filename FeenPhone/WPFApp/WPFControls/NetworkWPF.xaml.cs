@@ -170,10 +170,16 @@ namespace FeenPhone.WPFApp.Controls
             ControlsEnabled = true;
             Disconnect();
 
-            if (!requestedDisconnect)
+            if (!requestedDisconnect && AutoReconnect)
                 BeginReconnect();
             else
+            {
+                if(!AutoReconnect)
+                {
+                    EventSource.InvokeOnAlertUser(this);
+                }
                 btnConnect.Content = "Connect";
+            }
 
         }
 
@@ -201,6 +207,8 @@ namespace FeenPhone.WPFApp.Controls
             UDPPort = settings.UDPPort;
             TelnetPort = settings.TelnetPort;
 
+            AutoReconnect = settings.AutoReconnect;
+
             if (!string.IsNullOrWhiteSpace(settings.RequireServerPass))
             {
                 FeenPhone.Accounting.PasswordOnlyRepo.RequirePassword = settings.RequireServerPass;
@@ -222,6 +230,8 @@ namespace FeenPhone.WPFApp.Controls
             settings.TCPPort = TCPPort;
             settings.UDPPort = UDPPort;
             settings.TelnetPort = TelnetPort;
+
+            settings.AutoReconnect = AutoReconnect;
 
             if (RequireAuth)
                 settings.RequireServerPass = FeenPhone.Accounting.PasswordOnlyRepo.RequirePassword;
@@ -321,6 +331,8 @@ namespace FeenPhone.WPFApp.Controls
         public static DependencyProperty UDPPortTextProperty = DependencyProperty.Register("UDPPortText", typeof(string), typeof(NetworkWPF), new PropertyMetadata("5150", OnUDPPortTextChanged));
         public static DependencyProperty TelnetPortTextProperty = DependencyProperty.Register("TelnetPortText", typeof(string), typeof(NetworkWPF), new PropertyMetadata("23", OnTelnetPortTextChanged));
 
+        public static DependencyProperty AutoReconnectProperty = DependencyProperty.Register("AutoReconnect", typeof(bool?), typeof(NetworkWPF), new PropertyMetadata(true));
+
         public bool IsServer
         {
             get { return (bool?)this.GetValue(IsServerProperty) == true; }
@@ -356,6 +368,12 @@ namespace FeenPhone.WPFApp.Controls
         {
             get { return (int)this.GetValue(TelnetPortProperty); }
             set { this.SetValue(TelnetPortProperty, value); }
+        }
+
+        public bool AutoReconnect
+        {
+            get { return (bool?)this.GetValue(AutoReconnectProperty) == true; }
+            set { this.SetValue(AutoReconnectProperty, value); }
         }
 
         private static void OnTCPPortChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

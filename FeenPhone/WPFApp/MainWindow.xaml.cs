@@ -40,6 +40,8 @@ namespace FeenPhone.WPFApp
             FeenPhone.Client.EventSource.OnChat += EventSource_OnChat;
             UserStatusRepo.Users.CollectionChanged += Users_CollectionChanged;
 
+            FeenPhone.Client.EventSource.OnAlertUser += EventSource_OnAlertUser;
+
             DataContext = this;
 
             if (CommandArgs.HasArg("NoLocalAudio"))
@@ -90,6 +92,12 @@ namespace FeenPhone.WPFApp
             {
                 InvokeFlash();
             }
+        }
+
+        private void EventSource_OnAlertUser(object sender, EventArgs e)
+        {
+            InvokeFlash();
+            
         }
 
         private void InvokeFlash()

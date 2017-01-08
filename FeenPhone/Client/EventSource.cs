@@ -110,6 +110,8 @@ namespace FeenPhone.Client
 
         public static event EventHandler<PlaySoundEffectEventArgs> OnPlaySoundEffect;
 
+        public static event EventHandler<EventArgs> OnAlertUser;
+
         public static void InvokeOnUserConnected(object sender, IUser user)
         {
             if (OnUserConnected != null)
@@ -163,6 +165,12 @@ namespace FeenPhone.Client
         {
             if (OnPlaySoundEffect != null)
                 OnPlaySoundEffect(sender, new PlaySoundEffectEventArgs(format, data));
+        }
+
+        internal static void InvokeOnAlertUser(object sender)
+        {
+            if (OnAlertUser != null)
+                OnAlertUser(sender, new EventArgs());
         }
     }
 }
