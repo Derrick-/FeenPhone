@@ -14,7 +14,7 @@
             <TextBox Name="ChatEntry" Background="{StaticResource clrBackgroundSecondary}" KeyDown="ChatEntry_KeyDown"></TextBox>
         </DockPanel>
         <ScrollViewer Name="LogScroller">
-            <TextBlock TextWrapping="Wrap" Name="log"></TextBlock>
+            <TextBox TextWrapping="Wrap" Name="log"></TextBox>
         </ScrollViewer>
     </DockPanel>
 </UserControl>
